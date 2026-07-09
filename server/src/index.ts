@@ -115,6 +115,21 @@ const server = Bun.serve<WsData>({
       );
     }
 
+    // Serve static client files in production
+    const publicDir = import.meta.dir + "/../../client/dist";
+    const filePath = publicDir + (url.pathname === "/" ? "/index.html" : url.pathname);
+    const file = Bun.file(filePath);
+    
+    if (await file.exists()) {
+      return new Response(file);
+    }
+    
+    // SPA fallback
+    const indexFile = Bun.file(publicDir + "/index.html");
+    if (await indexFile.exists()) {
+      return new Response(indexFile);
+    }
+
     return new Response("Not Found", { status: 404 });
   },
 
