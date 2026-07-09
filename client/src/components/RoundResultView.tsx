@@ -1,4 +1,5 @@
 import { useGame } from '@/context/GameProvider'
+import { CrownIcon, PartyIcon, RefreshIcon, ArrowRight01Icon } from 'hugeicons-react'
 
 export default function RoundResultView() {
   const { gameState, nextRound, offerTrade } = useGame()
@@ -16,15 +17,15 @@ export default function RoundResultView() {
 
   return (
     <div>
-      <h2 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: '1.5rem' }}>
-        🏆 Resultado de la Ronda {gameState.roundNumber}
+      <h2 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+        <CrownIcon size={24} /> Resultado de la Ronda {gameState.roundNumber}
       </h2>
 
       {/* Winner */}
       {winningSub && (
         <div style={{ marginBottom: '2rem' }}>
-          <h3 className="section-title" style={{ color: '#ffd700' }}>
-            🎉 ¡{winningSub.playerName} gana esta ronda!
+          <h3 className="section-title" style={{ color: '#ffd700', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <PartyIcon size={20} /> ¡{winningSub.playerName} gana esta ronda!
           </h3>
 
           {/* Winning combo: black + white */}
@@ -86,7 +87,9 @@ export default function RoundResultView() {
       {/* Trade section */}
       {tradesEnabled && (
         <div style={{ marginBottom: '2rem' }}>
-          <h3 className="section-title">🔄 Intercambiar</h3>
+          <h3 className="section-title" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <RefreshIcon size={20} /> Intercambiar
+          </h3>
           {tradablePlayers.length === 0 ? (
             <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>
               No hay jugadores disponibles para intercambiar.
@@ -99,7 +102,7 @@ export default function RoundResultView() {
                   className="btn btn-secondary btn-sm"
                   onClick={() => offerTrade(p.id)}
                 >
-                  🔄 {p.name}
+                  <RefreshIcon size={16} style={{ verticalAlign: 'middle', marginRight: '4px' }} /> {p.name}
                 </button>
               ))}
             </div>
@@ -110,8 +113,8 @@ export default function RoundResultView() {
       {/* Next round */}
       <div style={{ display: 'flex', justifyContent: 'center' }}>
         {isHost ? (
-          <button className="btn btn-primary btn-lg" onClick={nextRound}>
-            ➡️ Siguiente Ronda
+          <button className="btn btn-primary btn-lg" onClick={nextRound} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <ArrowRight01Icon size={20} /> Siguiente Ronda
           </button>
         ) : (
           <div className="info-message">

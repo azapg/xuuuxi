@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useGame } from '@/context/GameProvider'
 import type { CollectionSummary, GameSettings } from '@xuuuxi/shared'
+import { CrownIcon, Settings01Icon, PackageIcon, GameController01Icon } from 'hugeicons-react'
 
 export default function LobbyView() {
   const { gameState, updateSettings, startGame } = useGame()
@@ -61,7 +62,7 @@ export default function LobbyView() {
               <span className={`status-dot ${p.isConnected ? 'online' : 'offline'}`} />
               <span className="player-name">
                 {p.name}
-                {p.isHost && ' 👑'}
+                {p.isHost && <CrownIcon size={16} style={{ verticalAlign: 'middle', marginLeft: '4px', color: 'var(--accent)' }} />}
                 {p.id === gameState.me.id && ' (tú)'}
               </span>
             </li>
@@ -72,7 +73,9 @@ export default function LobbyView() {
       {/* Settings (host only) */}
       {isHost && (
         <div style={{ width: '100%', maxWidth: 500 }}>
-          <h3 className="section-title">⚙️ Configuración</h3>
+          <h3 className="section-title" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <Settings01Icon size={20} /> Configuración
+          </h3>
           <div className="settings-grid">
             <div className="settings-field">
               <label className="settings-label">Cartas en mano</label>
@@ -220,7 +223,9 @@ export default function LobbyView() {
 
       {/* Collections */}
       <div style={{ width: '100%', maxWidth: 500 }}>
-        <h3 className="section-title">📦 Colecciones de Cartas</h3>
+        <h3 className="section-title" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <PackageIcon size={20} /> Colecciones de Cartas
+        </h3>
         {loadingCollections ? (
           <div style={{ display: 'flex', justifyContent: 'center', padding: '1rem' }}>
             <span className="loading-spinner" />
@@ -278,8 +283,9 @@ export default function LobbyView() {
             className="btn btn-primary btn-lg"
             onClick={startGame}
             disabled={!canStart}
+            style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
           >
-            🎮 Iniciar Juego
+            <GameController01Icon size={24} /> Iniciar Juego
           </button>
           {!canStart && (
             <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>

@@ -2,10 +2,11 @@ import { useState, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { GAME_DISPLAY_NAME } from '@xuuuxi/shared'
 import { useGame } from '@/context/GameProvider'
+import { DiceIcon, Door01Icon, ArrowLeft01Icon, Loading03Icon } from 'hugeicons-react'
 
 export default function Home() {
   const navigate = useNavigate()
-  const { createRoom, joinRoom, lastMessage, error } = useGame()
+  const { createRoom, joinRoom, lastMessage, gameState, error } = useGame()
 
   const [mode, setMode] = useState<'menu' | 'create' | 'join'>('menu')
   const [playerName, setPlayerName] = useState('')
@@ -59,7 +60,7 @@ export default function Home() {
           {GAME_DISPLAY_NAME}
         </h1>
         <p style={{ color: 'var(--text-secondary)', marginBottom: '2.5rem' }}>
-          El juego de cartas más irreverente 🃏
+          El juego de cartas más irreverente
         </p>
 
         {error && (
@@ -74,13 +75,13 @@ export default function Home() {
               className="btn btn-primary btn-lg btn-block"
               onClick={() => setMode('create')}
             >
-              🎲 Crear Sala
+              <DiceIcon size={24} /> Crear Sala
             </button>
             <button
               className="btn btn-secondary btn-lg btn-block"
               onClick={() => setMode('join')}
             >
-              🚪 Unirse a Sala
+              <Door01Icon size={24} /> Unirse a Sala
             </button>
           </div>
         )}
@@ -101,14 +102,14 @@ export default function Home() {
               type="submit"
               disabled={!playerName.trim() || loading}
             >
-              {loading ? <span className="loading-spinner" /> : '🎲 Crear Sala'}
+              {loading ? <Loading03Icon className="loading-spinner" size={24} /> : <><DiceIcon size={24} /> Crear Sala</>}
             </button>
             <button
               className="btn btn-ghost btn-block"
               type="button"
               onClick={() => { setMode('menu'); setLoading(false) }}
             >
-              ← Volver
+              <ArrowLeft01Icon size={20} /> Volver
             </button>
           </form>
         )}
@@ -138,14 +139,14 @@ export default function Home() {
               type="submit"
               disabled={!playerName.trim() || !roomCode.trim() || loading}
             >
-              {loading ? <span className="loading-spinner" /> : '🚪 Unirse'}
+              {loading ? <Loading03Icon className="loading-spinner" size={24} /> : <><Door01Icon size={24} /> Unirse</>}
             </button>
             <button
               className="btn btn-ghost btn-block"
               type="button"
               onClick={() => { setMode('menu'); setLoading(false) }}
             >
-              ← Volver
+              <ArrowLeft01Icon size={20} /> Volver
             </button>
           </form>
         )}

@@ -5,6 +5,7 @@ import type {
   BlackCard,
   WhiteCard,
 } from '@xuuuxi/shared'
+import { PackageIcon, ArrowLeft01Icon, Cancel01Icon, PlusSignIcon } from 'hugeicons-react'
 
 type ViewMode = 'list' | 'create' | 'detail'
 
@@ -139,7 +140,9 @@ export default function Collections() {
           marginBottom: '2rem',
         }}
       >
-        <h1 style={{ fontSize: '1.5rem', fontWeight: 800 }}>📦 Colecciones</h1>
+        <h1 style={{ fontSize: '1.5rem', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <PackageIcon size={24} /> Colecciones
+        </h1>
         {view !== 'list' && (
           <button
             className="btn btn-ghost"
@@ -149,7 +152,7 @@ export default function Collections() {
               setError(null)
             }}
           >
-            ← Volver
+            <ArrowLeft01Icon size={16} style={{ marginRight: '4px', verticalAlign: 'middle' }} /> Volver
           </button>
         )}
       </div>
@@ -159,10 +162,10 @@ export default function Collections() {
           {error}
           <button
             className="btn btn-ghost btn-sm"
-            style={{ marginLeft: '0.5rem' }}
+            style={{ marginLeft: '0.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
             onClick={() => setError(null)}
           >
-            ✕
+            <Cancel01Icon size={16} />
           </button>
         </div>
       )}
@@ -172,10 +175,10 @@ export default function Collections() {
         <>
           <button
             className="btn btn-primary"
-            style={{ marginBottom: '1.5rem' }}
+            style={{ marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
             onClick={() => setView('create')}
           >
-            ➕ Crear Colección
+            <PlusSignIcon size={20} /> Crear Colección
           </button>
 
           {loading ? (
@@ -349,8 +352,8 @@ export default function Collections() {
                     setNewCardType(e.target.value as 'black' | 'white')
                   }
                 >
-                  <option value="white">⬜ Blanca</option>
-                  <option value="black">⬛ Negra</option>
+                  <option value="white">Blanca</option>
+                  <option value="black">Negra</option>
                 </select>
               </div>
               {newCardType === 'black' && (
@@ -379,7 +382,7 @@ export default function Collections() {
           {/* Black cards */}
           <div className="section">
             <h3 className="section-title">
-              ⬛ Cartas Negras ({selectedCollection.blackCards.length})
+              Cartas Negras ({selectedCollection.blackCards.length})
             </h3>
             {selectedCollection.blackCards.length === 0 ? (
               <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>
@@ -415,7 +418,7 @@ export default function Collections() {
           {/* White cards */}
           <div className="section">
             <h3 className="section-title">
-              ⬜ Cartas Blancas ({selectedCollection.whiteCards.length})
+              Cartas Blancas ({selectedCollection.whiteCards.length})
             </h3>
             {selectedCollection.whiteCards.length === 0 ? (
               <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>

@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react'
 import { useGame } from '@/context/GameProvider'
+import { RefreshIcon, Tick01Icon, Cancel01Icon } from 'hugeicons-react'
 
 export default function TradeView() {
   const { gameState, respondToTrade, selectTradeCard, cancelTrade } = useGame()
@@ -45,7 +46,9 @@ export default function TradeView() {
         {/* PENDING_OFFER — Waiting for other player to accept */}
         {trade.status === 'PENDING_OFFER' && (
           <div style={{ textAlign: 'center' }}>
-            <h3 style={{ fontWeight: 700, marginBottom: '1rem' }}>🔄 Intercambio Pendiente</h3>
+            <h3 style={{ fontWeight: 700, marginBottom: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
+              <RefreshIcon size={24} /> Intercambio Pendiente
+            </h3>
             <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>
               Esperando respuesta de <strong>{toName}</strong>...
             </p>
@@ -61,7 +64,9 @@ export default function TradeView() {
         {/* PENDING_ACCEPTANCE — Other player wants to trade with you */}
         {trade.status === 'PENDING_ACCEPTANCE' && (
           <div style={{ textAlign: 'center' }}>
-            <h3 style={{ fontWeight: 700, marginBottom: '1rem' }}>🔄 Oferta de Intercambio</h3>
+            <h3 style={{ fontWeight: 700, marginBottom: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
+              <RefreshIcon size={24} /> Oferta de Intercambio
+            </h3>
             <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>
               <strong>{fromName}</strong> quiere intercambiar una carta contigo
             </p>
@@ -69,14 +74,16 @@ export default function TradeView() {
               <button
                 className="btn btn-success btn-lg"
                 onClick={() => respondToTrade(true)}
+                style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
               >
-                ✅ Aceptar
+                <Tick01Icon size={20} /> Aceptar
               </button>
               <button
                 className="btn btn-danger btn-lg"
                 onClick={() => respondToTrade(false)}
+                style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
               >
-                ❌ Rechazar
+                <Cancel01Icon size={20} /> Rechazar
               </button>
             </div>
           </div>
@@ -85,8 +92,8 @@ export default function TradeView() {
         {/* SELECTING_CARDS — Pick a card to trade */}
         {trade.status === 'SELECTING_CARDS' && (
           <div>
-            <h3 style={{ fontWeight: 700, marginBottom: '0.5rem', textAlign: 'center' }}>
-              🔄 Selecciona una Carta
+            <h3 style={{ fontWeight: 700, marginBottom: '0.5rem', textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
+              <RefreshIcon size={24} /> Selecciona una Carta
             </h3>
             <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem', textAlign: 'center' }}>
               Elige la carta que quieres intercambiar
@@ -133,7 +140,9 @@ export default function TradeView() {
         {/* COMPLETE — Trade done */}
         {trade.status === 'COMPLETE' && (
           <div style={{ textAlign: 'center' }}>
-            <h3 style={{ fontWeight: 700, marginBottom: '1rem' }}>✅ ¡Intercambio Completado!</h3>
+            <h3 style={{ fontWeight: 700, marginBottom: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
+              <Tick01Icon size={24} /> ¡Intercambio Completado!
+            </h3>
             <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>
               Revisa tu nueva carta en tu mano
             </p>
@@ -146,7 +155,9 @@ export default function TradeView() {
         {/* REJECTED */}
         {trade.status === 'REJECTED' && (
           <div style={{ textAlign: 'center' }}>
-            <h3 style={{ fontWeight: 700, marginBottom: '1rem' }}>❌ Intercambio Rechazado</h3>
+            <h3 style={{ fontWeight: 700, marginBottom: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
+              <Cancel01Icon size={24} /> Intercambio Rechazado
+            </h3>
             <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>
               El otro jugador no quiso intercambiar
             </p>

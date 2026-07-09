@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useGame } from '@/context/GameProvider'
+import { BalanceScaleIcon, CheckmarkBadge01Icon, Tick01Icon } from 'hugeicons-react'
 
 export default function JudgingView() {
   const { gameState, czarPick, vote } = useGame()
@@ -56,8 +57,8 @@ export default function JudgingView() {
     <div>
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem' }}>
-        <h2 style={{ fontSize: '1.2rem', fontWeight: 700 }}>
-          {isCzarMode ? '⚖️ Fase de Juicio' : '🗳️ Votación Popular'}
+        <h2 style={{ fontSize: '1.2rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          {isCzarMode ? <><ScaleIcon size={24} /> Fase de Juicio</> : <><CheckmarkBadge01Icon size={24} /> Votación Popular</>}
         </h2>
         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
           <span className="badge badge-accent">
@@ -98,8 +99,8 @@ export default function JudgingView() {
         </div>
       )}
       {hasVoted && (
-        <div className="info-message" style={{ marginBottom: '1.5rem' }}>
-          ✅ ¡Voto registrado! Esperando a los demás...
+        <div className="info-message" style={{ marginBottom: '1.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
+          <Tick01Icon size={20} /> ¡Voto registrado! Esperando a los demás...
         </div>
       )}
 
@@ -136,7 +137,9 @@ export default function JudgingView() {
             disabled={!selectedSubmission}
             onClick={handleConfirm}
           >
-            {isCzarMode ? '⚖️ Elegir Ganador' : '🗳️ Confirmar Voto'}
+            <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              {isCzarMode ? <><BalanceScaleIcon size={20} /> Elegir Ganador</> : <><CheckmarkBadge01Icon size={20} /> Confirmar Voto</>}
+            </span>
           </button>
         </div>
       )}

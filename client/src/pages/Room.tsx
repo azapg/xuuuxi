@@ -8,6 +8,7 @@ import RoundResultView from '@/components/RoundResultView'
 import DiscardView from '@/components/DiscardView'
 import ScoreboardView from '@/components/ScoreboardView'
 import TradeView from '@/components/TradeView'
+import { CrownIcon, MedalFirstPlaceIcon, MedalSecondPlaceIcon, MedalThirdPlaceIcon, RefreshIcon } from 'hugeicons-react'
 
 export default function Room() {
   const { code } = useParams<{ code: string }>()
@@ -116,8 +117,8 @@ function GameOverInline() {
 
   return (
     <div style={{ textAlign: 'center', padding: '2rem 0' }}>
-      <h2 style={{ fontSize: '2rem', fontWeight: 900, marginBottom: '0.5rem' }}>
-        🏆 ¡Fin del Juego!
+      <h2 style={{ fontSize: '2rem', fontWeight: 900, marginBottom: '0.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
+        <CrownIcon size={32} /> ¡Fin del Juego!
       </h2>
       <p style={{ fontSize: '1.25rem', color: 'var(--accent)', marginBottom: '2rem' }}>
         ¡{winner?.name} gana con {winner?.score} puntos!
@@ -127,8 +128,8 @@ function GameOverInline() {
         <ol className="player-list" style={{ listStyle: 'none', counterReset: 'rank' }}>
           {sortedPlayers.map((p, i) => (
             <li key={p.id} className={`player-item ${i === 0 ? 'leader' : ''}`}>
-              <span style={{ fontWeight: 800, fontSize: '1.1rem', minWidth: '2rem' }}>
-                {i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `${i + 1}.`}
+              <span style={{ fontWeight: 800, fontSize: '1.1rem', minWidth: '2rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                {i === 0 ? <MedalFirstPlaceIcon size={20} /> : i === 1 ? <MedalSecondPlaceIcon size={20} /> : i === 2 ? <MedalThirdPlaceIcon size={20} /> : `${i + 1}.`}
               </span>
               <span className="player-name">{p.name}</span>
               <span className="player-score">{p.score}</span>
@@ -139,7 +140,7 @@ function GameOverInline() {
 
       {gameState.me.isHost && (
         <button className="btn btn-primary btn-lg" onClick={playAgain}>
-          🔄 Jugar de Nuevo
+          <RefreshIcon size={20} style={{ marginRight: '0.5rem' }} /> Jugar de Nuevo
         </button>
       )}
       {!gameState.me.isHost && (

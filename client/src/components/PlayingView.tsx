@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useGame } from '@/context/GameProvider'
+import { BalanceScaleIcon, Tick01Icon, HourglassIcon } from 'hugeicons-react'
 
 export default function PlayingView() {
   const { gameState, submitCards } = useGame()
@@ -94,15 +95,15 @@ export default function PlayingView() {
 
       {/* Judge message */}
       {isJudge && (
-        <div className="info-message" style={{ marginBottom: '1.5rem' }}>
-          ⚖️ Eres el juez — espera las respuestas de los demás
+        <div className="info-message" style={{ marginBottom: '1.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
+          <BalanceScaleIcon size={20} /> Eres el juez — espera las respuestas de los demás
         </div>
       )}
 
       {/* Already submitted */}
       {hasSubmitted && !isJudge && (
-        <div className="info-message" style={{ marginBottom: '1.5rem' }}>
-          ✅ ¡Cartas enviadas! Esperando a los demás...
+        <div className="info-message" style={{ marginBottom: '1.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
+          <Tick01Icon size={20} /> ¡Cartas enviadas! Esperando a los demás...
         </div>
       )}
 
@@ -122,8 +123,8 @@ export default function PlayingView() {
                 >
                   <div className="card-text">{card.text}</div>
                   {isSelected && (
-                    <div className="card-meta">
-                      {pickCount > 1 ? `#${selectionIndex + 1}` : '✓ Seleccionada'}
+                    <div className="card-meta" style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                      {pickCount > 1 ? `#${selectionIndex + 1}` : <><Tick01Icon size={14} /> Seleccionada</>}
                     </div>
                   )}
                 </div>
@@ -155,8 +156,9 @@ export default function PlayingView() {
               <span
                 key={p.id}
                 className={`badge ${p.hasSubmitted ? 'badge-success' : 'badge-warning'}`}
+                style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}
               >
-                {p.hasSubmitted ? '✓' : '⏳'} {p.name}
+                {p.hasSubmitted ? <Tick01Icon size={14} /> : <HourglassIcon size={14} />} {p.name}
               </span>
             ))}
         </div>

@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react'
 import { useGame } from '@/context/GameProvider'
+import { Delete02Icon } from 'hugeicons-react'
 
 export default function DiscardView() {
   const { gameState, discardCards } = useGame()
@@ -34,8 +35,8 @@ export default function DiscardView() {
 
   return (
     <div>
-      <h2 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: '0.5rem' }}>
-        🗑️ Fase de Descarte
+      <h2 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+        <Delete02Icon size={24} /> Fase de Descarte
       </h2>
       <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>
         Puedes descartar hasta {maxDiscards} carta{maxDiscards !== 1 ? 's' : ''} y
@@ -58,8 +59,8 @@ export default function DiscardView() {
             >
               <div className="card-text">{card.text}</div>
               {isSelected && (
-                <div className="card-meta" style={{ color: 'var(--error)' }}>
-                  🗑️ Descartar
+                <div className="card-meta" style={{ color: 'var(--error)', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                  <Delete02Icon size={16} /> Descartar
                 </div>
               )}
             </div>
@@ -82,8 +83,9 @@ export default function DiscardView() {
           className="btn btn-danger btn-lg"
           onClick={handleDiscard}
           disabled={selectedIds.length === 0}
+          style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
         >
-          🗑️ Descartar {selectedIds.length > 0 ? `(${selectedIds.length})` : ''}
+          <Delete02Icon size={20} /> Descartar {selectedIds.length > 0 ? `(${selectedIds.length})` : ''}
         </button>
       </div>
     </div>

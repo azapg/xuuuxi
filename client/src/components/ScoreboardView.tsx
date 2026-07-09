@@ -1,4 +1,5 @@
 import { useGame } from '@/context/GameProvider'
+import { CrownIcon, BalanceScaleIcon, Tick01Icon, HourglassIcon, CheckmarkBadge01Icon, Cancel01Icon } from 'hugeicons-react'
 
 export default function ScoreboardView() {
   const { gameState, kickPlayer } = useGame()
@@ -24,8 +25,8 @@ export default function ScoreboardView() {
             <span className={`status-dot ${p.isConnected ? 'online' : 'offline'}`} />
 
             <span className="player-name">
-              {p.isHost && <span className="player-icon" title="Host">👑 </span>}
-              {p.isJudge && <span className="player-icon" title="Juez">⚖️ </span>}
+              {p.isHost && <span className="player-icon" title="Host"><CrownIcon size={16} style={{ verticalAlign: 'middle', marginRight: '4px' }} /></span>}
+              {p.isJudge && <span className="player-icon" title="Juez"><BalanceScaleIcon size={16} style={{ verticalAlign: 'middle', marginRight: '4px' }} /></span>}
               {p.name}
               {isMe && (
                 <span style={{ color: 'var(--text-muted)', fontWeight: 400 }}> (tú)</span>
@@ -35,19 +36,19 @@ export default function ScoreboardView() {
             {/* Status indicators */}
             {gameState.phase === 'PLAYING' && !p.isJudge && (
               <span
-                style={{ fontSize: '0.8rem' }}
+                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '1.5rem', color: p.hasSubmitted ? 'var(--success)' : 'var(--text-muted)' }}
                 title={p.hasSubmitted ? 'Enviado' : 'Pendiente'}
               >
-                {p.hasSubmitted ? '✅' : '⏳'}
+                {p.hasSubmitted ? <Tick01Icon size={16} /> : <HourglassIcon size={16} />}
               </span>
             )}
 
             {gameState.phase === 'JUDGING' && (
               <span
-                style={{ fontSize: '0.8rem' }}
+                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '1.5rem', color: p.hasVoted ? 'var(--accent)' : 'var(--text-muted)' }}
                 title={p.hasVoted ? 'Votó' : 'Pendiente'}
               >
-                {p.hasVoted ? '🗳️' : '⏳'}
+                {p.hasVoted ? <CheckmarkBadge01Icon size={16} /> : <HourglassIcon size={16} />}
               </span>
             )}
 
@@ -57,11 +58,11 @@ export default function ScoreboardView() {
             {isHost && !isMe && (
               <button
                 className="btn btn-ghost btn-sm"
-                style={{ padding: '0.25rem 0.5rem', fontSize: '0.75rem' }}
+                style={{ padding: '0.25rem 0.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                 onClick={() => kickPlayer(p.id)}
                 title="Expulsar"
               >
-                ✕
+                <Cancel01Icon size={16} />
               </button>
             )}
           </li>
