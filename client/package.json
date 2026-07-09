@@ -1,0 +1,26 @@
+{
+  "name": "@xuuuxi/client",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "lint": "eslint .",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@xuuuxi/shared": "workspace:*",
+    "lucide-react": "^0.473.0",
+    "react": "^19.1",
+    "react-dom": "^19.1",
+    "react-router-dom": "^7.6"
+  },
+  "devDependencies": {
+    "@types/react": "^19.1",
+    "@types/react-dom": "^19.1",
+    "@vitejs/plugin-react": "^4.5",
+    "typescript": "^5.8",
+    "vite": "^6.3"
+  }
+}
