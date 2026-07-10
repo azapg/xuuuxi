@@ -11,4 +11,5 @@ Xuuuxi is a real-time multiplayer party card game. Players create rooms, join vi
 ## Design Philosophy
 - **Aesthetics**: The UI must feel premium, modern, and engaging. We prioritize vibrant accents, dark themes, and smooth micro-animations.
 - **Iconography**: We strictly use `hugeicons-react`. Emojis are banned from the UI to maintain a sleek, unified, and professional look.
+- **Scroll Areas**: All scroll areas should use the shadcn `scroll-area` component (built on Radix UI) instead of native vanilla scrollbars to ensure a consistent, modern, and customizable experience.
 - **Responsiveness**: The game must be perfectly playable on mobile and desktop devices.

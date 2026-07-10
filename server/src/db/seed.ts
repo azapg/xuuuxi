@@ -1,5 +1,5 @@
 // ============================================================
-// Seed Script — Qué Xu#$4!! Pack Inicial (es-419)
+// Seed Script — ¡Xuuxi! Pack Inicial #1 (es-419)
 // ============================================================
 
 import { db } from "./index";
@@ -9,37 +9,43 @@ import { eq } from "drizzle-orm";
 const DEFAULT_COLLECTION_ID = "default-pack-inicial";
 
 async function seed() {
-  // Check if default collection already exists
+  // We'll update the existing collection or create it if not found
   const existing = await db.query.collections.findFirst({
     where: eq(collections.id, DEFAULT_COLLECTION_ID),
   });
 
-  if (existing) {
-    console.log("✅ Default collection already exists, skipping seed.");
-    return;
-  }
-
   const now = new Date();
 
-  // --- Create the collection ---
-  await db.insert(collections).values({
-    id: DEFAULT_COLLECTION_ID,
-    name: "Qué Xu#$4!! Pack Inicial",
-    description: "El pack original con las cartas más irreverentes de Latinoamérica.",
-    locale: "es-419",
-    isDefault: true,
-    createdBy: null,
-    createdAt: now,
-    updatedAt: now,
-  });
+  if (!existing) {
+    // --- Create the collection ---
+    await db.insert(collections).values({
+      id: DEFAULT_COLLECTION_ID,
+      name: "¡Xuuxi! Pack Inicial #1",
+      description: "El pack original con las cartas más irreverentes de Latinoamérica, ahora con sabor panameño.",
+      locale: "es-419",
+      isDefault: true,
+      createdBy: null,
+      createdAt: now,
+      updatedAt: now,
+    });
+  } else {
+     await db.update(collections).set({
+        name: "¡Xuuxi! Pack Inicial #1",
+        description: "El pack original con las cartas más irreverentes de Latinoamérica, ahora con sabor panameño.",
+        updatedAt: now,
+     }).where(eq(collections.id, DEFAULT_COLLECTION_ID));
+     
+     // Delete old cards so we can re-seed
+     await db.delete(blackCards).where(eq(blackCards.collectionId, DEFAULT_COLLECTION_ID));
+     await db.delete(whiteCards).where(eq(whiteCards.collectionId, DEFAULT_COLLECTION_ID));
+  }
 
   // --- Black Cards (prompts) ---
-  // ~15% are Pick 2
   const blackCardTexts: { text: string; pick: number }[] = [
-    // Pick 1
-    { text: "Lo peor de una fiesta es cuando _____.", pick: 1 },
-    { text: "Mi mamá me descubrió _____.", pick: 1 },
-    { text: "En mi última peda terminé _____.", pick: 1 },
+    // Pick 1 Original
+    { text: "Lo peor de ir a una fiesta es encontrarse con _____.", pick: 1 },
+    { text: "Mi mamá me castigó por esconder _____.", pick: 1 },
+    { text: "En mi última peda, lo único que me salvó fue _____.", pick: 1 },
     { text: "Lo que realmente pasa en los quinceaños: _____.", pick: 1 },
     { text: "El secreto del éxito en la vida es _____.", pick: 1 },
     { text: "Mi abuela siempre decía que _____ era la solución a todo.", pick: 1 },
@@ -57,10 +63,9 @@ async function seed() {
     { text: "Cuando muera, quiero que pongan _____ en mi lápida.", pick: 1 },
     { text: "Dios creó el mundo en 6 días, y el séptimo creó _____.", pick: 1 },
     { text: "El próximo presidente promete eliminar _____.", pick: 1 },
-    { text: "Mi ex se describe en una palabra: _____.", pick: 1 },
+    { text: "Lo que mejor describe a mi ex es _____.", pick: 1 },
     { text: "Lo peor que puedes gritar en una iglesia: _____.", pick: 1 },
     { text: "Netflix debería hacer un documental sobre _____.", pick: 1 },
-    { text: "El ingrediente secreto de las enchiladas de mi mamá: _____.", pick: 1 },
     { text: "Lo más incómodo de ir al doctor: _____.", pick: 1 },
     { text: "¿Qué hay en el Área 51? _____.", pick: 1 },
     { text: "Antes de morir, todos deberían experimentar _____.", pick: 1 },
@@ -68,20 +73,21 @@ async function seed() {
     { text: "En mi pueblo se hicieron famosos por _____.", pick: 1 },
     { text: "Lo que realmente quiero de Navidad: _____.", pick: 1 },
     { text: "El peor regalo de cumpleaños: _____.", pick: 1 },
-    { text: "Si mi perro pudiera hablar, contaría que me vio _____.", pick: 1 },
-    { text: "Lo que mi vecino hace a las 2am: _____.", pick: 1 },
-    { text: "Cuando digo que estudio, en realidad estoy _____.", pick: 1 },
+    { text: "Si mi perro pudiera hablar, contaría a todos sobre mi obsesión con _____.", pick: 1 },
+    { text: "El ruido que hace mi vecino a las 2am suena como _____.", pick: 1 },
+    { text: "Mi mayor distracción cuando intento estudiar es _____.", pick: 1 },
     { text: "La verdadera razón por la que se hundió el Titanic: _____.", pick: 1 },
     { text: "El emoji que mejor me representa: _____.", pick: 1 },
     { text: "Lo que en verdad piensan los meseros: _____.", pick: 1 },
     { text: "El trend más peligroso de TikTok: _____.", pick: 1 },
-    { text: "Mi terapeuta renunció después de escuchar _____.", pick: 1 },
+    { text: "Mi terapeuta renunció después de escuchar mis historias sobre _____.", pick: 1 },
     { text: "El mejor consejo que me dio un taxista: _____.", pick: 1 },
     { text: "Lo que guardan los narcos en sus búnkers: _____.", pick: 1 },
     { text: "Mi talento oculto es _____.", pick: 1 },
     { text: "La peor forma de terminar una relación: _____.", pick: 1 },
-    // Pick 2
-    { text: "En la prepa me conocían como _____ porque _____.", pick: 2 },
+    
+    // Pick 2 Original
+    { text: "En la prepa me hice famoso por culpa de _____ y _____.", pick: 2 },
     { text: "Paso 1: _____. Paso 2: _____. Paso 3: Ir a prisión.", pick: 2 },
     { text: "La combinación perfecta: _____ con _____.", pick: 2 },
     { text: "Mi mamá me dio _____ y yo lo cambié por _____.", pick: 2 },
@@ -91,19 +97,65 @@ async function seed() {
     { text: "Hoy en Caso Cerrado: _____ demanda a _____ por daños emocionales.", pick: 2 },
     { text: "Mi Uber tenía _____ en el asiento y _____ en el espejo.", pick: 2 },
     { text: "Para olvidar a tu ex necesitas _____ y mucho _____.", pick: 2 },
+
+    // Pick 1 Panama
+    { text: "En Panamá, la solución a _____ es siempre una cerveza fría.", pick: 1 },
+    { text: "La Caja del Seguro Social anunció que ahora cubre _____.", pick: 1 },
+    { text: "El próximo proyecto faraónico del gobierno será _____.", pick: 1 },
+    { text: "Lo único que le gana al tráfico de La Mina es _____.", pick: 1 },
+    { text: "En el Canal, los gringos se sorprenden cuando ven _____.", pick: 1 },
+    { text: "La verdadera razón por la que cerraron Calle Uruguay fue _____.", pick: 1 },
+    { text: "Mi abuela dice que la cura para todo es _____.", pick: 1 },
+    { text: "El Clásico Nacional se suspendió porque _____ invadió la cancha.", pick: 1 },
+    { text: "La nueva estrategia de seguridad del presidente incluye _____.", pick: 1 },
+    { text: "En el interior, la diversión del domingo es _____.", pick: 1 },
+    { text: "Rubén Blades escribió una canción sobre _____.", pick: 1 },
+    { text: "Lo que realmente hay en las bóvedas del Banco Nacional: _____.", pick: 1 },
+    { text: "El próximo reguetonero panameño famoso será conocido por _____.", pick: 1 },
+    { text: "En el Metro, lo peor que te puede pasar es encontrarte con _____.", pick: 1 },
+    { text: "La verdadera razón por la que los yanquis invadieron en el 89: _____.", pick: 1 },
+    { text: "Mi tía la chismosa ya se enteró de _____.", pick: 1 },
+    { text: "En Carnavales, lo que realmente pasa en las tablas es _____.", pick: 1 },
+    { text: "La nueva app de delivery panameña promete traerte _____ en 30 minutos.", pick: 1 },
+    { text: "Los kuna dicen que el futuro de Panamá depende de _____.", pick: 1 },
+    { text: "El último escándalo de la Asamblea Nacional involucra _____.", pick: 1 },
+    { text: "En el Mercado de Abastos, por $5 te dan _____.", pick: 1 },
+    { text: "La razón por la que el puente sobre el Canal se cayó: _____.", pick: 1 },
+    { text: "Mi primo el \"emprendedor\" ahora vende _____ por Instagram.", pick: 1 },
+    { text: "En un país serio, _____ sería ilegal. En Panamá, es martes.", pick: 1 },
+    { text: "Lo que el locutor de RPC realmente quería decir: _____.", pick: 1 },
+    { text: "La nueva atracción turística de Casco Viejo: _____.", pick: 1 },
+    { text: "El regalo perfecto para un político panameño: _____.", pick: 1 },
+    { text: "Lo que realmente pasa cuando dices \"ya vengo\" y tardas 5 horas: _____.", pick: 1 },
+    { text: "En la Universidad de Panamá, la carrera de _____ tiene más futuro.", pick: 1 },
+    { text: "El verdadero ingrediente secreto del sancocho de mi mamá: _____.", pick: 1 },
+    { text: "Los chinos del Super 99 ya venden _____.", pick: 1 },
+    { text: "La razón por la que Nito Cortizo no duerme por las noches: _____.", pick: 1 },
+    { text: "En Colón, _____ es considerado un deporte extremo.", pick: 1 },
+    { text: "Mi compa el que se fue a Estados Unidos ahora presume de _____.", pick: 1 },
+    { text: "La nueva política migratoria: ahora deportan a _____.", pick: 1 },
+    { text: "Lo que realmente hay debajo de la Cinta Costera: _____.", pick: 1 },
+    { text: "En un cumpleaños panameño, nunca falta _____.", pick: 1 },
+    { text: "El próximo candidato presidencial promete acabar con _____.", pick: 1 },
+    { text: "En la zona rural, _____ reemplazó al médico.", pick: 1 },
+    { text: "La razón por la que los venezolanos realmente vienen a Panamá: _____.", pick: 1 },
+    { text: "Mi suegra cree que _____ es obra del diablo.", pick: 1 },
+    { text: "En el Torneo de Copa, el equipo perdedor culpó a _____.", pick: 1 },
+    { text: "La nueva ley de alquileres prohíbe _____.", pick: 1 },
+    { text: "Lo que el taxista realmente piensa cuando dices \"siga derecho\": _____.", pick: 1 },
+
+    // Pick 2 Panama
+    { text: "En Bocas del Toro, los turistas vienen buscando _____ y encuentran _____.", pick: 2 },
   ];
 
   // --- White Cards (responses) ---
   const whiteCardTexts: string[] = [
+    // Original subset
     "El reggaetón de las 3am",
     "Un grupo de WhatsApp sin nombre",
     "La chancla de mi abuela",
     "Un ex tóxico en modo stalker",
     "La última rebanada de pizza",
-    "Un meme del Chavo del 8",
-    "Llorar en el baño de un Oxxo",
-    "Una torta de tamal con atole",
-    "El señor de los elotes a medianoche",
     "Daddy Yankee saliendo de su retiro otra vez",
     "La vecina chismosa",
     "Una cruda moral de tres días",
@@ -120,23 +172,16 @@ async function seed() {
     "Lloriquear por atención",
     "Ghostear a alguien después de la primera cita",
     "El 'mañana te pago' eterno",
-    "Un corrido tumbado sobre mi vida",
     "La bendición de la abuela antes de salir",
     "Un tatuaje de Bad Bunny",
     "Fingir que trabajas cuando pasa el jefe",
-    "El chile que te hace llorar",
-    "Una serenata con mariachi a las 4am",
-    "Bailar quebradita en una boda",
     "Los tamales de mi suegra",
     "Un quinceañero con tema de narcos",
     "La fila del banco un lunes",
     "El vecino con la música a todo volumen",
     "Una piñata con forma de político",
     "Comer tacos en la calle sin servilleta",
-    "El Chapulín Colorado",
     "Un escándalo en la junta de vecinos",
-    "La torta ahogada de Guadalajara",
-    "Hacer la fila del SAT todo el día",
     "Un sticker de Buenos Días en el grupo familiar",
     "Quedarte dormido en misa",
     "El tipo que lleva guitarra a todas las fiestas",
@@ -156,14 +201,9 @@ async function seed() {
     "El perreo intenso",
     "Un temblor durante el examen",
     "Cobrar la quincena y que ya se acabó",
-    "Un mural de Rivera pero con memes",
-    "El dólar a 25 pesos",
     "Rezar tres Ave Marías",
     "El tío que da billetes de a 20",
-    "Enchiladas suizas a las 2am",
     "Un Uber Pool con 6 personas",
-    "La señora que vende quesadillas sin queso",
-    "El Chavo en Netflix",
     "Tu ex dando like a tus fotos viejas",
     "Un payaso en una fiesta de adultos",
     "La cruda de domingo",
@@ -187,8 +227,6 @@ async function seed() {
     "Un grupo de mamás de WhatsApp",
     "La chancla voladora",
     "Empezar una conversación con 'no me vas a creer pero...'",
-    "Un mezcal de gusano",
-    "Ponerle limón y chile a absolutamente todo",
     "El tío que cuenta la misma historia en cada fiesta",
     "Una procesión con fuegos artificiales",
     "Ir a Costco un sábado",
@@ -199,11 +237,9 @@ async function seed() {
     "La promesa de ir al gym",
     "Un presidente con Twitter a las 6am",
     "La Coca-Cola de vidrio",
-    "Un corrido sobre tu vida amorosa",
     "El compadre que siempre está pedo",
     "La sopa de tu mamá cuando estás enfermo",
     "Hacer el ridículo en karaoke",
-    "Un funeral con banda sinaloense",
     "El wey que dice 'yo sé de todo'",
     "Una caguama entre amigos",
     "Poner Pedrito Sola como foto de perfil",
@@ -213,7 +249,6 @@ async function seed() {
     "Un crush que ni sabe que existes",
     "Dormir con ventilador a toda potencia",
     "El cajero que se traba en el peor momento",
-    "Un mariachi tocando 'Amor Eterno' a las 5am",
     "Comer en Tupperware en la oficina",
     "El grito de '¡GOOOOL!' de tu vecino",
     "Una cadena de oración por WhatsApp",
@@ -223,25 +258,18 @@ async function seed() {
     "El 'me salió más caro el caldo que las albóndigas'",
     "Un narcotúnel que sale en tu jardín",
     "La playlist de 'Para llorar en el shower'",
-    "Un amarre de brujo de Catemaco",
     "La herencia de un terreno en litigio",
-    "Quemar las tortillas y culpar al comal",
     "Un viaje a Cancún con todo incluido",
     "El 'yo no fui' de toda la vida",
     "Hacer la fila para votar con huaraches",
     "Un escándalo de corrupción más",
     "El secreto de la receta de mi tía",
-    "La foto del PRI en la pared de la abuela",
-    "Un Tecate bien fría en la playa",
     "El primo que emigró y habla con acento gringo",
     "Un examen que no estudiaste",
-    "Tortillas hechas a mano",
     "El chico que pone estado cada 5 minutos",
     "Un Día de Muertos en el panteón",
     "La eterna promesa de 'ya vamos a mejorar'",
     "Roncar como locomotora",
-    "Un vochito color pistache",
-    "El complot del agua de horchata",
     "Una selfie con el ataúd",
     "El perro de la cuadra que persigue motos",
     "Un altar con la foto de tu ex",
@@ -249,12 +277,10 @@ async function seed() {
     "La cantina de la esquina",
     "Mentir en la declaración de impuestos",
     "Un concierto de Los Ángeles Azules",
-    "El pozole de los domingos",
     "Ir a misa solo por las donas de después",
     "Un chiste de Pepito",
     "La tía que te pregunta cuándo te casas",
     "Un chofer de combi con estilo",
-    "El elote con mayonesa y chile",
     "Un correo de 'urgente' del jefe a las 11pm",
     "La lotería de la feria",
     "Escapar del país con una maleta de dinero",
@@ -264,28 +290,21 @@ async function seed() {
     "La banda de guerra del secundario",
     "Caerse en público y fingir que no pasó nada",
     "El tequila que te cambia la personalidad",
-    "Un globo de Cantinflas",
     "La cena de Navidad con 50 familiares",
-    "Un tamal de chipilín",
-    "El ruido del tianguis a las 6am",
-    "Un influencer de Tepito",
     "La 'mordida' del policía",
     "Un pan dulce con chocolate caliente",
     "El truco de poner una moneda en la puerta",
     "Un bautizo con 200 invitados",
     "La cobija de tigre",
-    "Un peluche gigante del tianguis",
     "El primo que vende cosas 'originales'",
     "La fila de la tortillería",
     "Un asalto en camión narrado como crónica",
     "El clásico 'luego te lo pago'",
     "Una limpia con huevo y ruda",
     "El taxímetro que sube solo",
-    "Un corrido que cuenta tu peor vergüenza",
     "La milanesa de la comida corrida",
     "Un tutorial de YouTube de 45 minutos",
     "El secreto que todos saben pero nadie dice",
-    "Una foto con el burro de Tijuana",
     "El arroz rojo de las fiestas",
     "Un sticker del Papá de 'ya llegué hija'",
     "La Rosca de Reyes con 3 muñequitos",
@@ -295,11 +314,161 @@ async function seed() {
     "La frase 'en mis tiempos'",
     "Una balacera de confeti",
     "El pollo de los domingos",
-    "Un michelada perfecta",
-    "Ir al tianguis con 50 pesos y volver cargado",
     "La canción de 'Las Mañanitas' desafinada",
-    "Un payaso de rodeo en una fiesta infantil",
-    "El atole de la esquina",
+
+    // NSFW / Edgy Classic
+    "Tetas falsas",
+    "Los gays",
+    "Morirse",
+    "Un aborto espontáneo",
+    "Pobreza extrema",
+    "Incesto",
+    "Mi colección de juguetes sexuales",
+    "Sida",
+    "Privilegio blanco",
+    "Un niño huérfano",
+    "Pedofilia",
+    "Disfunción eréctil",
+    "Una orgía de abuelos",
+    "Limpiarse con la mano",
+    "Cáncer de testículo",
+    "Un vagabundo borracho",
+    "La deep web",
+    "Hacerse una paja triste",
+    "Una ETS incurable",
+    "Clasismo",
+    "Trabajo infantil",
+    "El Ku Klux Klan",
+    "Vender fotos de tus pies",
+    "Una lluvia dorada",
+    "Eyaculación precoz",
+    "Drogas duras",
+    "Violencia intrafamiliar",
+    "Tener relaciones con tu primo",
+    "Necrofilia",
+    "Monjas cachondas",
+    "Depresión clínica",
+    "Gases vaginales",
+
+    // Panama 
+    "Un diablo rojo lleno de ñangaras",
+    "La Mina a las 6 de la mañana",
+    "Una caja de seguro social que no funciona pero sigue cobrando",
+    "El peaje de la autopista que sube cada año",
+    "Un político panameño prometiendo \"transparencia\"",
+    "El tráfico de Panamá Centro un viernes a las 5pm",
+    "Un \"ya vengo\" que dura 3 horas",
+    "La corrupción institucionalizada como deporte nacional",
+    "Un préstamo del Banco Nacional con 40% de interés",
+    "El olor a frito de la esquina a las 2am",
+    "Un taxista que no sabe dónde queda ningún lado",
+    "La luz de IDAAN que se va cuando más la necesitas",
+    "Un reguetón de Sech tocando en todo lado",
+    "La presión de comprar algo en el semáforo",
+    "Un \"¿y la plata?\" en plena crisis",
+    "El puente sobre el Canal que se cayó solo",
+    "Una marcha estudiantil que termina en cerveza",
+    "El olor a mar y basura en la Cinta Costera",
+    "Un \"soy emprendedor\" que vende por Instagram",
+    "La migra deportando a tu compa el colombiano",
+    "Un clásico Nacional suspendido por balacera",
+    "Román Torres lesionado... otra vez",
+    "La selección perdiendo con Curazao",
+    "Los \"muertos\" del estadio que reviven cuando meten gol",
+    "Un árbitro comprado por $500",
+    "La barra brava destrozando el bus del equipo rival",
+    "El \"Dibu\" Martínez haciendo de las suyas",
+    "Messi viniendo a jugar a Panamá... en sus sueños",
+    "Un partido de la liga local con 200 espectadores",
+    "El Tata Martino renunciando otra vez",
+    "Un penalti fallado en el minuto 90",
+    "Los comentaristas de TVN diciendo tonterías",
+    "El VAR robando en la CONCACAF",
+    "Rubén Blades cantando \"Pedro Navaja\" a las 4am",
+    "Sech pidiendo \"Otro Trago\" en el after",
+    "Nando Boom enseñando reggae en español al mundo",
+    "Eddy Lover llorando por una \"perdición\"",
+    "Los Rabanes haciendo un concierto para 15 personas",
+    "El General cantando \"Rica y Apretadita\" en un funeral",
+    "Bad Bunny haciendo un trap sobre el Canal",
+    "Shakira diciendo \"las mujeres ya no lloran, facturan\" en Panamá",
+    "Daddy Yankee diciendo \"la última vuelta\" por décima vez",
+    "Karol G perreando en la Feria de Las Tablas",
+    "Romeo Santos pidiendo \"propina\" después del concierto",
+    "Juan Luis Guerra cantando sobre el calor de Panamá",
+    "Celia Cruz gritando \"¡Azúcar!\" en el Carnaval",
+    "Un coro de \"Vivir Mi Vida\" en un karaoke borracho",
+    "Reguetón de mala muerte sonando en un diablo rojo",
+    "Un diputado durmiendo en plena sesión",
+    "La compra de votos con \"bolsa de comida\"",
+    "Un ministro que no sabe ni qué ministerio maneja",
+    "El \"pacto de sangre\" de la política panameña",
+    "Una investigación de la ANTE que nunca llega a nada",
+    "Los Papeles de Pandora en tu backyard",
+    "Un contrato millonario para una empresa de papel",
+    "La \"reelección\" que no es reelección",
+    "Un fiscal que \"no encuentra\" evidencia",
+    "Los fondos de educación gastados en viajes \"oficiales\"",
+    "Un alcalde que prometió pavimentar y solo puso una placa",
+    "La \"transparencia\" que solo existe en Twitter",
+    "Un juicio que se pospone por décima vez",
+    "Los \"asesores\" fantasmas cobrando sueldo",
+    "Un escándalo que dura 48 horas y luego todos olvidan",
+    "Un venezolano vendiendo arepas en cada esquina",
+    "Un colombiano ofreciendo \"servicios\" en el parque",
+    "Un nicaragüense construyendo todo el país",
+    "Un dominicano montando una banca de apuestas",
+    "Un mexicano diciendo \"no manches\" a todo",
+    "Un argentino explicando por qué son mejores que todos",
+    "Un peruano preparando ceviche en la playa",
+    "Un brasileño haciendo samba en Carnavales",
+    "Un cubano contando chistes en el bus",
+    "Un salvadoreño usando Bitcoin en el supermercado",
+    "Un ecuatoriano desapareciendo misteriosamente",
+    "Un boliviano con hoja de coca en el aeropuerto",
+    "Un paraguayo que nadie recuerda que existe",
+    "Un uruguayo fumando porro en Punta del Este",
+    "Un \"fiestón\" en el interior que dura 3 días",
+    "La quema del muñeco de año viejo",
+    "Un \"compa\" que es tu primo, tu vecino y tu padrino",
+    "La \"comelona\" de domingo con 50 personas",
+    "Un \"chichi\" (abuelo) contando historias de la dictadura",
+    "La superstición de no barrer de noche",
+    "Un \"guacho\" criado por toda la cuadra",
+    "La pelea por quién paga la cuenta",
+    "Un \"arranque\" de carro a las 3am",
+    "La \"visita\" sorpresa de la familia que se queda una semana",
+    "Un \"patacón\" que es más grande que tu plato",
+    "La discusión de si el arroz con pollo lleva pasas",
+    "Un \"yeye\" (fiesta privada) que termina en escándalo",
+    "La tradición de \"no hay plata\" pero sí hay cerveza",
+    "Un \"coro\" de panameños quejándose del calor",
+    "Un \"chacal\" (delincuente) con conexiones políticas",
+    "El \"negocio\" de los medicamentos en la CSS",
+    "Una fosa común en el Darién",
+    "Los \"coyotes\" cobrando $10,000 por cruzar",
+    "Un narco que tiene mejor vida que tú",
+    "La desaparición de activistas indígenas",
+    "Un juez liberando a un asesino por \"falta de evidencia\"",
+    "Los \"sicarios\" cobrando en efectivo o transferencia",
+    "La trata de personas en la frontera",
+    "Un político con 3 familias y 15 hijos",
+    "El \"sistema\" que protege a los ricos y jode a los pobres",
+    "Una \"limpieza social\" en los barrios",
+    "Los \"testigos\" que mueren antes del juicio",
+    "Un \"negocio\" de basureros controlado por alcaldes",
+    "La impunidad como estilo de vida",
+    "Un gringo preguntando \"¿Panamá está en México?\"",
+    "Un europeo quejándose del calor en enero",
+    "Un canadiense buscando jubilación barata",
+    "Un chino abriendo un supermercado en cada barrio",
+    "Un indio comprando propiedades en la costa",
+    "Un árabe manejando un taxi nuevo",
+    "Un ruso lavando dinero en una offshore",
+    "Un estadounidense construyendo un muro... en su casa",
+    "Un turista pagando $20 por un mojito",
+    "Un extranjero \"descubriendo\" Panamá como si fuera nuevo",
+    "Sobrevivir al día sin que te roben",
   ];
 
   // --- Insert black cards ---
@@ -324,6 +493,60 @@ async function seed() {
   console.log(`🃏 Seeded "${DEFAULT_COLLECTION_ID}":`);
   console.log(`   ${blackCardValues.length} black cards (${blackCardValues.filter(c => c.pick === 2).length} Pick 2)`);
   console.log(`   ${whiteCardValues.length} white cards`);
+
+  // ============================================================
+  // Seed Nightingale Cards
+  // ============================================================
+  const NIGHTINGALE_COLLECTION_ID = "nightingale-cards";
+  const existingNightingale = await db.query.collections.findFirst({
+    where: eq(collections.id, NIGHTINGALE_COLLECTION_ID),
+  });
+
+  if (!existingNightingale) {
+    await db.insert(collections).values({
+      id: NIGHTINGALE_COLLECTION_ID,
+      name: "Nightingale Cards",
+      description: "Inside jokes de la crew.",
+      locale: "es-419",
+      isDefault: false,
+      createdBy: null,
+      createdAt: now,
+      updatedAt: now,
+    });
+  } else {
+    await db.update(collections).set({
+      name: "Nightingale Cards",
+      description: "Inside jokes de la crew.",
+      updatedAt: now,
+    }).where(eq(collections.id, NIGHTINGALE_COLLECTION_ID));
+    
+    await db.delete(blackCards).where(eq(blackCards.collectionId, NIGHTINGALE_COLLECTION_ID));
+    await db.delete(whiteCards).where(eq(whiteCards.collectionId, NIGHTINGALE_COLLECTION_ID));
+  }
+
+  const nightingaleWhiteCards = [
+    "Una canción de Yemil",
+    "Un niño ciego cruzando la calle en San Miguelito",
+    "Queso de cabra",
+    "Disfunción eréctil",
+    "Un maleante del Chorrillo",
+    "Ser atropellado por un Metrobus",
+    "Vivir en San Miguelito",
+    "Momento alam",
+    "Computadora homosexual"
+  ];
+
+  const nightingaleWhiteCardValues = nightingaleWhiteCards.map((text) => ({
+    id: crypto.randomUUID(),
+    collectionId: NIGHTINGALE_COLLECTION_ID,
+    text,
+  }));
+
+  await db.insert(whiteCards).values(nightingaleWhiteCardValues);
+
+  console.log(`🃏 Seeded "${NIGHTINGALE_COLLECTION_ID}":`);
+  console.log(`   0 black cards (0 Pick 2)`);
+  console.log(`   ${nightingaleWhiteCardValues.length} white cards`);
 }
 
 seed()

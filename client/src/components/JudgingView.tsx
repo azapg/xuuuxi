@@ -58,7 +58,7 @@ export default function JudgingView() {
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem' }}>
         <h2 style={{ fontSize: '1.2rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          {isCzarMode ? <><ScaleIcon size={24} /> Fase de Juicio</> : <><CheckmarkBadge01Icon size={24} /> Votación Popular</>}
+          {isCzarMode ? <><BalanceScaleIcon size={24} /> Fase de Juicio</> : <><CheckmarkBadge01Icon size={24} /> Votación Popular</>}
         </h2>
         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
           <span className="badge badge-accent">

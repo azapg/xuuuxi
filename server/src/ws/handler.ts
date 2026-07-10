@@ -245,6 +245,25 @@ async function handleStartGame(ws: ServerWebSocket<WsData>): Promise<void> {
       .from(whiteCards);
   }
 
+  // Append temporary custom cards from settings
+  if (room.settings.customBlackCards?.length) {
+    blacks.push(
+      ...room.settings.customBlackCards.map((c) => ({
+        id: `custom-black-${crypto.randomUUID()}`,
+        text: c.text,
+        pick: c.pick,
+      }))
+    );
+  }
+  if (room.settings.customWhiteCards?.length) {
+    whites.push(
+      ...room.settings.customWhiteCards.map((c) => ({
+        id: `custom-white-${crypto.randomUUID()}`,
+        text: c.text,
+      }))
+    );
+  }
+
   room.setCards(blacks, whites);
   room.startGame(ws.data.playerId);
 

@@ -48,6 +48,10 @@ export interface GameSettings {
   judgingTimerSeconds: number;
   /** IDs of collections to use in this game */
   collectionIds: string[];
+  /** Custom black cards added for this specific game only */
+  customBlackCards: { text: string; pick: number }[];
+  /** Custom white cards added for this specific game only */
+  customWhiteCards: { text: string }[];
 }
 
 // --- Player ---

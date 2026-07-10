@@ -67,43 +67,46 @@ export default function Room() {
   }
 
   return (
-    <div className="game-layout">
+    <div className={`game-layout ${gameState.phase === 'PLAYING' ? 'playing-mode' : ''}`}>
       <div className="game-main">
         {error && <div className="error-message">{error}</div>}
         {renderPhase()}
         {/* Trade overlay */}
         {gameState.trade && gameState.trade.status !== 'IDLE' && <TradeView />}
       </div>
-      <div className="game-sidebar">
-        {/* Room code */}
-        <div className="sidebar-panel">
-          <div className="sidebar-panel-title">Código de Sala</div>
-          <div className="room-code-display" style={{ fontSize: '1.5rem' }}>
-            {gameState.roomCode}
+      
+      {gameState.phase !== 'PLAYING' && (
+        <div className="game-sidebar">
+          {/* Room code */}
+          <div className="sidebar-panel">
+            <div className="sidebar-panel-title">Código de Sala</div>
+            <div className="room-code-display" style={{ fontSize: '1.5rem' }}>
+              {gameState.roomCode}
+            </div>
+          </div>
+
+          {/* Scoreboard */}
+          <div className="sidebar-panel">
+            <div className="sidebar-panel-title">Jugadores</div>
+            <ScoreboardView />
+          </div>
+
+          {/* Game info */}
+          <div className="sidebar-panel">
+            <div className="sidebar-panel-title">Info</div>
+            <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+              <span>Ronda: {gameState.roundNumber}</span>
+              <span>Cartas restantes: {gameState.cardsRemaining}</span>
+              <span>Modo: {gameState.settings.judgingMode === 'CZAR' ? 'Juez rotativo' : 'Voto popular'}</span>
+              <span>
+                Meta: {gameState.settings.winCondition === 'POINTS'
+                  ? `${gameState.settings.pointsToWin} puntos`
+                  : `${gameState.settings.totalRounds} rondas`}
+              </span>
+            </div>
           </div>
         </div>
-
-        {/* Scoreboard */}
-        <div className="sidebar-panel">
-          <div className="sidebar-panel-title">Jugadores</div>
-          <ScoreboardView />
-        </div>
-
-        {/* Game info */}
-        <div className="sidebar-panel">
-          <div className="sidebar-panel-title">Info</div>
-          <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
-            <span>Ronda: {gameState.roundNumber}</span>
-            <span>Cartas restantes: {gameState.cardsRemaining}</span>
-            <span>Modo: {gameState.settings.judgingMode === 'CZAR' ? 'Juez rotativo' : 'Voto popular'}</span>
-            <span>
-              Meta: {gameState.settings.winCondition === 'POINTS'
-                ? `${gameState.settings.pointsToWin} puntos`
-                : `${gameState.settings.totalRounds} rondas`}
-            </span>
-          </div>
-        </div>
-      </div>
+      )}
     </div>
   )
 }

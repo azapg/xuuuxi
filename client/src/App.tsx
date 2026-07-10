@@ -4,6 +4,7 @@ import { GameProvider } from './context/GameProvider'
 import Home from './pages/Home'
 import Room from './pages/Room'
 import Collections from './pages/Collections'
+import DebugDecks from './pages/DebugDecks'
 
 export default function App() {
   return (
@@ -12,6 +13,16 @@ export default function App() {
         <Link to="/" className="app-logo">
           {GAME_DISPLAY_NAME}
         </Link>
+        <div style={{ display: 'flex', gap: '1rem' }}>
+          <Link to="/collections" className="btn btn-ghost btn-sm" style={{ padding: '0.25rem 0.5rem', fontSize: '0.85rem' }}>
+            Colecciones
+          </Link>
+          {import.meta.env.DEV && (
+            <Link to="/debug-decks" className="btn btn-ghost btn-sm" style={{ padding: '0.25rem 0.5rem', fontSize: '0.85rem' }}>
+              Debug Decks
+            </Link>
+          )}
+        </div>
       </header>
       <main className="app-main">
         <GameProvider>
@@ -19,6 +30,9 @@ export default function App() {
             <Route path="/" element={<Home />} />
             <Route path="/room/:code" element={<Room />} />
             <Route path="/collections" element={<Collections />} />
+            {import.meta.env.DEV && (
+              <Route path="/debug-decks" element={<DebugDecks />} />
+            )}
           </Routes>
         </GameProvider>
       </main>

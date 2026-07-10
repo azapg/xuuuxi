@@ -20,6 +20,8 @@ export const GameSettingsSchema = z.object({
   submissionTimerSeconds: z.number().int().min(0).max(300).optional(),
   judgingTimerSeconds: z.number().int().min(0).max(300).optional(),
   collectionIds: z.array(z.string()).optional(),
+  customBlackCards: z.array(z.object({ text: z.string(), pick: z.number().int().min(1).max(3) })).optional(),
+  customWhiteCards: z.array(z.object({ text: z.string() })).optional(),
 });
 
 // --- Client Message Schemas ---

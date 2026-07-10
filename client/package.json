@@ -10,9 +10,13 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@radix-ui/react-collapsible": "^1.1.16",
+    "@radix-ui/react-scroll-area": "^1.2.14",
     "@xuuuxi/shared": "workspace:*",
+    "clsx": "^2.1.1",
     "hugeicons-react": "^0.4.0",
     "lucide-react": "^0.473.0",
+    "motion": "^12.42.2",
     "react": "^19.1",
     "react-dom": "^19.1",
     "react-router-dom": "^7.6"

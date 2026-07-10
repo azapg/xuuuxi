@@ -34,6 +34,8 @@ export const DEFAULT_GAME_SETTINGS: GameSettings = {
   submissionTimerSeconds: 0,
   judgingTimerSeconds: 0,
   collectionIds: [],
+  customBlackCards: [],
+  customWhiteCards: [],
 };
 
 // --- Limits ---
