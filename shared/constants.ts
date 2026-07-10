@@ -33,6 +33,7 @@ export const DEFAULT_GAME_SETTINGS: GameSettings = {
   maxPlayers: 10,
   submissionTimerSeconds: 0,
   judgingTimerSeconds: 0,
+  discardTimerSeconds: 0,
   collectionIds: [],
   customBlackCards: [],
   customWhiteCards: [],

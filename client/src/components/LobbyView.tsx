@@ -259,6 +259,20 @@ export default function LobbyView() {
                 }
               />
             </div>
+
+            <div className="settings-field">
+              <label className="settings-label">Timer descarte (seg, 0=sin límite)</label>
+              <input
+                className="input"
+                type="number"
+                min={0}
+                max={300}
+                value={settings.discardTimerSeconds}
+                onChange={e =>
+                  handleSettingChange({ discardTimerSeconds: +e.target.value })
+                }
+              />
+            </div>
           </div>
 
           <div style={{ marginTop: '0.75rem' }}>

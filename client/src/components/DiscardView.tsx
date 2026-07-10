@@ -1,16 +1,52 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { useGame } from '@/context/GameProvider'
-import { Delete02Icon } from 'hugeicons-react'
+import { Delete02Icon, HourglassIcon } from 'hugeicons-react'
 
 export default function DiscardView() {
   const { gameState, discardCards } = useGame()
   const [selectedIds, setSelectedIds] = useState<string[]>([])
+  const [timerSeconds, setTimerSeconds] = useState<number | null>(null)
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
+  const timerSetting = gameState?.settings.discardTimerSeconds ?? 0
   const maxDiscards = gameState?.settings.maxDiscards ?? 3
   const hand = gameState?.me.hand ?? []
 
+  const handleSkip = useCallback(() => {
+    if (isSubmitting) return
+    setIsSubmitting(true)
+    discardCards([])
+  }, [discardCards, isSubmitting])
+
+  const handleDiscard = useCallback(() => {
+    if (selectedIds.length === 0 || isSubmitting) return
+    setIsSubmitting(true)
+    discardCards(selectedIds)
+  }, [selectedIds, discardCards, isSubmitting])
+
+  // Timer countdown
+  useEffect(() => {
+    if (timerSetting <= 0) {
+      setTimerSeconds(null)
+      return
+    }
+    setTimerSeconds(timerSetting)
+    const interval = setInterval(() => {
+      setTimerSeconds(prev => {
+        if (prev === null || prev <= 1) {
+          clearInterval(interval)
+          handleSkip() // Auto-skip when timer runs out
+          return 0
+        }
+        return prev - 1
+      })
+    }, 1000)
+    return () => clearInterval(interval)
+  }, [timerSetting, handleSkip])
+
   const toggleCard = useCallback(
     (cardId: string) => {
+      if (isSubmitting) return
       setSelectedIds(prev => {
         if (prev.includes(cardId)) {
           return prev.filter(id => id !== cardId)
@@ -19,25 +55,24 @@ export default function DiscardView() {
         return [...prev, cardId]
       })
     },
-    [maxDiscards],
+    [maxDiscards, isSubmitting],
   )
-
-  const handleDiscard = useCallback(() => {
-    if (selectedIds.length === 0) return
-    discardCards(selectedIds)
-  }, [selectedIds, discardCards])
-
-  const handleSkip = useCallback(() => {
-    discardCards([])
-  }, [discardCards])
 
   if (!gameState) return null
 
   return (
     <div>
-      <h2 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-        <Delete02Icon size={24} /> Fase de Descarte
-      </h2>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+        <h2 style={{ fontSize: '1.2rem', fontWeight: 700, margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <Delete02Icon size={24} /> Fase de Descarte
+        </h2>
+        {timerSeconds !== null && timerSeconds > 0 && (
+          <div style={{ fontWeight: 800, color: 'var(--warning)', fontVariantNumeric: 'tabular-nums', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+            <HourglassIcon size={20} />
+            {timerSeconds}s
+          </div>
+        )}
+      </div>
       <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>
         Puedes descartar hasta {maxDiscards} carta{maxDiscards !== 1 ? 's' : ''} y
         recibir nuevas a cambio

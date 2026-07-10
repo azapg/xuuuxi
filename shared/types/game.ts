@@ -46,6 +46,8 @@ export interface GameSettings {
   submissionTimerSeconds: number;
   /** Seconds for judging phase. 0 = no timer. */
   judgingTimerSeconds: number;
+  /** Seconds for discard phase. 0 = no timer. */
+  discardTimerSeconds: number;
   /** IDs of collections to use in this game */
   collectionIds: string[];
   /** Custom black cards added for this specific game only */
