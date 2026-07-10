@@ -549,12 +549,16 @@ async function seed() {
   console.log(`   ${nightingaleWhiteCardValues.length} white cards`);
 }
 
-seed()
-  .then(() => {
-    console.log("✅ Seed complete!");
-    process.exit(0);
-  })
-  .catch((err) => {
-    console.error("❌ Seed failed:", err);
-    process.exit(1);
-  });
+export { seed };
+
+if (import.meta.main) {
+  seed()
+    .then(() => {
+      console.log("✅ Seed complete!");
+      process.exit(0);
+    })
+    .catch((err) => {
+      console.error("❌ Seed failed:", err);
+      process.exit(1);
+    });
+}

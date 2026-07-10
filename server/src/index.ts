@@ -68,7 +68,8 @@ async function autoSeed(): Promise<void> {
   if (existing.length === 0) {
     console.log("📦 No collections found, running seed...");
     // Dynamic import to run the seed script
-    await import("./db/seed");
+    const { seed } = await import("./db/seed");
+    await seed();
   }
 }
 
