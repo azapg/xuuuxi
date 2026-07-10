@@ -22,18 +22,11 @@ export default function App() {
             </Link>
           </Button>
           {import.meta.env.DEV && (
-            <>
-              <Button asChild variant="ghost" size="sm">
-                <Link to="/analytics">
-                  Analytics
-                </Link>
-              </Button>
-              <Button asChild variant="ghost" size="sm">
-                <Link to="/debug-decks">
-                  Debug Decks
-                </Link>
-              </Button>
-            </>
+            <Button asChild variant="ghost" size="sm">
+              <Link to="/debug-decks">
+                Debug Decks
+              </Link>
+            </Button>
           )}
         </div>
       </header>
