@@ -7,7 +7,7 @@
     "bun": ">=1"
   },
   "scripts": {
-    "dev": "concurrently \"npm run dev -w server\" \"npm run dev -w client\""
+    "dev": "concurrently \"bun run --cwd server dev\" \"bun run --cwd client dev\""
   },
   "devDependencies": {
     "concurrently": "^10.0.3"
