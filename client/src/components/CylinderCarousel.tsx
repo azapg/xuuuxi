@@ -96,21 +96,21 @@ function CarouselBall({
   const scaleHover = useTransform(hDist, (d) => {
     if (d === -1) return 0;
     const abs = Math.abs(d);
-    return abs === 0 ? 0.2 : (abs === 1 ? 0.05 : 0);
+    return (abs === 0 ? 0.2 : (abs === 1 ? 0.05 : 0)) as number;
   });
   
   // When distance is 0, move UP significantly. Adjacent move up slightly.
   const yHover = useTransform(hDist, (d) => {
     if (d === -1) return 0;
     const abs = Math.abs(d);
-    return abs === 0 ? -40 : (abs === 1 ? -10 : 0);
+    return (abs === 0 ? -40 : (abs === 1 ? -10 : 0)) as number;
   });
   
   // Adjacent cards move SIDEWAYS to make room
   const xHover = useTransform(hDist, (d) => {
     if (d === -1) return 0;
     if (d === 0) return 0;
-    return d > 0 ? 25 : -25; // Push right if greater index, left if smaller
+    return (d > 0 ? 25 : -25) as number; // Push right if greater index, left if smaller
   });
 
   const scaleHoverSpring = useSpring(scaleHover, { stiffness: 400, damping: 15 });
