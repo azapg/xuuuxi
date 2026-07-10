@@ -307,8 +307,14 @@ export function useWebSocket(): WebSocketState {
     if (!mountedRef.current) return
     if (wsRef.current?.readyState === WebSocket.OPEN) return
 
+    let playerId = localStorage.getItem('xuuuxi_player_id')
+    if (!playerId) {
+      playerId = crypto.randomUUID()
+      localStorage.setItem('xuuuxi_player_id', playerId)
+    }
+
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
-    const url = `${protocol}//${window.location.host}/ws`
+    const url = `${protocol}//${window.location.host}/ws?playerId=${playerId}`
 
     try {
       const ws = new WebSocket(url)

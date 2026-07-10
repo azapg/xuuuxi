@@ -44,6 +44,16 @@ export class RoomManager {
     return this.rooms.get(code.toUpperCase());
   }
 
+  /** Find which room a player is currently in, if any */
+  findRoomByPlayerId(playerId: string): GameRoom | undefined {
+    for (const room of this.rooms.values()) {
+      if (room.players.has(playerId)) {
+        return room;
+      }
+    }
+    return undefined;
+  }
+
   /** Remove a player from their room, handle host migration, and destroy empty rooms */
   removePlayerFromRoom(
     code: string,

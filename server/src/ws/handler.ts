@@ -26,6 +26,24 @@ export function handleOpen(ws: ServerWebSocket<WsData>): void {
   const { playerId } = ws.data;
   registerSocket(playerId, ws);
   console.log(`🔌 WS open: ${playerId}`);
+
+  // Auto-reconnect if player is already in a room
+  const room = roomManager.findRoomByPlayerId(playerId);
+  if (room) {
+    ws.data.roomCode = room.code;
+    const player = room.players.get(playerId);
+    if (player) {
+      player.isConnected = true;
+    }
+    
+    // Send full state to the reconnecting player
+    const state = room.getStateForPlayer(playerId);
+    sendToPlayer(playerId, { type: "ROOM_JOINED", gameState: state });
+    
+    // Broadcast state to everyone else to update connection status
+    broadcastGameState(room);
+    console.log(`🔄 Reconnected ${playerId} to room ${room.code}`);
+  }
 }
 
 export function handleClose(ws: ServerWebSocket<WsData>): void {
@@ -338,7 +356,7 @@ function handleNextRound(ws: ServerWebSocket<WsData>): void {
 
   room.nextRound();
 
-  if (room.phase === "DISCARD_PHASE") {
+  if (room.phase as string === "DISCARD_PHASE") {
     broadcastToRoom(room, { type: "DISCARD_PHASE_STARTED" });
   }
 
