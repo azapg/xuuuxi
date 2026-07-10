@@ -1,3 +1,4 @@
+import { Button } from '@/components/ui/button'
 import { Routes, Route, Link } from 'react-router-dom'
 import { GAME_DISPLAY_NAME } from '@xuuuxi/shared'
 import { GameProvider } from './context/GameProvider'
@@ -14,13 +15,17 @@ export default function App() {
           {GAME_DISPLAY_NAME}
         </Link>
         <div style={{ display: 'flex', gap: '1rem' }}>
-          <Link to="/collections" className="btn btn-ghost btn-sm" style={{ padding: '0.25rem 0.5rem', fontSize: '0.85rem' }}>
-            Colecciones
-          </Link>
-          {import.meta.env.DEV && (
-            <Link to="/debug-decks" className="btn btn-ghost btn-sm" style={{ padding: '0.25rem 0.5rem', fontSize: '0.85rem' }}>
-              Debug Decks
+          <Button asChild variant="ghost" size="sm">
+            <Link to="/collections">
+              Colecciones
             </Link>
+          </Button>
+          {import.meta.env.DEV && (
+            <Button asChild variant="ghost" size="sm">
+              <Link to="/debug-decks">
+                Debug Decks
+              </Link>
+            </Button>
           )}
         </div>
       </header>

@@ -2,10 +2,15 @@ import { useState, useEffect } from 'react'
 import { useGame } from '@/context/GameProvider'
 import type { CollectionSummary, GameSettings } from '@xuuuxi/shared'
 import { CrownIcon, Settings01Icon, PackageIcon, GameController01Icon, ViewIcon, Add01Icon, Delete01Icon } from 'hugeicons-react'
-import { Dialog } from './Dialog'
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from './ui/collapsible'
 import { ArrowDown01Icon } from 'hugeicons-react'
 import type { CollectionWithCards } from '@xuuuxi/shared'
+
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog'
+import { ScrollArea } from '@/components/ui/scroll-area'
 
 export default function LobbyView() {
   const { gameState, updateSettings, startGame } = useGame()
@@ -18,7 +23,7 @@ export default function LobbyView() {
 
   const [showCustomCardsModal, setShowCustomCardsModal] = useState(false)
   const [tempBlackText, setTempBlackText] = useState('')
-  const [tempBlackPick, setTempBlackPick] = useState(1)
+  const [tempBlackPick, setTempBlackPick] = useState('1')
   const [tempWhiteText, setTempWhiteText] = useState('')
 
   useEffect(() => {
@@ -68,9 +73,9 @@ export default function LobbyView() {
   const addCustomBlackCard = () => {
     if (!tempBlackText.trim()) return
     const current = settings.customBlackCards || []
-    handleSettingChange({ customBlackCards: [...current, { text: tempBlackText.trim(), pick: tempBlackPick }] })
+    handleSettingChange({ customBlackCards: [...current, { text: tempBlackText.trim(), pick: parseInt(tempBlackPick, 10) }] })
     setTempBlackText('')
-    setTempBlackPick(1)
+    setTempBlackPick('1')
   }
 
   const removeCustomBlackCard = (index: number) => {
@@ -134,8 +139,7 @@ export default function LobbyView() {
           <div className="settings-grid">
             <div className="settings-field">
               <label className="settings-label">Cartas en mano</label>
-              <input
-                className="input"
+              <Input
                 type="number"
                 min={3}
                 max={20}
@@ -146,39 +150,40 @@ export default function LobbyView() {
 
             <div className="settings-field">
               <label className="settings-label">Modo de juicio</label>
-              <select
+              <Select
                 value={settings.judgingMode}
-                onChange={e =>
-                  handleSettingChange({
-                    judgingMode: e.target.value as 'CZAR' | 'POPULAR_VOTE',
-                  })
-                }
+                onValueChange={(val: 'CZAR' | 'POPULAR_VOTE') => handleSettingChange({ judgingMode: val })}
               >
-                <option value="CZAR">Juez rotativo</option>
-                <option value="POPULAR_VOTE">Voto popular</option>
-              </select>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="CZAR">Juez rotativo</SelectItem>
+                  <SelectItem value="POPULAR_VOTE">Voto popular</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
 
             <div className="settings-field">
               <label className="settings-label">Condición de victoria</label>
-              <select
+              <Select
                 value={settings.winCondition}
-                onChange={e =>
-                  handleSettingChange({
-                    winCondition: e.target.value as 'POINTS' | 'ROUNDS',
-                  })
-                }
+                onValueChange={(val: 'POINTS' | 'ROUNDS') => handleSettingChange({ winCondition: val })}
               >
-                <option value="POINTS">Puntos</option>
-                <option value="ROUNDS">Rondas</option>
-              </select>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="POINTS">Puntos</SelectItem>
+                  <SelectItem value="ROUNDS">Rondas</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
 
             {settings.winCondition === 'POINTS' && (
               <div className="settings-field">
                 <label className="settings-label">Puntos para ganar</label>
-                <input
-                  className="input"
+                <Input
                   type="number"
                   min={1}
                   max={50}
@@ -191,8 +196,7 @@ export default function LobbyView() {
             {settings.winCondition === 'ROUNDS' && (
               <div className="settings-field">
                 <label className="settings-label">Total de rondas</label>
-                <input
-                  className="input"
+                <Input
                   type="number"
                   min={1}
                   max={100}
@@ -206,8 +210,7 @@ export default function LobbyView() {
 
             <div className="settings-field">
               <label className="settings-label">Descartar cada N rondas</label>
-              <input
-                className="input"
+              <Input
                 type="number"
                 min={0}
                 max={20}
@@ -220,8 +223,7 @@ export default function LobbyView() {
 
             <div className="settings-field">
               <label className="settings-label">Máx. descartes</label>
-              <input
-                className="input"
+              <Input
                 type="number"
                 min={0}
                 max={10}
@@ -234,8 +236,7 @@ export default function LobbyView() {
 
             <div className="settings-field">
               <label className="settings-label">Timer envío (seg, 0=sin límite)</label>
-              <input
-                className="input"
+              <Input
                 type="number"
                 min={0}
                 max={300}
@@ -248,8 +249,7 @@ export default function LobbyView() {
 
             <div className="settings-field">
               <label className="settings-label">Timer juicio (seg, 0=sin límite)</label>
-              <input
-                className="input"
+              <Input
                 type="number"
                 min={0}
                 max={300}
@@ -262,8 +262,7 @@ export default function LobbyView() {
 
             <div className="settings-field">
               <label className="settings-label">Timer descarte (seg, 0=sin límite)</label>
-              <input
-                className="input"
+              <Input
                 type="number"
                 min={0}
                 max={300}
@@ -276,15 +275,16 @@ export default function LobbyView() {
           </div>
 
           <div style={{ marginTop: '0.75rem' }}>
-            <label className="checkbox-label">
+            <label className="checkbox-label" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}>
               <input
                 type="checkbox"
+                className="w-4 h-4"
                 checked={settings.tradesEnabled}
                 onChange={e =>
                   handleSettingChange({ tradesEnabled: e.target.checked })
                 }
               />
-              Permitir intercambios entre jugadores
+              <span className="text-sm">Permitir intercambios entre jugadores</span>
             </label>
           </div>
         </div>
@@ -297,9 +297,9 @@ export default function LobbyView() {
             <PackageIcon size={20} /> Colecciones de Cartas
           </h3>
           {isHost && (
-            <button className="btn btn-secondary" style={{ padding: '0.25rem 0.5rem', fontSize: '0.85rem' }} onClick={() => setShowCustomCardsModal(true)}>
-              <Add01Icon size={16} /> Cartas Extra
-            </button>
+            <Button variant="secondary" size="sm" onClick={() => setShowCustomCardsModal(true)}>
+              <Add01Icon size={16} className="mr-1" /> Cartas Extra
+            </Button>
           )}
         </div>
         {loadingCollections ? (
@@ -335,6 +335,7 @@ export default function LobbyView() {
                 >
                   <input
                     type="checkbox"
+                    className="w-4 h-4"
                     checked={isSelected}
                     readOnly
                     style={{ accentColor: 'var(--accent)' }}
@@ -345,8 +346,9 @@ export default function LobbyView() {
                       {col.blackCardCount} negras · {col.whiteCardCount} blancas
                     </div>
                   </div>
-                  <button
-                    className="btn-icon"
+                  <Button
+                    variant="ghost"
+                    size="icon"
                     onClick={(e) => {
                       e.stopPropagation();
                       handlePreview(col.id);
@@ -354,7 +356,7 @@ export default function LobbyView() {
                     title="Previsualizar cartas"
                   >
                     <ViewIcon size={20} />
-                  </button>
+                  </Button>
                 </div>
               )
             })}
@@ -365,14 +367,14 @@ export default function LobbyView() {
       {/* Start button */}
       {isHost ? (
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem' }}>
-          <button
-            className="btn btn-primary btn-lg"
+          <Button
+            size="lg"
+            className="w-full max-w-sm"
             onClick={startGame}
             disabled={!canStart}
-            style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
           >
-            <GameController01Icon size={24} /> Iniciar Juego
-          </button>
+            <GameController01Icon size={24} className="mr-2" /> Iniciar Juego
+          </Button>
           {!canStart && (
             <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>
               Se necesitan al menos {settings.minPlayers} jugadores
@@ -386,132 +388,141 @@ export default function LobbyView() {
       )}
 
       {/* Preview Dialog */}
-      <Dialog
-        isOpen={!!previewCollectionId}
-        onClose={() => setPreviewCollectionId(null)}
-        title={previewData ? previewData.name : 'Cargando colección...'}
-      >
-        {loadingPreview ? (
-          <div style={{ display: 'flex', justifyContent: 'center', padding: '2rem' }}>
-            <span className="loading-spinner" />
-          </div>
-        ) : previewData ? (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-            <p style={{ color: 'var(--text-secondary)' }}>{previewData.description}</p>
-            
-            <Collapsible defaultOpen>
-              <CollapsibleTrigger asChild>
-                <button className="collapsible-trigger-btn">
-                  <h4 className="section-title" style={{ margin: 0 }}>Cartas Negras ({previewData.blackCards.length})</h4>
-                  <ArrowDown01Icon size={20} className="collapsible-chevron" />
-                </button>
-              </CollapsibleTrigger>
-              <CollapsibleContent className="collapsible-content">
-                <div style={{ padding: '1rem 0' }}>
-                  <div className="card-submissions">
-                    {previewData.blackCards.map(c => (
-                      <div key={c.id} className="game-card black">
-                        <div className="card-text">{c.text}</div>
-                        <div className="card-meta">PICK {c.pick}</div>
+      <Dialog open={!!previewCollectionId} onOpenChange={(open) => !open && setPreviewCollectionId(null)}>
+        <DialogContent className="max-w-2xl max-h-[85vh] p-0 overflow-hidden flex flex-col bg-background/95 backdrop-blur border-border">
+          <DialogHeader className="p-6 pb-2">
+            <DialogTitle>{previewData ? previewData.name : 'Cargando colección...'}</DialogTitle>
+          </DialogHeader>
+          <div className="px-6 pb-6 overflow-y-auto flex-1">
+            {loadingPreview ? (
+              <div style={{ display: 'flex', justifyContent: 'center', padding: '2rem' }}>
+                <span className="loading-spinner" />
+              </div>
+            ) : previewData ? (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                <DialogDescription>{previewData.description}</DialogDescription>
+                
+                <Collapsible defaultOpen>
+                  <CollapsibleTrigger asChild>
+                    <Button variant="ghost" className="w-full justify-between h-auto py-2">
+                      <h4 className="section-title" style={{ margin: 0 }}>Cartas Negras ({previewData.blackCards.length})</h4>
+                      <ArrowDown01Icon size={20} className="collapsible-chevron opacity-50" />
+                    </Button>
+                  </CollapsibleTrigger>
+                  <CollapsibleContent>
+                    <div style={{ padding: '1rem 0' }}>
+                      <div className="card-submissions">
+                        {previewData.blackCards.map(c => (
+                          <div key={c.id} className="game-card black min-h-[140px]">
+                            <div className="card-text text-sm">{c.text}</div>
+                            {c.pick > 1 && <div className="card-meta">PICK {c.pick}</div>}
+                          </div>
+                        ))}
                       </div>
-                    ))}
-                  </div>
-                </div>
-              </CollapsibleContent>
-            </Collapsible>
+                    </div>
+                  </CollapsibleContent>
+                </Collapsible>
 
-            <Collapsible defaultOpen>
-              <CollapsibleTrigger asChild>
-                <button className="collapsible-trigger-btn">
-                  <h4 className="section-title" style={{ margin: 0 }}>Cartas Blancas ({previewData.whiteCards.length})</h4>
-                  <ArrowDown01Icon size={20} className="collapsible-chevron" />
-                </button>
-              </CollapsibleTrigger>
-              <CollapsibleContent className="collapsible-content">
-                <div style={{ padding: '1rem 0' }}>
-                  <div className="card-submissions">
-                    {previewData.whiteCards.map(c => (
-                      <div key={c.id} className="game-card white">
-                        <div className="card-text">{c.text}</div>
+                <Collapsible defaultOpen>
+                  <CollapsibleTrigger asChild>
+                    <Button variant="ghost" className="w-full justify-between h-auto py-2">
+                      <h4 className="section-title" style={{ margin: 0 }}>Cartas Blancas ({previewData.whiteCards.length})</h4>
+                      <ArrowDown01Icon size={20} className="collapsible-chevron opacity-50" />
+                    </Button>
+                  </CollapsibleTrigger>
+                  <CollapsibleContent>
+                    <div style={{ padding: '1rem 0' }}>
+                      <div className="card-submissions">
+                        {previewData.whiteCards.map(c => (
+                          <div key={c.id} className="game-card white min-h-[140px]">
+                            <div className="card-text text-sm">{c.text}</div>
+                          </div>
+                        ))}
                       </div>
-                    ))}
-                  </div>
-                </div>
-              </CollapsibleContent>
-            </Collapsible>
+                    </div>
+                  </CollapsibleContent>
+                </Collapsible>
+              </div>
+            ) : (
+              <div className="error-message">Error al cargar la colección.</div>
+            )}
           </div>
-        ) : (
-          <div className="error-message">Error al cargar la colección.</div>
-        )}
+        </DialogContent>
       </Dialog>
 
       {/* Custom Cards Dialog */}
-      <Dialog
-        isOpen={showCustomCardsModal}
-        onClose={() => setShowCustomCardsModal(false)}
-        title="Cartas Extra (Solo para este juego)"
-      >
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
-            Añade cartas temporales que solo existirán durante esta partida. Ideal para bromas internas.
-          </p>
+      <Dialog open={showCustomCardsModal} onOpenChange={setShowCustomCardsModal}>
+        <DialogContent className="max-w-2xl max-h-[85vh] p-0 overflow-hidden flex flex-col bg-background/95 backdrop-blur border-border">
+          <DialogHeader className="p-6 pb-2">
+            <DialogTitle>Cartas Extra (Solo para este juego)</DialogTitle>
+          </DialogHeader>
+          <div className="px-6 pb-6 overflow-y-auto flex-1">
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+              <DialogDescription>
+                Añade cartas temporales que solo existirán durante esta partida. Ideal para bromas internas.
+              </DialogDescription>
 
-          <div>
-            <h4 className="section-title">Cartas Negras</h4>
-            <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem' }}>
-              <input
-                className="input"
-                style={{ flex: 1 }}
-                placeholder="Texto de la carta negra..."
-                value={tempBlackText}
-                onChange={e => setTempBlackText(e.target.value)}
-                onKeyDown={e => e.key === 'Enter' && addCustomBlackCard()}
-              />
-              <select className="input" value={tempBlackPick} onChange={e => setTempBlackPick(+e.target.value)}>
-                <option value={1}>Pick 1</option>
-                <option value={2}>Pick 2</option>
-                <option value={3}>Pick 3</option>
-              </select>
-              <button className="btn btn-primary" onClick={addCustomBlackCard}>Añadir</button>
-            </div>
-            <div className="card-submissions">
-              {(settings.customBlackCards || []).map((c, i) => (
-                <div key={i} className="game-card black" style={{ position: 'relative', minHeight: '120px' }}>
-                  <div className="card-text" style={{ fontSize: '1rem' }}>{c.text}</div>
-                  <div className="card-meta">PICK {c.pick}</div>
-                  <button className="btn-icon" style={{ position: 'absolute', top: 8, right: 8, color: 'var(--text)' }} onClick={() => removeCustomBlackCard(i)}>
-                    <Delete01Icon size={16} />
-                  </button>
+              <div>
+                <h4 className="section-title">Cartas Negras</h4>
+                <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem' }}>
+                  <Input
+                    style={{ flex: 1 }}
+                    placeholder="Texto de la carta negra..."
+                    value={tempBlackText}
+                    onChange={e => setTempBlackText(e.target.value)}
+                    onKeyDown={e => e.key === 'Enter' && addCustomBlackCard()}
+                  />
+                  <Select value={tempBlackPick} onValueChange={setTempBlackPick}>
+                    <SelectTrigger className="w-[110px]">
+                      <SelectValue placeholder="Pick" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="1">Pick 1</SelectItem>
+                      <SelectItem value="2">Pick 2</SelectItem>
+                      <SelectItem value="3">Pick 3</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <Button onClick={addCustomBlackCard}>Añadir</Button>
                 </div>
-              ))}
+                <div className="card-submissions">
+                  {(settings.customBlackCards || []).map((c, i) => (
+                    <div key={i} className="game-card black" style={{ position: 'relative', minHeight: '120px' }}>
+                      <div className="card-text" style={{ fontSize: '1rem' }}>{c.text}</div>
+                      {c.pick > 1 && <div className="card-meta">PICK {c.pick}</div>}
+                      <Button variant="ghost" size="icon-sm" className="absolute top-2 right-2 hover:bg-white/20 text-white/70 hover:text-white" onClick={() => removeCustomBlackCard(i)}>
+                        <Delete01Icon size={16} />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <h4 className="section-title">Cartas Blancas</h4>
+                <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem' }}>
+                  <Input
+                    style={{ flex: 1 }}
+                    placeholder="Texto de la carta blanca..."
+                    value={tempWhiteText}
+                    onChange={e => setTempWhiteText(e.target.value)}
+                    onKeyDown={e => e.key === 'Enter' && addCustomWhiteCard()}
+                  />
+                  <Button onClick={addCustomWhiteCard}>Añadir</Button>
+                </div>
+                <div className="card-submissions">
+                  {(settings.customWhiteCards || []).map((c, i) => (
+                    <div key={i} className="game-card white" style={{ position: 'relative', minHeight: '120px' }}>
+                      <div className="card-text" style={{ fontSize: '1rem' }}>{c.text}</div>
+                      <Button variant="ghost" size="icon-sm" className="absolute top-2 right-2 text-muted-foreground hover:text-foreground" onClick={() => removeCustomWhiteCard(i)}>
+                        <Delete01Icon size={16} />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
-
-          <div>
-            <h4 className="section-title">Cartas Blancas</h4>
-            <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem' }}>
-              <input
-                className="input"
-                style={{ flex: 1 }}
-                placeholder="Texto de la carta blanca..."
-                value={tempWhiteText}
-                onChange={e => setTempWhiteText(e.target.value)}
-                onKeyDown={e => e.key === 'Enter' && addCustomWhiteCard()}
-              />
-              <button className="btn btn-primary" onClick={addCustomWhiteCard}>Añadir</button>
-            </div>
-            <div className="card-submissions">
-              {(settings.customWhiteCards || []).map((c, i) => (
-                <div key={i} className="game-card white" style={{ position: 'relative', minHeight: '120px' }}>
-                  <div className="card-text" style={{ fontSize: '1rem' }}>{c.text}</div>
-                  <button className="btn-icon" style={{ position: 'absolute', top: 8, right: 8, color: 'var(--text)' }} onClick={() => removeCustomWhiteCard(i)}>
-                    <Delete01Icon size={16} />
-                  </button>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
+        </DialogContent>
       </Dialog>
     </div>
   )

@@ -7,6 +7,8 @@ import type {
 } from '@xuuuxi/shared'
 import { PackageIcon, RefreshIcon, ShuffleIcon, PlayIcon, ArrowLeft01Icon } from 'hugeicons-react'
 import { Link } from 'react-router-dom'
+import { Button } from '@/components/ui/button'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
 export default function DebugDecks() {
   const [collections, setCollections] = useState<CollectionSummary[]>([])
@@ -36,7 +38,7 @@ export default function DebugDecks() {
 
   // Fetch specific collection when selected
   useEffect(() => {
-    if (!selectedCollectionId) {
+    if (!selectedCollectionId || selectedCollectionId === 'none') {
       setCollection(null)
       return
     }
@@ -117,24 +119,31 @@ export default function DebugDecks() {
         <h1 style={{ fontSize: '1.5rem', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           <PackageIcon size={24} /> Debug Decks
         </h1>
-        <Link to="/" className="btn btn-ghost">
-          <ArrowLeft01Icon size={16} style={{ marginRight: '4px', verticalAlign: 'middle' }} /> Volver al Inicio
-        </Link>
+        <Button variant="ghost" asChild>
+          <Link to="/">
+            <ArrowLeft01Icon size={16} /> Volver al Inicio
+          </Link>
+        </Button>
       </div>
 
       {error && <div className="error-message" style={{ marginBottom: '1rem' }}>{error}</div>}
 
       <div className="settings-field" style={{ maxWidth: 400, marginBottom: '2rem' }}>
         <label className="settings-label">Seleccionar Colección</label>
-        <select 
+        <Select 
           value={selectedCollectionId} 
-          onChange={(e) => setSelectedCollectionId(e.target.value)}
+          onValueChange={(value) => setSelectedCollectionId(value)}
         >
-          <option value="">-- Selecciona una colección --</option>
-          {collections.map(c => (
-            <option key={c.id} value={c.id}>{c.name}</option>
-          ))}
-        </select>
+          <SelectTrigger>
+            <SelectValue placeholder="-- Selecciona una colección --" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="none">-- Selecciona una colección --</SelectItem>
+            {collections.map(c => (
+              <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
 
       {loading && <div style={{ display: 'flex', justifyContent: 'center' }}><span className="loading-spinner" /></div>}
@@ -143,15 +152,15 @@ export default function DebugDecks() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
           
           <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
-            <button className="btn btn-secondary" onClick={handleRandomBlackCard}>
+            <Button variant="secondary" onClick={handleRandomBlackCard}>
               <RefreshIcon size={18} /> Random Black Card
-            </button>
-            <button className="btn btn-secondary" onClick={handleShuffleHand}>
+            </Button>
+            <Button variant="secondary" onClick={handleShuffleHand}>
               <ShuffleIcon size={18} /> Shuffle Hand (10)
-            </button>
-            <button className="btn btn-primary" onClick={handleAutoFill}>
+            </Button>
+            <Button onClick={handleAutoFill}>
               <PlayIcon size={18} /> Auto-fill Random Joke
-            </button>
+            </Button>
           </div>
 
           <hr style={{ borderColor: 'var(--border)', margin: '1rem 0' }} />

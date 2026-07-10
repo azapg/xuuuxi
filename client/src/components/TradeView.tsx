@@ -101,7 +101,7 @@ export default function TradeView() {
                 <Tick01Icon size={20} /> Aceptar
               </Button>
               <Button
-                variant="danger"
+                variant="destructive"
                 size="lg"
                 onClick={() => handleRespond(false)}
                 isLoading={isSubmitting}
@@ -171,7 +171,7 @@ export default function TradeView() {
             <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>
               Revisa tu nueva carta en tu mano
             </p>
-            <Button variant="primary" onClick={handleCancel} isLoading={isSubmitting}>
+            <Button variant="default" size="sm" onClick={handleCancel} isLoading={isSubmitting}>
               Cerrar
             </Button>
           </div>

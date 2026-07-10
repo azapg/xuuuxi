@@ -1,5 +1,6 @@
 import { useGame } from '@/context/GameProvider'
 import { CrownIcon, PartyIcon, RefreshIcon, ArrowRight01Icon } from 'hugeicons-react'
+import { Button } from '@/components/ui/button'
 
 export default function RoundResultView() {
   const { gameState, nextRound, offerTrade } = useGame()
@@ -97,13 +98,14 @@ export default function RoundResultView() {
           ) : (
             <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
               {tradablePlayers.map(p => (
-                <button
+                <Button
                   key={p.id}
-                  className="btn btn-secondary btn-sm"
+                  variant="secondary"
+                  size="sm"
                   onClick={() => offerTrade(p.id)}
                 >
-                  <RefreshIcon size={16} style={{ verticalAlign: 'middle', marginRight: '4px' }} /> {p.name}
-                </button>
+                  <RefreshIcon size={16} className="mr-2" /> {p.name}
+                </Button>
               ))}
             </div>
           )}
@@ -113,9 +115,9 @@ export default function RoundResultView() {
       {/* Next round */}
       <div style={{ display: 'flex', justifyContent: 'center' }}>
         {isHost ? (
-          <button className="btn btn-primary btn-lg" onClick={nextRound} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <ArrowRight01Icon size={20} /> Siguiente Ronda
-          </button>
+          <Button size="lg" onClick={nextRound}>
+            <ArrowRight01Icon size={20} className="mr-2" /> Siguiente Ronda
+          </Button>
         ) : (
           <div className="info-message">
             Esperando a que el host avance a la siguiente ronda...

@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { useGame } from '@/context/GameProvider'
 import { BalanceScaleIcon, CheckmarkBadge01Icon, Tick01Icon } from 'hugeicons-react'
 import { Button } from './ui/button'
+import { Badge } from './ui/badge'
 
 export default function JudgingView() {
   const { gameState, czarPick, vote } = useGame()
@@ -72,9 +73,9 @@ export default function JudgingView() {
           {isCzarMode ? <><BalanceScaleIcon size={24} /> Fase de Juicio</> : <><CheckmarkBadge01Icon size={24} /> Votación Popular</>}
         </h2>
         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-          <span className="badge badge-accent">
+          <Badge variant="secondary" className="text-accent bg-accent/10">
             {votedPlayers.length}/{totalVoters} votos
-          </span>
+          </Badge>
           {timerSeconds !== null && timerSeconds > 0 && (
             <span className="timer-display">{timerSeconds}s</span>
           )}

@@ -1,5 +1,6 @@
 import { useGame } from '@/context/GameProvider'
 import { CrownIcon, BalanceScaleIcon, Tick01Icon, HourglassIcon, CheckmarkBadge01Icon, Cancel01Icon } from 'hugeicons-react'
+import { Button } from '@/components/ui/button'
 
 export default function ScoreboardView() {
   const { gameState, kickPlayer } = useGame()
@@ -9,7 +10,6 @@ export default function ScoreboardView() {
   const sorted = [...gameState.players].sort((a, b) => b.score - a.score)
   const topScore = sorted[0]?.score ?? 0
   const isHost = gameState.me.isHost
-  const inLobby = gameState.phase === 'LOBBY'
 
   return (
     <ul className="player-list">
@@ -56,14 +56,14 @@ export default function ScoreboardView() {
 
             {/* Kick button (host only, not self) */}
             {isHost && !isMe && (
-              <button
-                className="btn btn-ghost btn-sm"
-                style={{ padding: '0.25rem 0.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+              <Button
+                variant="ghost"
+                size="icon-sm"
                 onClick={() => kickPlayer(p.id)}
                 title="Expulsar"
               >
                 <Cancel01Icon size={16} />
-              </button>
+              </Button>
             )}
           </li>
         )

@@ -122,7 +122,7 @@ export default function DiscardView() {
           Saltar (quedarse con todo)
         </Button>
         <Button
-          variant="danger"
+          variant="destructive"
           size="lg"
           onClick={handleDiscard}
           disabled={selectedIds.length === 0}

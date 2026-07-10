@@ -1,6 +1,6 @@
 import * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
-import { Slot } from "@radix-ui/react-slot"
+import { Slot, Slottable } from "@radix-ui/react-slot"
 import { Loading03Icon } from "hugeicons-react"
 
 import { cn } from "@/lib/utils"
@@ -46,13 +46,14 @@ function Button({
   variant = "default",
   size = "default",
   asChild = false,
+  isLoading = false,
   ...props
 }: React.ComponentProps<"button"> &
   VariantProps<typeof buttonVariants> & {
     asChild?: boolean
     isLoading?: boolean
   }) {
-  const Comp = asChild ? Slot.Root : "button"
+  const Comp = asChild ? Slot : "button"
 
   return (
     <Comp
@@ -64,7 +65,7 @@ function Button({
       {...props}
     >
       {isLoading && <Loading03Icon className="animate-spin" />}
-      {props.children}
+      <Slottable>{props.children}</Slottable>
     </Comp>
   )
 }

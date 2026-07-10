@@ -9,10 +9,13 @@ import DiscardView from '@/components/DiscardView'
 import ScoreboardView from '@/components/ScoreboardView'
 import TradeView from '@/components/TradeView'
 import { CrownIcon, MedalFirstPlaceIcon, MedalSecondPlaceIcon, MedalThirdPlaceIcon, RefreshIcon } from 'hugeicons-react'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 
 export default function Room() {
   const { code } = useParams<{ code: string }>()
-  const { gameState, connected, error, playAgain } = useGame()
+  const { gameState, connected, error } = useGame()
 
   if (!connected) {
     return (
@@ -78,33 +81,45 @@ export default function Room() {
       {gameState.phase !== 'PLAYING' && (
         <div className="game-sidebar">
           {/* Room code */}
-          <div className="sidebar-panel">
-            <div className="sidebar-panel-title">Código de Sala</div>
-            <div className="room-code-display" style={{ fontSize: '1.5rem' }}>
-              {gameState.roomCode}
-            </div>
-          </div>
+          <Card className="p-4 bg-card">
+            <CardHeader className="p-0 pb-3">
+              <CardTitle className="text-xs uppercase tracking-wider text-muted-foreground">Código de Sala</CardTitle>
+            </CardHeader>
+            <CardContent className="p-0">
+              <div className="room-code-display" style={{ fontSize: '1.5rem' }}>
+                {gameState.roomCode}
+              </div>
+            </CardContent>
+          </Card>
 
           {/* Scoreboard */}
-          <div className="sidebar-panel">
-            <div className="sidebar-panel-title">Jugadores</div>
-            <ScoreboardView />
-          </div>
+          <Card className="p-4 bg-card">
+            <CardHeader className="p-0 pb-3">
+              <CardTitle className="text-xs uppercase tracking-wider text-muted-foreground">Jugadores</CardTitle>
+            </CardHeader>
+            <CardContent className="p-0">
+              <ScoreboardView />
+            </CardContent>
+          </Card>
 
           {/* Game info */}
-          <div className="sidebar-panel">
-            <div className="sidebar-panel-title">Info</div>
-            <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
-              <span>Ronda: {gameState.roundNumber}</span>
-              <span>Cartas restantes: {gameState.cardsRemaining}</span>
-              <span>Modo: {gameState.settings.judgingMode === 'CZAR' ? 'Juez rotativo' : 'Voto popular'}</span>
-              <span>
-                Meta: {gameState.settings.winCondition === 'POINTS'
-                  ? `${gameState.settings.pointsToWin} puntos`
-                  : `${gameState.settings.totalRounds} rondas`}
-              </span>
-            </div>
-          </div>
+          <Card className="p-4 bg-card">
+            <CardHeader className="p-0 pb-3">
+              <CardTitle className="text-xs uppercase tracking-wider text-muted-foreground">Info</CardTitle>
+            </CardHeader>
+            <CardContent className="p-0">
+              <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+                <span>Ronda: {gameState.roundNumber}</span>
+                <span>Cartas restantes: {gameState.cardsRemaining}</span>
+                <span>Modo: {gameState.settings.judgingMode === 'CZAR' ? 'Juez rotativo' : 'Voto popular'}</span>
+                <span>
+                  Meta: {gameState.settings.winCondition === 'POINTS'
+                    ? `${gameState.settings.pointsToWin} puntos`
+                    : `${gameState.settings.totalRounds} rondas`}
+                </span>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       )}
     </div>
@@ -142,9 +157,9 @@ function GameOverInline() {
       </div>
 
       {gameState.me.isHost && (
-        <button className="btn btn-primary btn-lg" onClick={playAgain}>
-          <RefreshIcon size={20} style={{ marginRight: '0.5rem' }} /> Jugar de Nuevo
-        </button>
+        <Button size="lg" onClick={playAgain}>
+          <RefreshIcon size={20} /> Jugar de Nuevo
+        </Button>
       )}
       {!gameState.me.isHost && (
         <p className="info-message">Esperando a que el host inicie otra partida...</p>
@@ -169,8 +184,7 @@ function JoinForm({ code }: { code: string }) {
   return (
     <form onSubmit={handleJoin} style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
       {error && <div className="error-message" style={{ marginBottom: '0.5rem' }}>{error}</div>}
-      <input
-        className="input"
+      <Input
         type="text"
         placeholder="Tu nombre"
         value={name}
@@ -178,12 +192,12 @@ function JoinForm({ code }: { code: string }) {
         maxLength={20}
         autoFocus
       />
-      <button className="btn btn-primary btn-block" type="submit" disabled={!name.trim() || loading}>
-        {loading ? <span className="loading-spinner" /> : 'Entrar'}
-      </button>
-      <button className="btn btn-ghost btn-block" type="button" onClick={() => navigate('/')}>
+      <Button className="w-full" type="submit" disabled={!name.trim() || loading} isLoading={loading}>
+        {!loading && 'Entrar'}
+      </Button>
+      <Button variant="ghost" className="w-full" type="button" onClick={() => navigate('/')}>
         Volver al Inicio
-      </button>
+      </Button>
     </form>
   )
 }

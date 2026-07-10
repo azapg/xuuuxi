@@ -6,6 +6,10 @@ import type {
   WhiteCard,
 } from '@xuuuxi/shared'
 import { PackageIcon, ArrowLeft01Icon, Cancel01Icon, PlusSignIcon } from 'hugeicons-react'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Badge } from '@/components/ui/badge'
 
 type ViewMode = 'list' | 'create' | 'detail'
 
@@ -25,7 +29,7 @@ export default function Collections() {
   // Add card form state
   const [newCardText, setNewCardText] = useState('')
   const [newCardType, setNewCardType] = useState<'black' | 'white'>('white')
-  const [newCardPick, setNewCardPick] = useState(1)
+  const [newCardPick, setNewCardPick] = useState('1')
 
   const fetchCollections = useCallback(async () => {
     try {
@@ -91,7 +95,7 @@ export default function Collections() {
         const endpoint = `/api/collections/${selectedCollection.id}/cards`
         const body =
           newCardType === 'black'
-            ? { black: [{ text: newCardText.trim(), pick: newCardPick }] }
+            ? { black: [{ text: newCardText.trim(), pick: parseInt(newCardPick, 10) }] }
             : { white: [{ text: newCardText.trim() }] }
         const res = await fetch(endpoint, {
           method: 'POST',
@@ -138,42 +142,41 @@ export default function Collections() {
           <PackageIcon size={24} /> Colecciones
         </h1>
         {view !== 'list' && (
-          <button
-            className="btn btn-ghost"
+          <Button
+            variant="ghost"
             onClick={() => {
               setView('list')
               setSelectedCollection(null)
               setError(null)
             }}
           >
-            <ArrowLeft01Icon size={16} style={{ marginRight: '4px', verticalAlign: 'middle' }} /> Volver
-          </button>
+            <ArrowLeft01Icon size={16} /> Volver
+          </Button>
         )}
       </div>
 
       {error && (
-        <div className="error-message" style={{ marginBottom: '1rem' }}>
+        <div className="error-message" style={{ marginBottom: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           {error}
-          <button
-            className="btn btn-ghost btn-sm"
-            style={{ marginLeft: '0.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+          <Button
+            variant="ghost"
+            size="icon-sm"
             onClick={() => setError(null)}
           >
             <Cancel01Icon size={16} />
-          </button>
+          </Button>
         </div>
       )}
 
       {/* LIST VIEW */}
       {view === 'list' && (
         <>
-          <button
-            className="btn btn-primary"
-            style={{ marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+          <Button
+            className="mb-6"
             onClick={() => setView('create')}
           >
             <PlusSignIcon size={20} /> Crear Colección
-          </button>
+          </Button>
 
           {loading ? (
             <div style={{ display: 'flex', justifyContent: 'center', padding: '2rem' }}>
@@ -222,21 +225,21 @@ export default function Collections() {
                   >
                     {col.description || 'Sin descripción'}
                   </p>
-                  <div style={{ display: 'flex', gap: '0.75rem' }}>
-                    <span className="badge badge-accent">
+                  <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+                    <Badge variant="secondary">
                       {col.blackCardCount} negras
-                    </span>
-                    <span className="badge badge-success">
+                    </Badge>
+                    <Badge className="bg-green-600 hover:bg-green-700 text-white">
                       {col.whiteCardCount} blancas
-                    </span>
+                    </Badge>
                   </div>
                   {col.isDefault && (
-                    <span
-                      className="badge badge-warning"
-                      style={{ marginTop: '0.5rem' }}
+                    <Badge
+                      variant="outline"
+                      className="mt-2 border-yellow-500 text-yellow-500"
                     >
                       Predeterminada
-                    </span>
+                    </Badge>
                   )}
                 </div>
               ))}
@@ -259,8 +262,7 @@ export default function Collections() {
           <h2 style={{ fontWeight: 700 }}>Crear Nueva Colección</h2>
           <div className="settings-field">
             <label className="settings-label">Nombre</label>
-            <input
-              className="input"
+            <Input
               type="text"
               value={newName}
               onChange={e => setNewName(e.target.value)}
@@ -270,29 +272,29 @@ export default function Collections() {
           </div>
           <div className="settings-field">
             <label className="settings-label">Descripción</label>
-            <textarea
-              className="input"
+            <Input
+              type="text"
               value={newDescription}
               onChange={e => setNewDescription(e.target.value)}
               placeholder="Descripción de la colección..."
-              rows={3}
-              style={{ resize: 'vertical' }}
             />
           </div>
           <div className="settings-field">
             <label className="settings-label">Idioma</label>
-            <select
-              value={newLocale}
-              onChange={e => setNewLocale(e.target.value)}
-            >
-              <option value="es-MX">Español (México)</option>
-              <option value="es-ES">Español (España)</option>
-              <option value="en-US">English (US)</option>
-            </select>
+            <Select value={newLocale} onValueChange={setNewLocale}>
+              <SelectTrigger>
+                <SelectValue placeholder="Selecciona idioma" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="es-MX">Español (México)</SelectItem>
+                <SelectItem value="es-ES">Español (España)</SelectItem>
+                <SelectItem value="en-US">English (US)</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
-          <button className="btn btn-primary" type="submit" disabled={!newName.trim()}>
+          <Button type="submit" disabled={!newName.trim()}>
             Crear
-          </button>
+          </Button>
         </form>
       )}
 
@@ -329,8 +331,7 @@ export default function Collections() {
             >
               <div className="settings-field" style={{ flex: '1 1 200px' }}>
                 <label className="settings-label">Texto</label>
-                <input
-                  className="input"
+                <Input
                   type="text"
                   value={newCardText}
                   onChange={e => setNewCardText(e.target.value)}
@@ -338,38 +339,36 @@ export default function Collections() {
                   required
                 />
               </div>
-              <div className="settings-field" style={{ flex: '0 0 120px' }}>
+              <div className="settings-field" style={{ flex: '0 0 140px' }}>
                 <label className="settings-label">Tipo</label>
-                <select
-                  value={newCardType}
-                  onChange={e =>
-                    setNewCardType(e.target.value as 'black' | 'white')
-                  }
-                >
-                  <option value="white">Blanca</option>
-                  <option value="black">Negra</option>
-                </select>
+                <Select value={newCardType} onValueChange={(val: 'black' | 'white') => setNewCardType(val)}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="white">Blanca</SelectItem>
+                    <SelectItem value="black">Negra</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
               {newCardType === 'black' && (
-                <div className="settings-field" style={{ flex: '0 0 80px' }}>
+                <div className="settings-field" style={{ flex: '0 0 100px' }}>
                   <label className="settings-label">Pick</label>
-                  <input
-                    className="input"
+                  <Input
                     type="number"
                     min={1}
                     max={3}
                     value={newCardPick}
-                    onChange={e => setNewCardPick(+e.target.value)}
+                    onChange={e => setNewCardPick(e.target.value)}
                   />
                 </div>
               )}
-              <button
-                className="btn btn-primary"
+              <Button
                 type="submit"
                 disabled={!newCardText.trim()}
               >
                 Agregar
-              </button>
+              </Button>
             </form>
           </div>
 
@@ -391,17 +390,14 @@ export default function Collections() {
                       <span className="card-pick-badge">Pick {card.pick}</span>
                     )}
                     <div className="card-meta">
-                      <button
-                        className="btn btn-ghost btn-sm"
-                        style={{
-                          padding: '0.15rem 0.4rem',
-                          fontSize: '0.7rem',
-                          color: 'var(--error)',
-                        }}
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-6 text-[0.7rem] px-2 text-destructive hover:text-destructive"
                         onClick={() => handleDeleteCard(card.id, 'black')}
                       >
                         Eliminar
-                      </button>
+                      </Button>
                     </div>
                   </div>
                 ))}
@@ -424,17 +420,14 @@ export default function Collections() {
                   <div key={card.id} className="game-card white">
                     <div className="card-text">{card.text}</div>
                     <div className="card-meta">
-                      <button
-                        className="btn btn-ghost btn-sm"
-                        style={{
-                          padding: '0.15rem 0.4rem',
-                          fontSize: '0.7rem',
-                          color: 'var(--error)',
-                        }}
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-6 text-[0.7rem] px-2 text-destructive hover:text-destructive"
                         onClick={() => handleDeleteCard(card.id, 'white')}
                       >
                         Eliminar
-                      </button>
+                      </Button>
                     </div>
                   </div>
                 ))}

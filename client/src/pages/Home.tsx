@@ -2,7 +2,9 @@ import { useState, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { GAME_DISPLAY_NAME } from '@xuuuxi/shared'
 import { useGame } from '@/context/GameProvider'
-import { DiceIcon, Door01Icon, ArrowLeft01Icon, Loading03Icon } from 'hugeicons-react'
+import { DiceIcon, Door01Icon, ArrowLeft01Icon } from 'hugeicons-react'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 
 export default function Home() {
   const navigate = useNavigate()
@@ -71,25 +73,27 @@ export default function Home() {
 
         {mode === 'menu' && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-            <button
-              className="btn btn-primary btn-lg btn-block"
+            <Button
+              size="lg"
+              className="w-full"
               onClick={() => setMode('create')}
             >
               <DiceIcon size={24} /> Crear Sala
-            </button>
-            <button
-              className="btn btn-secondary btn-lg btn-block"
+            </Button>
+            <Button
+              variant="secondary"
+              size="lg"
+              className="w-full"
               onClick={() => setMode('join')}
             >
               <Door01Icon size={24} /> Unirse a Sala
-            </button>
+            </Button>
           </div>
         )}
 
         {mode === 'create' && (
           <form onSubmit={handleCreate} style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-            <input
-              className="input"
+            <Input
               type="text"
               placeholder="Tu nombre"
               value={playerName}
@@ -97,27 +101,29 @@ export default function Home() {
               maxLength={20}
               autoFocus
             />
-            <button
-              className="btn btn-primary btn-lg btn-block"
+            <Button
+              size="lg"
+              className="w-full"
               type="submit"
               disabled={!playerName.trim() || loading}
+              isLoading={loading}
             >
-              {loading ? <Loading03Icon className="loading-spinner" size={24} /> : <><DiceIcon size={24} /> Crear Sala</>}
-            </button>
-            <button
-              className="btn btn-ghost btn-block"
+              {!loading && <DiceIcon size={24} />} Crear Sala
+            </Button>
+            <Button
+              variant="ghost"
+              className="w-full"
               type="button"
               onClick={() => { setMode('menu'); setLoading(false) }}
             >
               <ArrowLeft01Icon size={20} /> Volver
-            </button>
+            </Button>
           </form>
         )}
 
         {mode === 'join' && (
           <form onSubmit={handleJoin} style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-            <input
-              className="input"
+            <Input
               type="text"
               placeholder="Código de sala"
               value={roomCode}
@@ -126,28 +132,30 @@ export default function Home() {
               style={{ textAlign: 'center', letterSpacing: '0.15em', fontWeight: 700 }}
               autoFocus
             />
-            <input
-              className="input"
+            <Input
               type="text"
               placeholder="Tu nombre"
               value={playerName}
               onChange={e => setPlayerName(e.target.value)}
               maxLength={20}
             />
-            <button
-              className="btn btn-primary btn-lg btn-block"
+            <Button
+              size="lg"
+              className="w-full"
               type="submit"
               disabled={!playerName.trim() || !roomCode.trim() || loading}
+              isLoading={loading}
             >
-              {loading ? <Loading03Icon className="loading-spinner" size={24} /> : <><Door01Icon size={24} /> Unirse</>}
-            </button>
-            <button
-              className="btn btn-ghost btn-block"
+              {!loading && <Door01Icon size={24} />} Unirse
+            </Button>
+            <Button
+              variant="ghost"
+              className="w-full"
               type="button"
               onClick={() => { setMode('menu'); setLoading(false) }}
             >
               <ArrowLeft01Icon size={20} /> Volver
-            </button>
+            </Button>
           </form>
         )}
       </div>
