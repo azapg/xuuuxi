@@ -11,6 +11,18 @@ import {
 } from "./ws/handler";
 import type { WsData } from "./ws/broadcaster";
 import { GAME_DISPLAY_NAME } from "@xuuuxi/shared";
+import { roomManager } from "./game/RoomManager";
+import { broadcastGameState } from "./ws/broadcaster";
+
+// --- Server Tick Loop ---
+setInterval(() => {
+  const now = Date.now();
+  for (const room of roomManager.getAllRooms()) {
+    if (room.tick(now)) {
+      broadcastGameState(room);
+    }
+  }
+}, 1000);
 
 // --- Initialize DB tables (Drizzle push equivalent at runtime) ---
 import { sqlite } from "./db/index";

@@ -98,8 +98,8 @@ export class RoomManager {
   }
 
   /** Get all rooms (for debugging) */
-  getAllRooms(): Map<string, GameRoom> {
-    return this.rooms;
+  getAllRooms(): GameRoom[] {
+    return Array.from(this.rooms.values());
   }
 }
 

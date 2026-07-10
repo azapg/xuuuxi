@@ -1,3 +1,20 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: var(--accent);
+  --color-primary-foreground: #ffffff;
+  --color-destructive: var(--error);
+  --color-destructive-foreground: #ffffff;
+  --color-secondary: var(--bg-elevated);
+  --color-secondary-foreground: var(--text-primary);
+  --color-accent: var(--bg-elevated);
+  --color-accent-foreground: var(--text-primary);
+  --color-background: var(--bg-primary);
+  --color-ring: var(--accent);
+  --color-input: var(--border);
+  --radius-md: var(--radius);
+}
+
 /* ============================================================
    Qué Xu#$4!! — Global Styles
    ============================================================ */
@@ -168,7 +185,7 @@ input, select, textarea {
 .btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
-  filter: grayscale(100%);
+  pointer-events: none;
 }
 
 .btn-primary {
@@ -251,6 +268,13 @@ input, select, textarea {
 
 .btn-success:hover:not(:disabled) {
   background: #388e3c;
+}
+
+.btn-spinner {
+  animation: spin 1s linear infinite;
+  width: 1.25rem;
+  height: 1.25rem;
+  flex-shrink: 0;
 }
 
 /* ============================================================

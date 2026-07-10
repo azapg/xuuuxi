@@ -1,22 +1,42 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { useGame } from '@/context/GameProvider'
 import { RefreshIcon, Tick01Icon, Cancel01Icon } from 'hugeicons-react'
+import { Button } from './ui/button'
 
 export default function TradeView() {
   const { gameState, respondToTrade, selectTradeCard, cancelTrade } = useGame()
   const [selectedCardId, setSelectedCardId] = useState<string | null>(null)
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const trade = gameState?.trade
+
+  useEffect(() => {
+    setIsSubmitting(false)
+  }, [trade?.status])
+
   if (!trade || trade.status === 'IDLE') return null
 
   const fromName = gameState?.players.find(p => p.id === trade.fromPlayerId)?.name ?? '???'
   const toName = gameState?.players.find(p => p.id === trade.toPlayerId)?.name ?? '???'
 
   const handleSelectCard = useCallback(() => {
-    if (!selectedCardId) return
+    if (!selectedCardId || isSubmitting) return
+    setIsSubmitting(true)
     selectTradeCard(selectedCardId)
     setSelectedCardId(null)
-  }, [selectedCardId, selectTradeCard])
+  }, [selectedCardId, selectTradeCard, isSubmitting])
+
+  const handleRespond = useCallback((accept: boolean) => {
+    if (isSubmitting) return
+    setIsSubmitting(true)
+    respondToTrade(accept)
+  }, [respondToTrade, isSubmitting])
+
+  const handleCancel = useCallback(() => {
+    if (isSubmitting) return
+    setIsSubmitting(true)
+    cancelTrade()
+  }, [cancelTrade, isSubmitting])
 
   return (
     <div
@@ -54,9 +74,9 @@ export default function TradeView() {
             </p>
             <span className="loading-spinner" />
             <div style={{ marginTop: '1.5rem' }}>
-              <button className="btn btn-ghost" onClick={cancelTrade}>
+              <Button variant="ghost" onClick={handleCancel} isLoading={isSubmitting}>
                 Cancelar
-              </button>
+              </Button>
             </div>
           </div>
         )}
@@ -71,20 +91,24 @@ export default function TradeView() {
               <strong>{fromName}</strong> quiere intercambiar una carta contigo
             </p>
             <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
-              <button
-                className="btn btn-success btn-lg"
-                onClick={() => respondToTrade(true)}
+              <Button
+                variant="success"
+                size="lg"
+                onClick={() => handleRespond(true)}
+                isLoading={isSubmitting}
                 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
               >
                 <Tick01Icon size={20} /> Aceptar
-              </button>
-              <button
-                className="btn btn-danger btn-lg"
-                onClick={() => respondToTrade(false)}
+              </Button>
+              <Button
+                variant="danger"
+                size="lg"
+                onClick={() => handleRespond(false)}
+                isLoading={isSubmitting}
                 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
               >
                 <Cancel01Icon size={20} /> Rechazar
-              </button>
+              </Button>
             </div>
           </div>
         )}
@@ -123,16 +147,17 @@ export default function TradeView() {
             </div>
 
             <div style={{ marginTop: '1.5rem', display: 'flex', justifyContent: 'center', gap: '1rem' }}>
-              <button className="btn btn-ghost" onClick={cancelTrade}>
+              <Button variant="ghost" onClick={handleCancel} isLoading={isSubmitting}>
                 Cancelar
-              </button>
-              <button
-                className="btn btn-primary btn-lg"
+              </Button>
+              <Button
+                size="lg"
                 disabled={!selectedCardId}
+                isLoading={isSubmitting}
                 onClick={handleSelectCard}
               >
                 Confirmar Intercambio
-              </button>
+              </Button>
             </div>
           </div>
         )}
@@ -146,9 +171,9 @@ export default function TradeView() {
             <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>
               Revisa tu nueva carta en tu mano
             </p>
-            <button className="btn btn-primary" onClick={cancelTrade}>
+            <Button variant="primary" onClick={handleCancel} isLoading={isSubmitting}>
               Cerrar
-            </button>
+            </Button>
           </div>
         )}
 
@@ -161,9 +186,9 @@ export default function TradeView() {
             <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>
               El otro jugador no quiso intercambiar
             </p>
-            <button className="btn btn-secondary" onClick={cancelTrade}>
+            <Button variant="secondary" onClick={handleCancel} isLoading={isSubmitting}>
               Cerrar
-            </button>
+            </Button>
           </div>
         )}
       </div>

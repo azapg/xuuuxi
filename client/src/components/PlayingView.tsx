@@ -4,6 +4,7 @@ import { CrownIcon, Tick01Icon, HourglassIcon } from 'hugeicons-react'
 import { CylinderCarousel } from './CylinderCarousel'
 import { PlayingCard } from './PlayingCard'
 import { motion, AnimatePresence } from 'motion/react'
+import { Button } from './ui/button'
 
 // Simple deterministic random based on string to keep rotations stable
 const getDeterministicRandom = (id: string) => {
@@ -28,6 +29,25 @@ export default function PlayingView() {
   const [showBlackCardOnTop, setShowBlackCardOnTop] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
+  // Responsive scaling for mobile
+  const [scale, setScale] = useState(1)
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerHeight < 800) {
+        setScale(Math.max(0.65, window.innerHeight / 800))
+      } else {
+        setScale(1)
+      }
+    }
+    handleResize()
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
+
+  const cardWidth = Math.round(180 * scale)
+  const cardHeight = Math.round(270 * scale)
+  const carouselHeight = Math.round(350 * scale)
+
   // Reset selection on new round
   useEffect(() => {
     setSelectedIds([])
@@ -42,22 +62,29 @@ export default function PlayingView() {
 
   // Timer countdown
   useEffect(() => {
-    if (timer <= 0) {
+    const phaseEndsAt = gameState?.phaseEndsAt
+    if (!phaseEndsAt) {
       setTimerSeconds(null)
       return
     }
-    setTimerSeconds(timer)
+
+    const calculateRemaining = () => {
+      const remaining = Math.max(0, Math.ceil((phaseEndsAt - Date.now()) / 1000))
+      return remaining
+    }
+
+    setTimerSeconds(calculateRemaining())
+    
     const interval = setInterval(() => {
-      setTimerSeconds(prev => {
-        if (prev === null || prev <= 1) {
-          clearInterval(interval)
-          return 0
-        }
-        return prev - 1
-      })
+      const remaining = calculateRemaining()
+      setTimerSeconds(remaining)
+      if (remaining <= 0) {
+        clearInterval(interval)
+      }
     }, 1000)
+
     return () => clearInterval(interval)
-  }, [timer, gameState?.roundNumber])
+  }, [gameState?.phaseEndsAt])
 
   const toggleCard = useCallback(
     (cardId: string) => {
@@ -148,7 +175,7 @@ export default function PlayingView() {
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '1rem', gap: '3.5rem', zIndex: 5 }}>
         
         {/* Stack Stage */}
-        <div style={{ position: 'relative', width: 180, height: 270, marginTop: '2rem' }}>
+        <div style={{ position: 'relative', width: cardWidth, height: cardHeight, marginTop: '2rem' }}>
           
           {/* Black card */}
           {gameState.currentBlackCard && (
@@ -163,7 +190,7 @@ export default function PlayingView() {
                 zIndex: showBlackCardOnTop ? 50 : 1
               }} // Random rotate around -15 when a card is selected
               transition={{ type: "spring", stiffness: 300, damping: 20 }}
-              style={{ width: 180, height: 270, position: 'absolute', top: 0, left: 0, boxShadow: '0 10px 30px rgba(0,0,0,0.5)' }}
+              style={{ width: cardWidth, height: cardHeight, position: 'absolute', top: 0, left: 0, boxShadow: '0 10px 30px rgba(0,0,0,0.5)' }}
               onHoverStart={() => setShowBlackCardOnTop(true)}
               onHoverEnd={() => setShowBlackCardOnTop(false)}
               onTap={() => setShowBlackCardOnTop(prev => !prev)}
@@ -204,8 +231,8 @@ export default function PlayingView() {
                     position: 'absolute', 
                     top: 0, // Sit on top of the black card
                     left: 0, 
-                    width: 180, 
-                    height: 270, 
+                    width: cardWidth, 
+                    height: cardHeight, 
                     zIndex: 2 + index 
                   }}
                 >
@@ -224,7 +251,7 @@ export default function PlayingView() {
         </div>
 
         {/* Action Button / Messages */}
-        <div style={{ minHeight: 60, display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: '2rem' }}>
+        <div style={{ minHeight: 60, display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: '2rem', zIndex: 20 }}>
           <AnimatePresence mode="wait">
             {isJudge ? (
               <motion.div key="judge" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="info-message">
@@ -235,17 +262,20 @@ export default function PlayingView() {
                 ¡Cartas enviadas! Esperando a los demás...
               </motion.div>
             ) : selectedIds.length === pickCount ? (
-              <motion.button 
+              <motion.div
                 key="submit-btn"
                 initial={{ opacity: 0, scale: 0.9 }} 
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.9 }}
-                className="btn btn-primary btn-lg" 
-                onClick={handleSubmit}
-                disabled={isSubmitting}
               >
-                Enviar {pickCount > 1 ? `(${selectedIds.length}/${pickCount})` : 'Carta'}
-              </motion.button>
+                <Button 
+                  size="lg"
+                  onClick={handleSubmit}
+                  isLoading={isSubmitting}
+                >
+                  Enviar {pickCount > 1 ? `(${selectedIds.length}/${pickCount})` : 'Carta'}
+                </Button>
+              </motion.div>
             ) : null}
           </AnimatePresence>
         </div>
@@ -254,7 +284,7 @@ export default function PlayingView() {
       {/* --- Bottom Stage: Hand Carousel --- */}
       {!isJudge && !hasSubmitted && (
         <div style={{ width: '100%', paddingBottom: '1rem', zIndex: 10, marginTop: 'auto' }}>
-          <CylinderCarousel itemSize={180} height={350}>
+          <CylinderCarousel itemSize={cardWidth} height={carouselHeight}>
             {hand.filter(c => !selectedIds.includes(c.id)).map(card => (
               <PlayingCard 
                 key={card.id} 

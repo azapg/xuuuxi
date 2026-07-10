@@ -1,11 +1,13 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useGame } from '@/context/GameProvider'
 import { BalanceScaleIcon, CheckmarkBadge01Icon, Tick01Icon } from 'hugeicons-react'
+import { Button } from './ui/button'
 
 export default function JudgingView() {
   const { gameState, czarPick, vote } = useGame()
   const [selectedSubmission, setSelectedSubmission] = useState<string | null>(null)
   const [timerSeconds, setTimerSeconds] = useState<number | null>(null)
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const isCzarMode = gameState?.settings.judgingMode === 'CZAR'
   const isJudge = gameState?.me.isJudge ?? false
@@ -15,38 +17,47 @@ export default function JudgingView() {
   // Reset selection when phase changes
   useEffect(() => {
     setSelectedSubmission(null)
+    setIsSubmitting(false)
   }, [gameState?.phase])
 
   // Timer countdown
   useEffect(() => {
-    if (timer <= 0) {
+    const phaseEndsAt = gameState?.phaseEndsAt
+    if (!phaseEndsAt) {
       setTimerSeconds(null)
       return
     }
-    setTimerSeconds(timer)
+
+    const calculateRemaining = () => {
+      const remaining = Math.max(0, Math.ceil((phaseEndsAt - Date.now()) / 1000))
+      return remaining
+    }
+
+    setTimerSeconds(calculateRemaining())
+    
     const interval = setInterval(() => {
-      setTimerSeconds(prev => {
-        if (prev === null || prev <= 1) {
-          clearInterval(interval)
-          return 0
-        }
-        return prev - 1
-      })
+      const remaining = calculateRemaining()
+      setTimerSeconds(remaining)
+      if (remaining <= 0) {
+        clearInterval(interval)
+      }
     }, 1000)
+
     return () => clearInterval(interval)
-  }, [timer, gameState?.phase])
+  }, [gameState?.phaseEndsAt])
 
   const canPick = isCzarMode && isJudge && !hasVoted
   const canVote = !isCzarMode && !isJudge && !hasVoted
 
   const handleConfirm = useCallback(() => {
-    if (!selectedSubmission) return
+    if (!selectedSubmission || isSubmitting) return
+    setIsSubmitting(true)
     if (canPick) {
       czarPick(selectedSubmission)
     } else if (canVote) {
       vote(selectedSubmission)
     }
-  }, [selectedSubmission, canPick, canVote, czarPick, vote])
+  }, [selectedSubmission, canPick, canVote, czarPick, vote, isSubmitting])
 
   if (!gameState) return null
 
@@ -132,15 +143,16 @@ export default function JudgingView() {
       {/* Confirm button */}
       {(canPick || canVote) && (
         <div style={{ marginTop: '1.5rem', display: 'flex', justifyContent: 'center' }}>
-          <button
-            className="btn btn-primary btn-lg"
+          <Button
+            size="lg"
             disabled={!selectedSubmission}
+            isLoading={isSubmitting}
             onClick={handleConfirm}
           >
             <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               {isCzarMode ? <><BalanceScaleIcon size={20} /> Elegir Ganador</> : <><CheckmarkBadge01Icon size={20} /> Confirmar Voto</>}
             </span>
-          </button>
+          </Button>
         </div>
       )}
     </div>

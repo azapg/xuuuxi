@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect } from 'react'
 import { useGame } from '@/context/GameProvider'
 import { Delete02Icon, HourglassIcon } from 'hugeicons-react'
+import { Button } from './ui/button'
 
 export default function DiscardView() {
   const { gameState, discardCards } = useGame()
@@ -26,23 +27,29 @@ export default function DiscardView() {
 
   // Timer countdown
   useEffect(() => {
-    if (timerSetting <= 0) {
+    const phaseEndsAt = gameState?.phaseEndsAt
+    if (!phaseEndsAt) {
       setTimerSeconds(null)
       return
     }
-    setTimerSeconds(timerSetting)
+
+    const calculateRemaining = () => {
+      const remaining = Math.max(0, Math.ceil((phaseEndsAt - Date.now()) / 1000))
+      return remaining
+    }
+
+    setTimerSeconds(calculateRemaining())
+    
     const interval = setInterval(() => {
-      setTimerSeconds(prev => {
-        if (prev === null || prev <= 1) {
-          clearInterval(interval)
-          handleSkip() // Auto-skip when timer runs out
-          return 0
-        }
-        return prev - 1
-      })
+      const remaining = calculateRemaining()
+      setTimerSeconds(remaining)
+      if (remaining <= 0) {
+        clearInterval(interval)
+      }
     }, 1000)
+
     return () => clearInterval(interval)
-  }, [timerSetting, handleSkip])
+  }, [gameState?.phaseEndsAt])
 
   const toggleCard = useCallback(
     (cardId: string) => {
@@ -111,17 +118,19 @@ export default function DiscardView() {
           gap: '1rem',
         }}
       >
-        <button className="btn btn-ghost btn-lg" onClick={handleSkip}>
+        <Button variant="ghost" size="lg" onClick={handleSkip} isLoading={isSubmitting}>
           Saltar (quedarse con todo)
-        </button>
-        <button
-          className="btn btn-danger btn-lg"
+        </Button>
+        <Button
+          variant="danger"
+          size="lg"
           onClick={handleDiscard}
           disabled={selectedIds.length === 0}
+          isLoading={isSubmitting}
           style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
         >
           <Delete02Icon size={20} /> Descartar {selectedIds.length > 0 ? `(${selectedIds.length})` : ''}
-        </button>
+        </Button>
       </div>
     </div>
   )

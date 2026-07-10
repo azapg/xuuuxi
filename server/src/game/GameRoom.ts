@@ -62,6 +62,7 @@ export class GameRoom {
   code: string;
   players: Map<string, InternalPlayer> = new Map();
   phase: GamePhase = "LOBBY";
+  phaseEndsAt: number | null = null;
   settings: GameSettings;
   deck!: DeckManager;
   currentBlackCard: BlackCard | null = null;
@@ -208,6 +209,9 @@ export class GameRoom {
   startRound(): void {
     this.roundNumber++;
     this.phase = "PLAYING";
+    this.phaseEndsAt = this.settings.submissionTimerSeconds > 0 
+      ? Date.now() + this.settings.submissionTimerSeconds * 1000 
+      : null;
     this.submissions.clear();
     this.votes.clear();
     this.lastRevealedSubmissions = [];
@@ -298,6 +302,9 @@ export class GameRoom {
   /** Transition to JUDGING phase */
   transitionToJudging(): void {
     this.phase = "JUDGING";
+    this.phaseEndsAt = this.settings.judgingTimerSeconds > 0
+      ? Date.now() + this.settings.judgingTimerSeconds * 1000
+      : null;
   }
 
   // ============================================================
@@ -425,10 +432,12 @@ export class GameRoom {
     // Check win condition
     if (this.checkWinCondition()) {
       this.phase = "GAME_OVER";
+      this.phaseEndsAt = null;
       return;
     }
 
     this.phase = "ROUND_RESULT";
+    this.phaseEndsAt = null;
   }
 
   private checkWinCondition(): boolean {
@@ -465,6 +474,9 @@ export class GameRoom {
 
   startDiscardPhase(): void {
     this.phase = "DISCARD_PHASE";
+    this.phaseEndsAt = this.settings.discardTimerSeconds > 0
+      ? Date.now() + this.settings.discardTimerSeconds * 1000
+      : null;
     // Reset hasSubmitted to track who has discarded
     for (const p of this.players.values()) {
       p.hasSubmitted = false;
@@ -670,8 +682,8 @@ export class GameRoom {
         submissionId: subId,
         cards: sub.cards,
       }));
-      // Shuffle so order doesn't reveal identity
-      fisherYatesShuffle(submissions);
+      // Sort by submissionId (which is random) so order is stable but random
+      submissions.sort((a, b) => a.submissionId.localeCompare(b.submissionId));
     }
 
     // Revealed submissions (during ROUND_RESULT or GAME_OVER)
@@ -724,7 +736,66 @@ export class GameRoom {
       trade,
       canDiscard: this.phase === "DISCARD_PHASE" && !me.hasSubmitted,
       cardsRemaining: this.deck ? this.deck.remainingWhite : 0,
+      phaseEndsAt: this.phaseEndsAt,
     };
+  }
+
+  // ============================================================
+  // Tick (Timer Evaluation)
+  // ============================================================
+
+  /** Evaluates timer logic. Returns true if state changed and needs broadcasting. */
+  tick(now: number): boolean {
+    if (this.phaseEndsAt === null || now < this.phaseEndsAt) {
+      return false;
+    }
+
+    // Timer has expired, handle logic based on current phase
+    if (this.phase === "PLAYING") {
+      // Auto-skip anyone who hasn't submitted
+      for (const p of this.players.values()) {
+        if (this.settings.judgingMode === "CZAR" && p.isJudge) continue;
+        if (!p.hasSubmitted) {
+          p.hasSubmitted = true;
+          // Note: we don't add to this.submissions so they get 0 cards
+        }
+      }
+
+      if (this.submissions.size === 0) {
+        // Nobody submitted, go to next round
+        this.nextRound();
+      } else if (this.submissions.size === 1) {
+        // Only one submitted, they auto-win
+        const onlySubmission = Array.from(this.submissions.values())[0];
+        this.resolveRound(onlySubmission.playerId);
+      } else {
+        // Normal transition
+        this.transitionToJudging();
+      }
+      return true;
+    }
+
+    if (this.phase === "JUDGING") {
+      if (this.settings.judgingMode === "CZAR") {
+        // Czar AFK, nobody wins, next round
+        this.nextRound();
+      } else {
+        this.resolvePopularVote();
+      }
+      return true;
+    }
+
+    if (this.phase === "DISCARD_PHASE") {
+      for (const p of this.players.values()) {
+        if (!p.hasSubmitted) {
+          this.skipDiscard(p.id);
+        }
+      }
+      this.startRound();
+      return true;
+    }
+
+    return false;
   }
 
   // ============================================================
@@ -733,6 +804,7 @@ export class GameRoom {
 
   playAgain(): void {
     this.phase = "LOBBY";
+    this.phaseEndsAt = null;
     this.roundNumber = 0;
     this.judgeIndex = -1;
     this.currentBlackCard = null;
@@ -793,7 +865,7 @@ export class GameRoom {
       submissionId: subId,
       cards: sub.cards,
     }));
-    fisherYatesShuffle(subs);
+    subs.sort((a, b) => a.submissionId.localeCompare(b.submissionId));
     return subs;
   }
 }

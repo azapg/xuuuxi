@@ -146,4 +146,6 @@ export interface GameState {
   canDiscard: boolean;
   /** Cards remaining in draw pile */
   cardsRemaining: number;
+  /** Server timestamp when the current phase timer expires */
+  phaseEndsAt: number | null;
 }

@@ -12,19 +12,25 @@
   "dependencies": {
     "@radix-ui/react-collapsible": "^1.1.16",
     "@radix-ui/react-scroll-area": "^1.2.14",
+    "@radix-ui/react-slot": "^1.3.0",
     "@xuuuxi/shared": "workspace:*",
+    "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "hugeicons-react": "^0.4.0",
     "lucide-react": "^0.473.0",
     "motion": "^12.42.2",
+    "radix-ui": "^1.6.2",
     "react": "^19.1",
     "react-dom": "^19.1",
-    "react-router-dom": "^7.6"
+    "react-router-dom": "^7.6",
+    "tailwind-merge": "^3.6.0"
   },
   "devDependencies": {
+    "@tailwindcss/vite": "^4.3.2",
     "@types/react": "^19.1",
     "@types/react-dom": "^19.1",
     "@vitejs/plugin-react": "^4.5",
+    "tailwindcss": "^4.3.2",
     "typescript": "^5.8",
     "vite": "^6.3"
   }
