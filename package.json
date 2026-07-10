@@ -1,5 +1,9 @@
 {
   "name": "xuuuxi",
   "private": true,
-  "workspaces": ["shared", "server", "client"]
+  "workspaces": ["shared", "server", "client"],
+  "engines": {
+    "node": ">=20",
+    "bun": ">=1"
+  }
 }
