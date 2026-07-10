@@ -5,5 +5,11 @@
   "engines": {
     "node": ">=20",
     "bun": ">=1"
+  },
+  "scripts": {
+    "dev": "concurrently \"npm run dev -w server\" \"npm run dev -w client\""
+  },
+  "devDependencies": {
+    "concurrently": "^10.0.3"
   }
 }
