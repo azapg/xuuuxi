@@ -60,3 +60,5 @@ export const gamePlayers = sqliteTable("game_players", {
   score: integer("score").notNull().default(0),
   isHost: integer("is_host", { mode: "boolean" }).notNull().default(false),
 });
+
+export * from "./analytics-schema";

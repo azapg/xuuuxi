@@ -12,6 +12,16 @@ import {
   removeCard,
 } from "./collections";
 
+import {
+  getOverviewStats,
+  getBlackCardRanking,
+  getWhiteCardRanking,
+  getBestCombos,
+  compareCards,
+  getSessionsList,
+  getCardPerformanceChart,
+} from "./analytics";
+
 // CORS headers for local dev (Vite on :5173)
 const CORS_HEADERS: Record<string, string> = {
   "Access-Control-Allow-Origin": "http://localhost:5173",
@@ -73,6 +83,29 @@ export async function routeRest(req: Request): Promise<Response> {
       const collectionId = decodeURIComponent(cardMatch[1]);
       const cardId = decodeURIComponent(cardMatch[2]);
       return withCors(await removeCard(collectionId, cardId));
+    }
+
+    // --- Analytics Routes ---
+    if (path === "/api/analytics/overview" && method === "GET") {
+      return withCors(await getOverviewStats(req));
+    }
+    if (path === "/api/analytics/cards/black/ranking" && method === "GET") {
+      return withCors(await getBlackCardRanking(req));
+    }
+    if (path === "/api/analytics/cards/white/ranking" && method === "GET") {
+      return withCors(await getWhiteCardRanking(req));
+    }
+    if (path === "/api/analytics/cards/combos" && method === "GET") {
+      return withCors(await getBestCombos(req));
+    }
+    if (path === "/api/analytics/cards/compare" && method === "POST") {
+      return withCors(await compareCards(req));
+    }
+    if (path === "/api/analytics/sessions" && method === "GET") {
+      return withCors(await getSessionsList(req));
+    }
+    if (path === "/api/analytics/charts/card-performance" && method === "GET") {
+      return withCors(await getCardPerformanceChart(req));
     }
 
     // --- 404 ---

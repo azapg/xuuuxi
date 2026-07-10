@@ -69,6 +69,59 @@ sqlite.exec(`
     score INTEGER NOT NULL DEFAULT 0,
     is_host INTEGER NOT NULL DEFAULT 0
   );
+
+  CREATE TABLE IF NOT EXISTS game_sessions (
+    id TEXT PRIMARY KEY,
+    room_code TEXT NOT NULL,
+    judging_mode TEXT NOT NULL,
+    win_condition TEXT NOT NULL,
+    player_count INTEGER NOT NULL,
+    total_rounds INTEGER NOT NULL,
+    collection_ids TEXT NOT NULL,
+    winner_name TEXT,
+    started_at INTEGER NOT NULL,
+    finished_at INTEGER
+  );
+
+  CREATE TABLE IF NOT EXISTS game_session_players (
+    id TEXT PRIMARY KEY,
+    session_id TEXT NOT NULL REFERENCES game_sessions(id) ON DELETE CASCADE,
+    player_name TEXT NOT NULL,
+    final_score INTEGER NOT NULL DEFAULT 0,
+    is_winner INTEGER NOT NULL DEFAULT 0
+  );
+
+  CREATE TABLE IF NOT EXISTS round_results (
+    id TEXT PRIMARY KEY,
+    session_id TEXT NOT NULL REFERENCES game_sessions(id) ON DELETE CASCADE,
+    round_number INTEGER NOT NULL,
+    black_card_id TEXT NOT NULL,
+    black_card_text TEXT NOT NULL,
+    judging_mode TEXT NOT NULL,
+    player_count INTEGER NOT NULL,
+    created_at INTEGER NOT NULL
+  );
+
+  CREATE TABLE IF NOT EXISTS round_submissions (
+    id TEXT PRIMARY KEY,
+    round_id TEXT NOT NULL REFERENCES round_results(id) ON DELETE CASCADE,
+    player_name TEXT NOT NULL,
+    white_card_ids TEXT NOT NULL,
+    white_card_texts TEXT NOT NULL,
+    votes_received INTEGER NOT NULL DEFAULT 0,
+    is_winner INTEGER NOT NULL DEFAULT 0,
+    was_czar_pick INTEGER NOT NULL DEFAULT 0
+  );
+
+  CREATE TABLE IF NOT EXISTS card_combo_stats (
+    id TEXT PRIMARY KEY,
+    black_card_id TEXT NOT NULL,
+    white_card_id TEXT NOT NULL,
+    times_played_together INTEGER NOT NULL DEFAULT 0,
+    times_won_together INTEGER NOT NULL DEFAULT 0,
+    win_rate REAL NOT NULL DEFAULT 0,
+    last_played_at INTEGER NOT NULL
+  );
 `);
 
 // --- Auto-seed if no collections exist ---

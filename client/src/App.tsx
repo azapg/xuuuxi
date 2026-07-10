@@ -6,6 +6,7 @@ import Home from './pages/Home'
 import Room from './pages/Room'
 import Collections from './pages/Collections'
 import DebugDecks from './pages/DebugDecks'
+import Analytics from './pages/Analytics'
 
 export default function App() {
   return (
@@ -21,11 +22,18 @@ export default function App() {
             </Link>
           </Button>
           {import.meta.env.DEV && (
-            <Button asChild variant="ghost" size="sm">
-              <Link to="/debug-decks">
-                Debug Decks
-              </Link>
-            </Button>
+            <>
+              <Button asChild variant="ghost" size="sm">
+                <Link to="/analytics">
+                  Analytics
+                </Link>
+              </Button>
+              <Button asChild variant="ghost" size="sm">
+                <Link to="/debug-decks">
+                  Debug Decks
+                </Link>
+              </Button>
+            </>
           )}
         </div>
       </header>
@@ -35,6 +43,7 @@ export default function App() {
             <Route path="/" element={<Home />} />
             <Route path="/room/:code" element={<Room />} />
             <Route path="/collections" element={<Collections />} />
+            <Route path="/analytics" element={<Analytics />} />
             {import.meta.env.DEV && (
               <Route path="/debug-decks" element={<DebugDecks />} />
             )}
