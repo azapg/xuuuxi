@@ -78,11 +78,12 @@ const PORT = Number(process.env.PORT) || 3001;
 
 const server = Bun.serve<WsData>({
   port: PORT,
-  hostname: "::",
+  hostname: "0.0.0.0",
 
   // --- HTTP fetch handler ---
   async fetch(req, server) {
     const url = new URL(req.url);
+    console.log(`[HTTP] ${req.method} ${url.pathname}`);
 
     // WebSocket upgrade
     if (url.pathname === "/ws") {
