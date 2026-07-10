@@ -88,14 +88,11 @@ export default function Collections() {
       e.preventDefault()
       if (!selectedCollection || !newCardText.trim()) return
       try {
-        const endpoint =
-          newCardType === 'black'
-            ? `/api/collections/${selectedCollection.id}/black-cards`
-            : `/api/collections/${selectedCollection.id}/white-cards`
+        const endpoint = `/api/collections/${selectedCollection.id}/cards`
         const body =
           newCardType === 'black'
-            ? { text: newCardText.trim(), pick: newCardPick }
-            : { text: newCardText.trim() }
+            ? { black: [{ text: newCardText.trim(), pick: newCardPick }] }
+            : { white: [{ text: newCardText.trim() }] }
         const res = await fetch(endpoint, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -116,10 +113,7 @@ export default function Collections() {
     async (cardId: string, type: 'black' | 'white') => {
       if (!selectedCollection) return
       try {
-        const endpoint =
-          type === 'black'
-            ? `/api/collections/${selectedCollection.id}/black-cards/${cardId}`
-            : `/api/collections/${selectedCollection.id}/white-cards/${cardId}`
+        const endpoint = `/api/collections/${selectedCollection.id}/cards/${cardId}`
         const res = await fetch(endpoint, { method: 'DELETE' })
         if (!res.ok) throw new Error('Error eliminando carta')
         fetchCollectionDetail(selectedCollection.id)
