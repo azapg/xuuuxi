@@ -78,6 +78,7 @@ const PORT = Number(process.env.PORT) || 3001;
 
 const server = Bun.serve<WsData>({
   port: PORT,
+  hostname: "0.0.0.0",
 
   // --- HTTP fetch handler ---
   async fetch(req, server) {
