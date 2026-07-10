@@ -19,6 +19,11 @@ import {
 import { db } from "../db/index";
 import { blackCards, whiteCards } from "../db/schema";
 import { eq, inArray } from "drizzle-orm";
+import {
+  createGameSession,
+  recordRoundResult,
+  recordGameComplete,
+} from "../db/analytics-writer";
 
 // ---- WebSocket lifecycle ----
 
@@ -285,6 +290,10 @@ async function handleStartGame(ws: ServerWebSocket<WsData>): Promise<void> {
   room.setCards(blacks, whites);
   room.startGame(ws.data.playerId);
 
+  // Initialize analytics game session
+  const sessionId = await createGameSession(room.code, room.settings, room.players.size);
+  room.sessionId = sessionId;
+
   console.log(`🎮 Game started in room ${room.code} — Round ${room.roundNumber}`);
 
   // Send full state to each player (they get their own hand)
@@ -312,6 +321,16 @@ function handleCzarPick(ws: ServerWebSocket<WsData>, submissionId: string): void
   const room = getPlayerRoom(ws);
   room.czarPick(ws.data.playerId, submissionId);
 
+  // Record round result
+  if (room.sessionId && room.currentBlackCard) {
+    recordRoundResult(
+      room.sessionId,
+      room.getStateForPlayer(ws.data.playerId),
+      room.currentBlackCard.text,
+      room.currentBlackCard.id
+    );
+  }
+
   sendRoundResultOrGameOver(room);
 }
 
@@ -323,6 +342,17 @@ function handleVote(ws: ServerWebSocket<WsData>, submissionId: string): void {
 
   if (room.checkAllVoted()) {
     room.resolvePopularVote();
+
+    // Record round result
+    if (room.sessionId && room.currentBlackCard) {
+      recordRoundResult(
+        room.sessionId,
+        room.getStateForPlayer(ws.data.playerId),
+        room.currentBlackCard.text,
+        room.currentBlackCard.id
+      );
+    }
+
     sendRoundResultOrGameOver(room);
     console.log(`🗳️  Votes tallied in room ${room.code}`);
   }
@@ -333,6 +363,20 @@ function sendRoundResultOrGameOver(room: GameRoom): void {
   const scores = room.getFinalScores();
 
   if (room.phase === "GAME_OVER") {
+    // Record game complete
+    if (room.sessionId) {
+      const playerNames: Record<string, string> = {};
+      for (const [id, player] of room.players.entries()) {
+        playerNames[id] = player.name;
+      }
+      recordGameComplete(
+        room.sessionId,
+        winner?.name ?? null,
+        scores,
+        playerNames
+      );
+    }
+
     broadcastToRoom(room, {
       type: "GAME_OVER",
       winnerId: winner?.id ?? "",

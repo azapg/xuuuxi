@@ -69,6 +69,7 @@ export class GameRoom {
   roundNumber: number = 0;
   judgeIndex: number = -1;
   trades: Map<string, ActiveTrade> = new Map();
+  sessionId: string | null = null;
 
   // Internal — keyed by submissionId
   private submissions: Map<string, Submission> = new Map();
