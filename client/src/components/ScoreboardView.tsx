@@ -3,7 +3,7 @@ import { CrownIcon, BalanceScaleIcon, Tick01Icon, HourglassIcon, CheckmarkBadge0
 import { Button } from '@/components/ui/button'
 
 export default function ScoreboardView() {
-  const { gameState, kickPlayer } = useGame()
+  const { gameState, kickPlayer, transferHost } = useGame()
 
   if (!gameState) return null
 
@@ -54,16 +54,30 @@ export default function ScoreboardView() {
 
             <span className="player-score">{p.score}</span>
 
-            {/* Kick button (host only, not self) */}
+            {/* Host-only actions on other players */}
             {isHost && !isMe && (
-              <Button
-                variant="ghost"
-                size="icon-sm"
-                onClick={() => kickPlayer(p.id)}
-                title="Expulsar"
-              >
-                <Cancel01Icon size={16} />
-              </Button>
+              <>
+                <Button
+                  variant="ghost"
+                  size="icon-sm"
+                  onClick={() => {
+                    if (confirm(`¿Convertir a ${p.name} en el nuevo host de la sala?`)) {
+                      transferHost(p.id)
+                    }
+                  }}
+                  title="Transferir Host"
+                >
+                  <CrownIcon size={16} />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon-sm"
+                  onClick={() => kickPlayer(p.id)}
+                  title="Expulsar"
+                >
+                  <Cancel01Icon size={16} />
+                </Button>
+              </>
             )}
           </li>
         )

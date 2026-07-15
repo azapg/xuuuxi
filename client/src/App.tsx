@@ -2,6 +2,7 @@ import { Button } from '@/components/ui/button'
 import { Routes, Route, Link } from 'react-router-dom'
 import { GAME_DISPLAY_NAME } from '@xuuuxi/shared'
 import { GameProvider } from './context/GameProvider'
+import RoomHeaderControls from './components/RoomHeaderControls'
 import Home from './pages/Home'
 import Room from './pages/Room'
 import Collections from './pages/Collections'
@@ -11,27 +12,28 @@ import Analytics from './pages/Analytics'
 export default function App() {
   return (
     <div className="app">
-      <header className="app-header">
-        <Link to="/" className="app-logo">
-          {GAME_DISPLAY_NAME}
-        </Link>
-        <div style={{ display: 'flex', gap: '1rem' }}>
-          <Button asChild variant="ghost" size="sm">
-            <Link to="/collections">
-              Colecciones
-            </Link>
-          </Button>
-          {import.meta.env.DEV && (
+      <GameProvider>
+        <header className="app-header">
+          <Link to="/" className="app-logo">
+            {GAME_DISPLAY_NAME}
+          </Link>
+          <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+            <RoomHeaderControls />
             <Button asChild variant="ghost" size="sm">
-              <Link to="/debug-decks">
-                Debug Decks
+              <Link to="/collections">
+                Colecciones
               </Link>
             </Button>
-          )}
-        </div>
-      </header>
-      <main className="app-main">
-        <GameProvider>
+            {import.meta.env.DEV && (
+              <Button asChild variant="ghost" size="sm">
+                <Link to="/debug-decks">
+                  Debug Decks
+                </Link>
+              </Button>
+            )}
+          </div>
+        </header>
+        <main className="app-main">
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/room/:code" element={<Room />} />
@@ -41,8 +43,8 @@ export default function App() {
               <Route path="/debug-decks" element={<DebugDecks />} />
             )}
           </Routes>
-        </GameProvider>
-      </main>
+        </main>
+      </GameProvider>
     </div>
   )
 }

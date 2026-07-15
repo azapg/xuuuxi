@@ -30,6 +30,8 @@ export interface InternalPlayer {
   isConnected: boolean;
   hasSubmitted: boolean;
   hasVoted: boolean;
+  /** Timestamp when this player disconnected, or null while connected */
+  disconnectedAt: number | null;
 }
 
 export interface ActiveTrade {
@@ -70,6 +72,8 @@ export class GameRoom {
   judgeIndex: number = -1;
   trades: Map<string, ActiveTrade> = new Map();
   sessionId: string | null = null;
+  /** Timestamp of the last meaningful activity in this room */
+  lastActivityAt: number = Date.now();
 
   // Internal — keyed by submissionId
   private submissions: Map<string, Submission> = new Map();
@@ -85,6 +89,11 @@ export class GameRoom {
   constructor(code: string, settings?: Partial<GameSettings>) {
     this.code = code;
     this.settings = { ...DEFAULT_GAME_SETTINGS, ...settings };
+  }
+
+  /** Mark the room as recently active (resets the inactivity expiration clock) */
+  touch(): void {
+    this.lastActivityAt = Date.now();
   }
 
   // ============================================================
@@ -115,6 +124,7 @@ export class GameRoom {
       isConnected: true,
       hasSubmitted: false,
       hasVoted: false,
+      disconnectedAt: null,
     };
     this.players.set(id, player);
     return player;
@@ -839,6 +849,26 @@ export class GameRoom {
       throw new GameError(ErrorCodes.NOT_IN_ROOM, "Player not in room.");
     }
     this.removePlayer(targetId);
+  }
+
+  // ============================================================
+  // Ownership Transfer
+  // ============================================================
+
+  transferHost(currentHostId: string, targetId: string): void {
+    const current = this.players.get(currentHostId);
+    if (!current?.isHost) {
+      throw new GameError(ErrorCodes.NOT_HOST, "Only the host can transfer ownership.");
+    }
+    if (currentHostId === targetId) {
+      throw new GameError(ErrorCodes.INVALID_TARGET, "Cannot transfer ownership to yourself.");
+    }
+    const target = this.players.get(targetId);
+    if (!target) {
+      throw new GameError(ErrorCodes.INVALID_TARGET, "Target player not in room.");
+    }
+    current.isHost = false;
+    target.isHost = true;
   }
 
   // ============================================================

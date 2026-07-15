@@ -43,6 +43,8 @@ export const ClientMessageSchema = z.discriminatedUnion("type", [
   z.object({ type: z.literal("CANCEL_TRADE") }),
   z.object({ type: z.literal("KICK_PLAYER"), playerId: z.string() }),
   z.object({ type: z.literal("LEAVE_ROOM") }),
+  z.object({ type: z.literal("END_ROOM") }),
+  z.object({ type: z.literal("TRANSFER_HOST"), playerId: z.string() }),
   z.object({ type: z.literal("PLAY_AGAIN") }),
   z.object({ type: z.literal("PING") }),
 ]);
