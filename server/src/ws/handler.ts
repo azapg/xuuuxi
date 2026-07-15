@@ -14,6 +14,7 @@ import {
   sendToPlayer,
   registerSocket,
   unregisterSocket,
+  getSocket,
   type WsData,
 } from "./broadcaster";
 import { db } from "../db/index";
@@ -39,8 +40,10 @@ export function handleOpen(ws: ServerWebSocket<WsData>): void {
     const player = room.players.get(playerId);
     if (player) {
       player.isConnected = true;
+      player.disconnectedAt = null;
     }
-    
+    room.touch();
+
     // Send full state to the reconnecting player
     const state = room.getStateForPlayer(playerId);
     sendToPlayer(playerId, { type: "ROOM_JOINED", gameState: state });
@@ -63,6 +66,7 @@ export function handleClose(ws: ServerWebSocket<WsData>): void {
       const player = room.players.get(playerId);
       if (player) {
         player.isConnected = false;
+        player.disconnectedAt = Date.now();
         broadcastGameState(room);
       }
     }
@@ -163,6 +167,14 @@ export async function handleMessage(
         handleLeaveRoom(ws);
         break;
 
+      case "END_ROOM":
+        handleEndRoom(ws);
+        break;
+
+      case "TRANSFER_HOST":
+        handleTransferHost(ws, msg.playerId);
+        break;
+
       case "PLAY_AGAIN":
         handlePlayAgain(ws);
         break;
@@ -189,6 +201,7 @@ async function handleCreateRoom(
   const { playerId } = ws.data;
   const { roomCode, room } = roomManager.createRoom(playerId, playerName, settings as any);
   ws.data.roomCode = roomCode;
+  room.touch();
 
   const state = room.getStateForPlayer(playerId);
   sendToPlayer(playerId, { type: "ROOM_CREATED", roomCode, gameState: state });
@@ -202,6 +215,7 @@ async function handleJoinRoom(
   const { playerId } = ws.data;
   const room = roomManager.joinRoom(roomCode, playerId, playerName);
   ws.data.roomCode = roomCode.toUpperCase();
+  room.touch();
 
   // Notify the joining player
   const state = room.getStateForPlayer(playerId);
@@ -516,6 +530,9 @@ function handleLeaveRoom(ws: ServerWebSocket<WsData>): void {
   );
   ws.data.roomCode = null;
 
+  // Confirm to the leaving player that they're out, so their client clears local state
+  sendToPlayer(playerId, { type: "LEFT_ROOM" });
+
   if (!destroyed && room) {
     broadcastToRoom(room, {
       type: "PLAYER_LEFT",
@@ -526,6 +543,31 @@ function handleLeaveRoom(ws: ServerWebSocket<WsData>): void {
     checkTransitions(room);
     broadcastGameState(room);
   }
+}
+
+function handleEndRoom(ws: ServerWebSocket<WsData>): void {
+  const room = getPlayerRoom(ws);
+  const host = room.players.get(ws.data.playerId);
+  if (!host?.isHost) {
+    throw new GameError(ErrorCodes.NOT_HOST, "Only the host can end the room.");
+  }
+
+  broadcastToRoom(room, { type: "ROOM_DESTROYED", reason: "El host cerró la sala." });
+
+  // Detach every connected socket from the room so they don't try to act on it again
+  for (const [pid] of room.players) {
+    const sock = getSocket(pid);
+    if (sock) sock.data.roomCode = null;
+  }
+
+  roomManager.destroyRoom(room.code);
+  console.log(`🔒 Room ${room.code} ended by host "${host.name}".`);
+}
+
+function handleTransferHost(ws: ServerWebSocket<WsData>, targetPlayerId: string): void {
+  const room = getPlayerRoom(ws);
+  room.transferHost(ws.data.playerId, targetPlayerId);
+  broadcastGameState(room);
 }
 
 function handlePlayAgain(ws: ServerWebSocket<WsData>): void {
@@ -539,7 +581,7 @@ function handlePlayAgain(ws: ServerWebSocket<WsData>): void {
 // Helpers
 // ============================================================
 
-function checkTransitions(room: GameRoom): void {
+export function checkTransitions(room: GameRoom): void {
   if (room.phase === "PLAYING" && room.checkAllSubmitted()) {
     room.transitionToJudging();
     const subs = room.getAnonymousSubmissions();
@@ -564,6 +606,7 @@ function getPlayerRoom(ws: ServerWebSocket<WsData>): GameRoom {
   if (!room) {
     throw new GameError(ErrorCodes.ROOM_NOT_FOUND, "Room not found.");
   }
+  room.touch();
   return room;
 }
 

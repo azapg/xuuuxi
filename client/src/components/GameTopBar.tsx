@@ -5,6 +5,7 @@ import { GAME_DISPLAY_NAME } from '@xuuuxi/shared'
 import { CrownIcon, Tick01Icon, HourglassIcon } from 'hugeicons-react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog'
 import ScoreboardView from './ScoreboardView'
+import RoomHeaderControls from './RoomHeaderControls'
 
 const MAX_VISIBLE_AVATARS = 5
 
@@ -24,10 +25,13 @@ export function GameTopBar({ timerSeconds }: { timerSeconds?: number | null }) {
   return (
     <>
       <div className="game-topbar">
-        <Link to="/" className="game-topbar-brand">
-          <span className="game-topbar-logo">{GAME_DISPLAY_NAME}</span>
-          <span className="game-topbar-room-code">{gameState.roomCode}</span>
-        </Link>
+        <div className="game-topbar-left">
+          <RoomHeaderControls compact />
+          <Link to="/" className="game-topbar-brand">
+            <span className="game-topbar-logo">{GAME_DISPLAY_NAME}</span>
+            <span className="game-topbar-room-code">{gameState.roomCode}</span>
+          </Link>
+        </div>
 
         {timerSeconds != null && timerSeconds > 0 && (
           <div className="game-topbar-timer">{timerSeconds}s</div>

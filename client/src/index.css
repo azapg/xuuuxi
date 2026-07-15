@@ -166,11 +166,17 @@ input, select, textarea {
   pointer-events: none;
 }
 
+.game-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  pointer-events: auto;
+}
+
 .game-topbar-brand {
   display: flex;
   flex-direction: column;
   gap: 0.15rem;
-  pointer-events: auto;
   transition: opacity 0.2s;
 }
 

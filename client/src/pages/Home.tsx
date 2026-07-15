@@ -8,19 +8,23 @@ import { Input } from '@/components/ui/input'
 
 export default function Home() {
   const navigate = useNavigate()
-  const { createRoom, joinRoom, lastMessage, gameState, error } = useGame()
+  const { createRoom, joinRoom, gameState, error } = useGame()
 
   const [mode, setMode] = useState<'menu' | 'create' | 'join'>('menu')
   const [playerName, setPlayerName] = useState('')
   const [roomCode, setRoomCode] = useState('')
   const [loading, setLoading] = useState(false)
 
-  // Navigate when room is created or joined
+  // Navigate only right after explicitly submitting create/join from THIS
+  // page (tracked via `loading`) — not just because stale gameState from an
+  // old reconnect happens to exist. Otherwise landing on Home (e.g. via the
+  // logo) while still technically a member of an old room would immediately
+  // bounce you back into it.
   useEffect(() => {
-    if (gameState && gameState.roomCode) {
+    if (loading && gameState && gameState.roomCode) {
       navigate(`/room/${gameState.roomCode}`)
     }
-  }, [gameState, navigate])
+  }, [gameState, loading, navigate])
 
   useEffect(() => {
     if (error) setLoading(false)

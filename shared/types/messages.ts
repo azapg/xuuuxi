@@ -25,6 +25,8 @@ export type ClientMessage =
   | { type: "CANCEL_TRADE" }
   | { type: "KICK_PLAYER"; playerId: string }
   | { type: "LEAVE_ROOM" }
+  | { type: "END_ROOM" }
+  | { type: "TRANSFER_HOST"; playerId: string }
   | { type: "PLAY_AGAIN" }
   | { type: "PING" };
 
@@ -56,6 +58,7 @@ export type ServerMessage =
   | { type: "GAME_OVER"; winnerId: string; winnerName: string; finalScores: Record<string, number>; revealedSubmissions: RevealedSubmission[] }
   | { type: "PLAYER_KICKED"; playerId: string; playerName: string }
   | { type: "YOU_WERE_KICKED" }
+  | { type: "LEFT_ROOM" }
   | { type: "ROOM_DESTROYED"; reason: string }
   | { type: "ERROR"; code: string; message: string }
   | { type: "PONG" };
@@ -78,6 +81,7 @@ export const ErrorCodes = {
   TRADE_ALREADY_PENDING: "TRADE_ALREADY_PENDING",
   NAME_TAKEN: "NAME_TAKEN",
   INVALID_MESSAGE: "INVALID_MESSAGE",
+  INVALID_TARGET: "INVALID_TARGET",
 } as const;
 
 export type ErrorCode = typeof ErrorCodes[keyof typeof ErrorCodes];

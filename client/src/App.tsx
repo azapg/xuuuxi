@@ -2,6 +2,7 @@ import { Button } from '@/components/ui/button'
 import { Routes, Route, Link, useLocation } from 'react-router-dom'
 import { GAME_DISPLAY_NAME } from '@xuuuxi/shared'
 import { GameProvider, useGame } from './context/GameProvider'
+import RoomHeaderControls from './components/RoomHeaderControls'
 import Home from './pages/Home'
 import Room from './pages/Room'
 import Collections from './pages/Collections'
@@ -13,8 +14,8 @@ function AppShell() {
   const { gameState } = useGame()
 
   // During active card selection the game view renders its own compact
-  // overlay chrome (logo + player list), so the global header would just
-  // push content down for no reason on small screens.
+  // overlay chrome (logo + player list + room controls), so the global
+  // header would just push content down for no reason on small screens.
   const isCompactGameView =
     location.pathname.startsWith('/room/') && gameState?.phase === 'PLAYING'
 
@@ -25,7 +26,8 @@ function AppShell() {
           <Link to="/" className="app-logo">
             {GAME_DISPLAY_NAME}
           </Link>
-          <div style={{ display: 'flex', gap: '1rem' }}>
+          <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+            <RoomHeaderControls />
             <Button asChild variant="ghost" size="sm">
               <Link to="/collections">
                 Colecciones
