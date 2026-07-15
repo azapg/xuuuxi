@@ -8,11 +8,17 @@ import {
   handleClose,
   handleMessage,
   handleDrain,
+  checkTransitions,
 } from "./ws/handler";
 import type { WsData } from "./ws/broadcaster";
-import { GAME_DISPLAY_NAME } from "@xuuuxi/shared";
+import {
+  GAME_DISPLAY_NAME,
+  ROOM_INACTIVITY_TIMEOUT_MS,
+  ROOM_SWEEP_INTERVAL_MS,
+  DISCONNECT_GRACE_PERIOD_MS,
+} from "@xuuuxi/shared";
 import { roomManager } from "./game/RoomManager";
-import { broadcastGameState } from "./ws/broadcaster";
+import { broadcastGameState, broadcastToRoom, getSocket } from "./ws/broadcaster";
 
 // --- Server Tick Loop ---
 setInterval(() => {
@@ -23,6 +29,55 @@ setInterval(() => {
     }
   }
 }, 1000);
+
+// --- Stale Room / Ghost Player Sweep ---
+setInterval(() => {
+  const now = Date.now();
+
+  for (const room of roomManager.getAllRooms()) {
+    // End rooms that have had no activity for too long
+    if (now - room.lastActivityAt > ROOM_INACTIVITY_TIMEOUT_MS) {
+      broadcastToRoom(room, {
+        type: "ROOM_DESTROYED",
+        reason: "La sala se cerró automáticamente por inactividad.",
+      });
+      for (const [pid] of room.players) {
+        const sock = getSocket(pid);
+        if (sock) sock.data.roomCode = null;
+      }
+      roomManager.destroyRoom(room.code);
+      console.log(`⏰ Room ${room.code} auto-closed after inactivity.`);
+      continue;
+    }
+
+    // Remove players who've been disconnected past the grace period
+    for (const [pid, player] of [...room.players]) {
+      if (
+        player.disconnectedAt !== null &&
+        now - player.disconnectedAt > DISCONNECT_GRACE_PERIOD_MS
+      ) {
+        const playerName = player.name;
+        const { hostMigrated, newHostId } = room.removePlayer(pid);
+
+        if (room.players.size === 0) {
+          roomManager.destroyRoom(room.code);
+          console.log(`🗑️  Room ${room.code} destroyed — last player timed out.`);
+          break;
+        }
+
+        broadcastToRoom(room, {
+          type: "PLAYER_LEFT",
+          playerId: pid,
+          playerName,
+          newHostId,
+        });
+        checkTransitions(room);
+        broadcastGameState(room);
+        console.log(`👻 Removed long-disconnected player "${playerName}" from room ${room.code}.`);
+      }
+    }
+  }
+}, ROOM_SWEEP_INTERVAL_MS);
 
 // --- Initialize DB tables (Drizzle push equivalent at runtime) ---
 import { sqlite } from "./db/index";

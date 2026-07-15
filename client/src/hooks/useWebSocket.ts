@@ -285,6 +285,11 @@ export function useWebSocket(): WebSocketState {
           setError('Has sido expulsado de la sala.')
           break
 
+        case 'LEFT_ROOM':
+          setGameState(null)
+          setError(null)
+          break
+
         case 'ROOM_DESTROYED':
           setGameState(null)
           setError(`La sala fue cerrada: ${msg.reason}`)

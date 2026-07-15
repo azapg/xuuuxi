@@ -50,6 +50,12 @@ export const EMPTY_ROOM_TIMEOUT_MS = 5 * 60 * 1000; // 5 minutes
 /** How long a disconnected player stays before being removed (ms) */
 export const DISCONNECT_GRACE_PERIOD_MS = 2 * 60 * 1000; // 2 minutes
 
+/** How long a room can sit with no activity before it's automatically ended (ms) */
+export const ROOM_INACTIVITY_TIMEOUT_MS = 4 * 60 * 60 * 1000; // 4 hours
+
+/** How often the server checks for inactive rooms / stale disconnected players (ms) */
+export const ROOM_SWEEP_INTERVAL_MS = 60 * 1000; // 1 minute
+
 /** Minimum black cards required to start a game */
 export const MIN_BLACK_CARDS = 10;
 

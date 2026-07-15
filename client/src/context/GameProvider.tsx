@@ -40,6 +40,8 @@ interface GameContextValue {
   nextRound: () => void
   kickPlayer: (playerId: string) => void
   leaveRoom: () => void
+  endRoom: () => void
+  transferHost: (playerId: string) => void
   playAgain: () => void
 }
 
@@ -124,6 +126,13 @@ export function GameProvider({ children }: { children: ReactNode }) {
 
   const leaveRoom = useCallback(() => send({ type: 'LEAVE_ROOM' }), [send])
 
+  const endRoom = useCallback(() => send({ type: 'END_ROOM' }), [send])
+
+  const transferHost = useCallback(
+    (playerId: string) => send({ type: 'TRANSFER_HOST', playerId }),
+    [send],
+  )
+
   const playAgain = useCallback(() => send({ type: 'PLAY_AGAIN' }), [send])
 
   const value: GameContextValue = {
@@ -147,6 +156,8 @@ export function GameProvider({ children }: { children: ReactNode }) {
     nextRound,
     kickPlayer,
     leaveRoom,
+    endRoom,
+    transferHost,
     playAgain,
   }
 
