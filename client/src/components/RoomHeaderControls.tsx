@@ -12,7 +12,7 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog'
 
-export default function RoomHeaderControls() {
+export default function RoomHeaderControls({ compact = false }: { compact?: boolean }) {
   const { gameState, leaveRoom, endRoom } = useGame()
   const [open, setOpen] = useState(false)
   const [confirmingEnd, setConfirmingEnd] = useState(false)
@@ -42,9 +42,20 @@ export default function RoomHeaderControls() {
         if (!next) setConfirmingEnd(false)
       }}
     >
-      <Button variant="ghost" size="sm" onClick={() => setOpen(true)}>
-        <Door01Icon size={18} /> Sala {gameState.roomCode}
-      </Button>
+      {compact ? (
+        <Button
+          variant="ghost"
+          size="icon-sm"
+          onClick={() => setOpen(true)}
+          title={`Sala ${gameState.roomCode}`}
+        >
+          <Door01Icon size={18} />
+        </Button>
+      ) : (
+        <Button variant="ghost" size="sm" onClick={() => setOpen(true)}>
+          <Door01Icon size={18} /> Sala {gameState.roomCode}
+        </Button>
+      )}
       <DialogContent className="sm:max-w-sm">
         <DialogHeader>
           <DialogTitle>Sala {gameState.roomCode}</DialogTitle>

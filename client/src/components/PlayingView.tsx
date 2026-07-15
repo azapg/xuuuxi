@@ -1,8 +1,8 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useGame } from '@/context/GameProvider'
-import { CrownIcon, Tick01Icon, HourglassIcon } from 'hugeicons-react'
 import { CylinderCarousel } from './CylinderCarousel'
 import { PlayingCard } from './PlayingCard'
+import { GameTopBar } from './GameTopBar'
 import { motion, AnimatePresence } from 'motion/react'
 import { Button } from './ui/button'
 
@@ -111,65 +111,10 @@ export default function PlayingView() {
 
   if (!gameState) return null
 
-  // Players logic for the top bar
-  const players = gameState.players;
-
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', position: 'relative', overflow: 'hidden' }}>
-      
-      {/* --- Top Bar: Minimal Room Info and Players --- */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem', zIndex: 10 }}>
-        <div style={{ fontSize: '1rem', fontWeight: 900, color: 'var(--text-muted)', letterSpacing: '0.1em' }}>
-          {gameState.roomCode}
-        </div>
-        
-        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-          {players.map(p => {
-            const initials = p.name.substring(0, 2).toUpperCase();
-            return (
-              <div 
-                key={p.id}
-                title={p.name}
-                style={{
-                  width: 36,
-                  height: 36,
-                  borderRadius: '50%',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: '0.8rem',
-                  fontWeight: 'bold',
-                  backgroundColor: p.isJudge ? 'var(--warning)' : (p.hasSubmitted ? 'var(--success)' : 'var(--bg-elevated)'),
-                  color: p.isJudge || p.hasSubmitted ? '#fff' : 'var(--text-secondary)',
-                  border: `2px solid ${p.hasSubmitted ? 'var(--success)' : 'var(--border)'}`,
-                  position: 'relative'
-                }}
-              >
-                {p.isJudge ? <CrownIcon size={16} /> : initials}
-                
-                {/* Status indicator badge */}
-                {!p.isJudge && (
-                  <div style={{ 
-                    position: 'absolute', bottom: -4, right: -4, 
-                    background: 'var(--bg-primary)', borderRadius: '50%', padding: 2
-                  }}>
-                    {p.hasSubmitted ? 
-                      <Tick01Icon size={12} color="var(--success)" /> : 
-                      <HourglassIcon size={12} color="var(--text-muted)" />
-                    }
-                  </div>
-                )}
-              </div>
-            )
-          })}
-          
-          {timerSeconds !== null && timerSeconds > 0 && (
-            <div style={{ marginLeft: '1rem', fontWeight: 800, color: 'var(--warning)', fontVariantNumeric: 'tabular-nums' }}>
-              {timerSeconds}s
-            </div>
-          )}
-        </div>
-      </div>
+
+      <GameTopBar timerSeconds={timerSeconds} />
 
       {/* --- Center Stage: Black Card and Selected Cards --- */}
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '1rem', gap: '3.5rem', zIndex: 5 }}>
