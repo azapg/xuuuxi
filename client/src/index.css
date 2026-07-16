@@ -89,6 +89,11 @@ body {
   background-color: var(--bg-primary);
   color: var(--text-primary);
   line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4 {
+  text-wrap: balance;
 }
 
 a {
@@ -154,7 +159,7 @@ input, select, textarea {
    ============================================================ */
 
 .game-topbar {
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   right: 0;
@@ -164,6 +169,13 @@ input, select, textarea {
   padding: 0.75rem 1rem;
   z-index: 30;
   pointer-events: none;
+}
+
+.game-topbar-right {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.4rem;
+  pointer-events: auto;
 }
 
 .game-topbar-left {
@@ -213,6 +225,17 @@ input, select, textarea {
   padding: 0.15rem 0.65rem;
   border-radius: 999px;
   pointer-events: none;
+}
+
+.game-topbar-timer.urgent {
+  color: var(--error);
+  border-color: rgba(244, 67, 54, 0.4);
+  animation: timer-pulse 1s ease-in-out infinite;
+}
+
+@keyframes timer-pulse {
+  0%, 100% { transform: translateX(-50%) scale(1); }
+  50% { transform: translateX(-50%) scale(1.08); }
 }
 
 .game-topbar-players {
@@ -322,6 +345,20 @@ input, select, textarea {
 
 .game-card .card-text {
   flex: 1;
+}
+
+.game-card .card-text-stack {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.game-card .card-text-stack .card-text {
+  flex: initial;
+}
+
+.game-card.selected.selected-destructive {
+  border-color: var(--error);
 }
 
 .game-card .card-meta {
@@ -464,52 +501,120 @@ input, select, textarea {
    Game Layout (Room page)
    ============================================================ */
 
+/* Single column, full width: the top bar overlays the content and every
+   panel that used to live in a sidebar is now a dialog, so the cards get
+   all the space. */
 .game-layout {
-  display: grid;
-  grid-template-columns: 1fr 280px;
-  gap: 1.5rem;
+  display: flex;
+  flex-direction: column;
   flex: 1;
-  padding: 1.5rem;
-  max-width: 1400px;
-  margin: 0 auto;
   width: 100%;
-}
-
-.game-layout.playing-mode {
-  grid-template-columns: 1fr;
-  padding: 0;
-  max-width: 1600px;
-  height: 100%;
-  overflow: hidden;
+  min-height: 0;
 }
 
 .game-main {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
-  height: 100%;
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 4.5rem 1.5rem 1.5rem;
 }
 
-.game-sidebar {
+/* Stage + carousel phases: no scroll, no padding — the view composes the
+   whole viewport itself under the overlay chrome. */
+.game-layout.immersive {
+  height: 100%;
+  overflow: hidden;
+}
+
+.game-layout.immersive .game-main {
+  max-width: 1600px;
+  padding: 0;
+  overflow: hidden;
+}
+
+/* Discard zone (discard phase stage) */
+.discard-zone {
+  border: 2px dashed rgba(244, 67, 54, 0.35);
+  border-radius: var(--radius-lg);
+}
+
+.discard-zone-hint {
+  position: absolute;
+  inset: 0;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  color: rgba(244, 67, 54, 0.55);
+  font-weight: 700;
+  font-size: 0.85rem;
+  pointer-events: none;
 }
 
-.sidebar-panel {
-  background: var(--bg-secondary);
+/* Room dialog: shareable code + game info */
+.room-code-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+  background: var(--bg-elevated);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
-  padding: 1rem;
+  padding: 0.75rem 1rem 0.6rem;
+  cursor: pointer;
+  transition: border-color 0.2s, transform 0.15s;
+  -webkit-tap-highlight-color: transparent;
 }
 
-.sidebar-panel-title {
-  font-size: 0.85rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+.room-code-copy:hover {
+  border-color: var(--accent);
+}
+
+.room-code-copy:active {
+  transform: scale(0.98);
+}
+
+.room-code-copy-hint {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.75rem;
   color: var(--text-secondary);
-  margin-bottom: 0.75rem;
+}
+
+.room-info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+}
+
+.room-info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.5rem 0.75rem;
+}
+
+.room-info-label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+}
+
+.room-info-value {
+  font-size: 0.9rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
 }
 
 /* ============================================================
@@ -610,11 +715,34 @@ input, select, textarea {
   to { transform: rotate(360deg); }
 }
 
-.timer-display {
-  font-size: 1.5rem;
-  font-weight: 800;
-  color: var(--warning);
-  font-variant-numeric: tabular-nums;
+/* Staggered rise-in for page/section entrances. Apply to a container to
+   cascade its direct children in with a ~70ms delay between each. */
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.stagger-children > * {
+  animation: rise-in 0.45s cubic-bezier(0.2, 0, 0, 1) backwards;
+}
+
+.stagger-children > *:nth-child(2) { animation-delay: 0.07s; }
+.stagger-children > *:nth-child(3) { animation-delay: 0.14s; }
+.stagger-children > *:nth-child(4) { animation-delay: 0.21s; }
+.stagger-children > *:nth-child(5) { animation-delay: 0.28s; }
+.stagger-children > *:nth-child(6) { animation-delay: 0.35s; }
+.stagger-children > *:nth-child(n+7) { animation-delay: 0.42s; }
+
+@media (prefers-reduced-motion: reduce) {
+  .stagger-children > * {
+    animation: none;
+  }
 }
 
 .checkbox-label {
@@ -633,8 +761,12 @@ input, select, textarea {
 
 /* Responsive */
 @media (max-width: 768px) {
-  .game-layout {
-    grid-template-columns: 1fr;
+  .game-main {
+    padding: 4rem 1rem 1rem;
+  }
+
+  .game-layout.immersive .game-main {
+    padding: 0;
   }
 
   .card-hand {

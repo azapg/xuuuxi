@@ -1,8 +1,19 @@
 import { useState, useCallback, useEffect } from 'react'
 import { useGame } from '@/context/GameProvider'
 import { RefreshIcon, Tick01Icon, Cancel01Icon } from 'hugeicons-react'
+import { playSound } from '@/lib/sound'
+import { PlayingCard } from './PlayingCard'
 import { Button } from './ui/button'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from './ui/dialog'
 
+// Trades run inside the standard dialog so they open, close, and sound
+// exactly like every other overlay in the game.
 export default function TradeView() {
   const { gameState, respondToTrade, selectTradeCard, cancelTrade } = useGame()
   const [selectedCardId, setSelectedCardId] = useState<string | null>(null)
@@ -14,14 +25,10 @@ export default function TradeView() {
     setIsSubmitting(false)
   }, [trade?.status])
 
-  if (!trade || trade.status === 'IDLE') return null
-
-  const fromName = gameState?.players.find(p => p.id === trade.fromPlayerId)?.name ?? '???'
-  const toName = gameState?.players.find(p => p.id === trade.toPlayerId)?.name ?? '???'
-
   const handleSelectCard = useCallback(() => {
     if (!selectedCardId || isSubmitting) return
     setIsSubmitting(true)
+    playSound('success')
     selectTradeCard(selectedCardId)
     setSelectedCardId(null)
   }, [selectedCardId, selectTradeCard, isSubmitting])
@@ -38,40 +45,75 @@ export default function TradeView() {
     cancelTrade()
   }, [cancelTrade, isSubmitting])
 
+  const toggleCard = useCallback((cardId: string) => {
+    setSelectedCardId(prev => {
+      if (prev === cardId) {
+        playSound('cardLift')
+        return null
+      }
+      playSound('cardSlide')
+      return cardId
+    })
+  }, [])
+
+  if (!trade || trade.status === 'IDLE') return null
+
+  const fromName = gameState?.players.find(p => p.id === trade.fromPlayerId)?.name ?? '???'
+  const toName = gameState?.players.find(p => p.id === trade.toPlayerId)?.name ?? '???'
+
+  const title =
+    trade.status === 'PENDING_OFFER' ? 'Intercambio Pendiente'
+    : trade.status === 'PENDING_ACCEPTANCE' ? 'Oferta de Intercambio'
+    : trade.status === 'SELECTING_CARDS' ? 'Selecciona una Carta'
+    : trade.status === 'COMPLETE' ? '¡Intercambio Completado!'
+    : 'Intercambio Rechazado'
+
+  const TitleIcon =
+    trade.status === 'COMPLETE' ? Tick01Icon
+    : trade.status === 'REJECTED' ? Cancel01Icon
+    : RefreshIcon
+
   return (
-    <div
-      style={{
-        position: 'fixed',
-        inset: 0,
-        background: 'rgba(0, 0, 0, 0.7)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        zIndex: 100,
-        padding: '2rem',
+    <Dialog
+      open
+      onOpenChange={(open) => {
+        if (!open) handleCancel()
       }}
     >
-      <div
-        style={{
-          background: 'var(--bg-secondary)',
-          border: '1px solid var(--border)',
-          borderRadius: 'var(--radius-xl)',
-          padding: '2rem',
-          maxWidth: 600,
-          width: '100%',
-          maxHeight: '80vh',
-          overflow: 'auto',
-        }}
-      >
-        {/* PENDING_OFFER — Waiting for other player to accept */}
+      <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <TitleIcon size={20} /> {title}
+          </DialogTitle>
+          {trade.status === 'PENDING_OFFER' && (
+            <DialogDescription>
+              Esperando respuesta de <strong>{toName}</strong>...
+            </DialogDescription>
+          )}
+          {trade.status === 'PENDING_ACCEPTANCE' && (
+            <DialogDescription>
+              <strong>{fromName}</strong> quiere intercambiar una carta contigo
+            </DialogDescription>
+          )}
+          {trade.status === 'SELECTING_CARDS' && (
+            <DialogDescription>
+              Elige la carta que quieres intercambiar
+            </DialogDescription>
+          )}
+          {trade.status === 'COMPLETE' && (
+            <DialogDescription>
+              Revisa tu nueva carta en tu mano
+            </DialogDescription>
+          )}
+          {trade.status === 'REJECTED' && (
+            <DialogDescription>
+              El otro jugador no quiso intercambiar
+            </DialogDescription>
+          )}
+        </DialogHeader>
+
         {trade.status === 'PENDING_OFFER' && (
           <div style={{ textAlign: 'center' }}>
-            <h3 style={{ fontWeight: 700, marginBottom: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
-              <RefreshIcon size={24} /> Intercambio Pendiente
-            </h3>
-            <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>
-              Esperando respuesta de <strong>{toName}</strong>...
-            </p>
             <span className="loading-spinner" />
             <div style={{ marginTop: '1.5rem' }}>
               <Button variant="ghost" onClick={handleCancel} isLoading={isSubmitting}>
@@ -81,72 +123,47 @@ export default function TradeView() {
           </div>
         )}
 
-        {/* PENDING_ACCEPTANCE — Other player wants to trade with you */}
         {trade.status === 'PENDING_ACCEPTANCE' && (
-          <div style={{ textAlign: 'center' }}>
-            <h3 style={{ fontWeight: 700, marginBottom: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
-              <RefreshIcon size={24} /> Oferta de Intercambio
-            </h3>
-            <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>
-              <strong>{fromName}</strong> quiere intercambiar una carta contigo
-            </p>
-            <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
-              <Button
-                variant="success"
-                size="lg"
-                onClick={() => handleRespond(true)}
-                isLoading={isSubmitting}
-                style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
-              >
-                <Tick01Icon size={20} /> Aceptar
-              </Button>
-              <Button
-                variant="destructive"
-                size="lg"
-                onClick={() => handleRespond(false)}
-                isLoading={isSubmitting}
-                style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
-              >
-                <Cancel01Icon size={20} /> Rechazar
-              </Button>
-            </div>
+          <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
+            <Button
+              variant="success"
+              size="lg"
+              onClick={() => handleRespond(true)}
+              isLoading={isSubmitting}
+            >
+              <Tick01Icon size={20} /> Aceptar
+            </Button>
+            <Button
+              variant="destructive"
+              size="lg"
+              onClick={() => handleRespond(false)}
+              isLoading={isSubmitting}
+            >
+              <Cancel01Icon size={20} /> Rechazar
+            </Button>
           </div>
         )}
 
-        {/* SELECTING_CARDS — Pick a card to trade */}
         {trade.status === 'SELECTING_CARDS' && (
-          <div>
-            <h3 style={{ fontWeight: 700, marginBottom: '0.5rem', textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
-              <RefreshIcon size={24} /> Selecciona una Carta
-            </h3>
-            <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem', textAlign: 'center' }}>
-              Elige la carta que quieres intercambiar
-            </p>
-
-            {/* Show partner readiness */}
+          <>
             {(trade.fromPlayerReady || trade.toPlayerReady) && (
-              <div className="info-message" style={{ marginBottom: '1rem' }}>
+              <div className="info-message">
                 Tu compañero ya seleccionó su carta
               </div>
             )}
 
-            <div className="card-hand" style={{ maxHeight: '40vh', overflow: 'auto' }}>
+            <div className="card-hand" style={{ maxHeight: '40vh', overflowY: 'auto' }}>
               {gameState?.me.hand.map(card => (
-                <div
+                <PlayingCard
                   key={card.id}
-                  className={`game-card white selectable ${
-                    selectedCardId === card.id ? 'selected' : ''
-                  }`}
-                  onClick={() => setSelectedCardId(
-                    selectedCardId === card.id ? null : card.id
-                  )}
-                >
-                  <div className="card-text">{card.text}</div>
-                </div>
+                  card={card}
+                  isSelected={selectedCardId === card.id}
+                  onClick={() => toggleCard(card.id)}
+                />
               ))}
             </div>
 
-            <div style={{ marginTop: '1.5rem', display: 'flex', justifyContent: 'center', gap: '1rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem' }}>
               <Button variant="ghost" onClick={handleCancel} isLoading={isSubmitting}>
                 Cancelar
               </Button>
@@ -159,39 +176,21 @@ export default function TradeView() {
                 Confirmar Intercambio
               </Button>
             </div>
-          </div>
+          </>
         )}
 
-        {/* COMPLETE — Trade done */}
-        {trade.status === 'COMPLETE' && (
-          <div style={{ textAlign: 'center' }}>
-            <h3 style={{ fontWeight: 700, marginBottom: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
-              <Tick01Icon size={24} /> ¡Intercambio Completado!
-            </h3>
-            <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>
-              Revisa tu nueva carta en tu mano
-            </p>
-            <Button variant="default" size="sm" onClick={handleCancel} isLoading={isSubmitting}>
+        {(trade.status === 'COMPLETE' || trade.status === 'REJECTED') && (
+          <div style={{ display: 'flex', justifyContent: 'center' }}>
+            <Button
+              variant={trade.status === 'COMPLETE' ? 'default' : 'secondary'}
+              onClick={handleCancel}
+              isLoading={isSubmitting}
+            >
               Cerrar
             </Button>
           </div>
         )}
-
-        {/* REJECTED */}
-        {trade.status === 'REJECTED' && (
-          <div style={{ textAlign: 'center' }}>
-            <h3 style={{ fontWeight: 700, marginBottom: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
-              <Cancel01Icon size={24} /> Intercambio Rechazado
-            </h3>
-            <p style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem' }}>
-              El otro jugador no quiso intercambiar
-            </p>
-            <Button variant="secondary" onClick={handleCancel} isLoading={isSubmitting}>
-              Cerrar
-            </Button>
-          </div>
-        )}
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   )
 }

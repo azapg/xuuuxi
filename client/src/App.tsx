@@ -13,11 +13,11 @@ function AppShell() {
   const location = useLocation()
   const { gameState } = useGame()
 
-  // During active card selection the game view renders its own compact
-  // overlay chrome (logo + player list + room controls), so the global
-  // header would just push content down for no reason on small screens.
+  // Inside a room the game renders its own compact overlay chrome
+  // (GameTopBar: logo + timer + players + room controls), so the global
+  // header would just eat vertical space for no reason.
   const isCompactGameView =
-    location.pathname.startsWith('/room/') && gameState?.phase === 'PLAYING'
+    location.pathname.startsWith('/room/') && gameState != null
 
   return (
     <div className="app">

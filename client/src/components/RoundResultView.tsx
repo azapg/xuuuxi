@@ -1,6 +1,14 @@
 import { useGame } from '@/context/GameProvider'
 import { CrownIcon, PartyIcon, RefreshIcon, ArrowRight01Icon } from 'hugeicons-react'
+import { motion } from 'motion/react'
+import { PlayingCard } from './PlayingCard'
 import { Button } from '@/components/ui/button'
+
+const sectionStagger = (i: number) => ({
+  initial: { opacity: 0, y: 14 },
+  animate: { opacity: 1, y: 0 },
+  transition: { delay: i * 0.1, type: 'spring' as const, stiffness: 300, damping: 26 },
+})
 
 export default function RoundResultView() {
   const { gameState, nextRound, offerTrade } = useGame()
@@ -18,13 +26,16 @@ export default function RoundResultView() {
 
   return (
     <div>
-      <h2 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+      <motion.h2
+        {...sectionStagger(0)}
+        style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem', textWrap: 'balance' }}
+      >
         <CrownIcon size={24} /> Resultado de la Ronda {gameState.roundNumber}
-      </h2>
+      </motion.h2>
 
       {/* Winner */}
       {winningSub && (
-        <div style={{ marginBottom: '2rem' }}>
+        <motion.div {...sectionStagger(1)} style={{ marginBottom: '2rem' }}>
           <h3 className="section-title" style={{ color: '#ffd700', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             <PartyIcon size={20} /> ¡{winningSub.playerName} gana esta ronda!
           </h3>
@@ -32,62 +43,63 @@ export default function RoundResultView() {
           {/* Winning combo: black + white */}
           <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', alignItems: 'stretch' }}>
             {gameState.currentBlackCard && (
-              <div className="game-card black winner" style={{ flex: '1 1 200px', maxWidth: 280 }}>
+              <motion.div
+                initial={{ opacity: 0, rotate: -4, scale: 0.92 }}
+                animate={{ opacity: 1, rotate: 0, scale: 1 }}
+                transition={{ delay: 0.25, type: 'spring', stiffness: 300, damping: 22 }}
+                className="game-card black winner"
+                style={{ flex: '1 1 200px', maxWidth: 280 }}
+              >
                 <div className="card-text">{gameState.currentBlackCard.text}</div>
-              </div>
+              </motion.div>
             )}
-            {winningSub.cards.map(card => (
-              <div key={card.id} className="game-card white winner" style={{ flex: '1 1 200px', maxWidth: 280 }}>
-                <div className="card-text">{card.text}</div>
-              </div>
-            ))}
+            <motion.div
+              initial={{ opacity: 0, rotate: 4, scale: 0.92 }}
+              animate={{ opacity: 1, rotate: 0, scale: 1 }}
+              transition={{ delay: 0.4, type: 'spring', stiffness: 300, damping: 22 }}
+              style={{ flex: '1 1 200px', maxWidth: 280, display: 'flex' }}
+            >
+              <PlayingCard
+                cards={winningSub.cards}
+                className="winner"
+                meta={winningSub.votes > 0 ? `${winningSub.votes} voto${winningSub.votes !== 1 ? 's' : ''}` : undefined}
+              />
+            </motion.div>
           </div>
-
-          {winningSub.votes > 0 && (
-            <p style={{ marginTop: '0.5rem', color: 'var(--text-secondary)', fontSize: '0.85rem' }}>
-              {winningSub.votes} voto{winningSub.votes !== 1 ? 's' : ''}
-            </p>
-          )}
-        </div>
+        </motion.div>
       )}
 
       {/* Other submissions */}
       {otherSubs.length > 0 && (
-        <div style={{ marginBottom: '2rem' }}>
+        <motion.div {...sectionStagger(2)} style={{ marginBottom: '2rem' }}>
           <h3 className="section-title">Otras respuestas</h3>
           <div className="card-submissions">
-            {otherSubs.map(sub => (
-              <div key={sub.submissionId} className="game-card white">
-                {sub.cards.map((card, i) => (
-                  <div
-                    key={card.id}
-                    className="card-text"
-                    style={
-                      i > 0
-                        ? {
-                            marginTop: '0.5rem',
-                            paddingTop: '0.5rem',
-                            borderTop: '1px solid var(--card-white-border)',
-                          }
-                        : undefined
-                    }
-                  >
-                    {card.text}
-                  </div>
-                ))}
-                <div className="card-meta">
-                  {sub.playerName}
-                  {sub.votes > 0 && ` · ${sub.votes} voto${sub.votes !== 1 ? 's' : ''}`}
-                </div>
-              </div>
+            {otherSubs.map((sub, i) => (
+              <motion.div
+                key={sub.submissionId}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.45 + i * 0.06 }}
+                style={{ display: 'flex' }}
+              >
+                <PlayingCard
+                  cards={sub.cards}
+                  meta={
+                    <>
+                      {sub.playerName}
+                      {sub.votes > 0 && ` · ${sub.votes} voto${sub.votes !== 1 ? 's' : ''}`}
+                    </>
+                  }
+                />
+              </motion.div>
             ))}
           </div>
-        </div>
+        </motion.div>
       )}
 
       {/* Trade section */}
       {tradesEnabled && (
-        <div style={{ marginBottom: '2rem' }}>
+        <motion.div {...sectionStagger(3)} style={{ marginBottom: '2rem' }}>
           <h3 className="section-title" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             <RefreshIcon size={20} /> Intercambiar
           </h3>
@@ -109,11 +121,11 @@ export default function RoundResultView() {
               ))}
             </div>
           )}
-        </div>
+        </motion.div>
       )}
 
       {/* Next round */}
-      <div style={{ display: 'flex', justifyContent: 'center' }}>
+      <motion.div {...sectionStagger(4)} style={{ display: 'flex', justifyContent: 'center' }}>
         {isHost ? (
           <Button size="lg" onClick={nextRound}>
             <ArrowRight01Icon size={20} className="mr-2" /> Siguiente Ronda
@@ -123,7 +135,7 @@ export default function RoundResultView() {
             Esperando a que el host avance a la siguiente ronda...
           </div>
         )}
-      </div>
+      </motion.div>
     </div>
   )
 }

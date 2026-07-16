@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react'
 import { useGame } from '@/context/GameProvider'
 import type { CollectionSummary, GameSettings } from '@xuuuxi/shared'
-import { CrownIcon, Settings01Icon, PackageIcon, GameController01Icon, ViewIcon, Add01Icon, Delete01Icon } from 'hugeicons-react'
+import { CrownIcon, Settings01Icon, PackageIcon, GameController01Icon, ViewIcon, Add01Icon, Delete01Icon, Copy01Icon, Tick01Icon } from 'hugeicons-react'
+import { playSound } from '@/lib/sound'
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from './ui/collapsible'
 import { ArrowDown01Icon } from 'hugeicons-react'
 import type { CollectionWithCards } from '@xuuuxi/shared'
@@ -22,6 +23,7 @@ export default function LobbyView() {
   const [loadingPreview, setLoadingPreview] = useState(false)
 
   const [showCustomCardsModal, setShowCustomCardsModal] = useState(false)
+  const [copiedCode, setCopiedCode] = useState(false)
   const [tempBlackText, setTempBlackText] = useState('')
   const [tempBlackPick, setTempBlackPick] = useState('1')
   const [tempWhiteText, setTempWhiteText] = useState('')
@@ -45,6 +47,17 @@ export default function LobbyView() {
 
   const handleSettingChange = (partial: Partial<GameSettings>) => {
     updateSettings(partial)
+  }
+
+  const handleCopyCode = async () => {
+    try {
+      await navigator.clipboard.writeText(gameState.roomCode)
+      playSound('success')
+      setCopiedCode(true)
+      setTimeout(() => setCopiedCode(false), 1500)
+    } catch {
+      // Clipboard unavailable — the code is still visible to copy manually.
+    }
   }
 
   const toggleCollection = (id: string) => {
@@ -98,11 +111,16 @@ export default function LobbyView() {
   }
 
   return (
-    <div className="lobby">
+    <div className="lobby stagger-children">
       {/* Room Code */}
       <div className="lobby-code-section">
         <div className="lobby-code-label">Código de Sala</div>
-        <div className="room-code-display">{gameState.roomCode}</div>
+        <button type="button" className="room-code-copy" onClick={handleCopyCode} title="Copiar código">
+          <span className="room-code-display">{gameState.roomCode}</span>
+          <span className="room-code-copy-hint">
+            {copiedCode ? <><Tick01Icon size={14} /> Copiado</> : <><Copy01Icon size={14} /> Copiar código</>}
+          </span>
+        </button>
         <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginTop: '0.5rem' }}>
           Comparte este código con tus amigos
         </p>
