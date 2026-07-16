@@ -3,12 +3,23 @@ import { Cancel01Icon as XIcon } from "hugeicons-react"
 import { Dialog as DialogPrimitive } from "radix-ui"
 
 import { cn } from "@/lib/utils"
+import { playSound } from "@/lib/sound"
 import { Button } from "@/components/ui/button"
 
 function Dialog({
+  onOpenChange,
   ...props
 }: React.ComponentProps<typeof DialogPrimitive.Root>) {
-  return <DialogPrimitive.Root data-slot="dialog" {...props} />
+  return (
+    <DialogPrimitive.Root
+      data-slot="dialog"
+      onOpenChange={(open) => {
+        playSound(open ? "page" : "cardLift")
+        onOpenChange?.(open)
+      }}
+      {...props}
+    />
+  )
 }
 
 function DialogTrigger({

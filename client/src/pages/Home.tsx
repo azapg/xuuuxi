@@ -52,7 +52,7 @@ export default function Home() {
 
   return (
     <div className="page-center">
-      <div style={{ maxWidth: 400, width: '100%', textAlign: 'center' }}>
+      <div className="stagger-children" style={{ maxWidth: 400, width: '100%', textAlign: 'center' }}>
         {/* Title */}
         <h1
           style={{

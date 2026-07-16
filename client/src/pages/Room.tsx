@@ -1,21 +1,24 @@
 import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useGame } from '@/context/GameProvider'
+import { useGameSounds } from '@/hooks/useGameSounds'
 import LobbyView from '@/components/LobbyView'
 import PlayingView from '@/components/PlayingView'
 import JudgingView from '@/components/JudgingView'
 import RoundResultView from '@/components/RoundResultView'
 import DiscardView from '@/components/DiscardView'
-import ScoreboardView from '@/components/ScoreboardView'
 import TradeView from '@/components/TradeView'
+import { GameTopBar } from '@/components/GameTopBar'
 import { CrownIcon, MedalFirstPlaceIcon, MedalSecondPlaceIcon, MedalThirdPlaceIcon, RefreshIcon } from 'hugeicons-react'
+import { motion } from 'motion/react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 
 export default function Room() {
   const { code } = useParams<{ code: string }>()
   const { gameState, connected, error } = useGame()
+
+  useGameSounds()
 
   if (!connected) {
     return (
@@ -50,6 +53,13 @@ export default function Room() {
     )
   }
 
+  // Stage + carousel phases own the whole viewport (no scroll); the other
+  // phases scroll normally under the top bar.
+  const isImmersive =
+    gameState.phase === 'PLAYING' ||
+    gameState.phase === 'JUDGING' ||
+    gameState.phase === 'DISCARD_PHASE'
+
   const renderPhase = () => {
     switch (gameState.phase) {
       case 'LOBBY':
@@ -70,60 +80,25 @@ export default function Room() {
   }
 
   return (
-    <div className={`game-layout ${gameState.phase === 'PLAYING' ? 'playing-mode' : ''}`}>
+    <div className={`game-layout ${isImmersive ? 'immersive' : ''}`}>
+      <GameTopBar />
       <div className="game-main">
         {error && <div className="error-message">{error}</div>}
         {renderPhase()}
         {/* Trade overlay */}
         {gameState.trade && gameState.trade.status !== 'IDLE' && <TradeView />}
       </div>
-      
-      {gameState.phase !== 'PLAYING' && (
-        <div className="game-sidebar">
-          {/* Room code */}
-          <Card className="p-4 bg-card">
-            <CardHeader className="p-0 pb-3">
-              <CardTitle className="text-xs uppercase tracking-wider text-muted-foreground">Código de Sala</CardTitle>
-            </CardHeader>
-            <CardContent className="p-0">
-              <div className="room-code-display" style={{ fontSize: '1.5rem' }}>
-                {gameState.roomCode}
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Scoreboard */}
-          <Card className="p-4 bg-card">
-            <CardHeader className="p-0 pb-3">
-              <CardTitle className="text-xs uppercase tracking-wider text-muted-foreground">Jugadores</CardTitle>
-            </CardHeader>
-            <CardContent className="p-0">
-              <ScoreboardView />
-            </CardContent>
-          </Card>
-
-          {/* Game info */}
-          <Card className="p-4 bg-card">
-            <CardHeader className="p-0 pb-3">
-              <CardTitle className="text-xs uppercase tracking-wider text-muted-foreground">Info</CardTitle>
-            </CardHeader>
-            <CardContent className="p-0">
-              <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
-                <span>Ronda: {gameState.roundNumber}</span>
-                <span>Cartas restantes: {gameState.cardsRemaining}</span>
-                <span>Modo: {gameState.settings.judgingMode === 'CZAR' ? 'Juez rotativo' : 'Voto popular'}</span>
-                <span>
-                  Meta: {gameState.settings.winCondition === 'POINTS'
-                    ? `${gameState.settings.pointsToWin} puntos`
-                    : `${gameState.settings.totalRounds} rondas`}
-                </span>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      )}
     </div>
   )
+}
+
+const podiumStagger = {
+  hidden: { opacity: 0, y: 14 },
+  visible: (i: number) => ({
+    opacity: 1,
+    y: 0,
+    transition: { delay: 0.15 + i * 0.1, type: 'spring' as const, stiffness: 300, damping: 24 },
+  }),
 }
 
 function GameOverInline() {
@@ -135,23 +110,40 @@ function GameOverInline() {
 
   return (
     <div style={{ textAlign: 'center', padding: '2rem 0' }}>
-      <h2 style={{ fontSize: '2rem', fontWeight: 900, marginBottom: '0.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
+      <motion.h2
+        initial={{ opacity: 0, scale: 0.85 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ type: 'spring', stiffness: 320, damping: 22 }}
+        style={{ fontSize: '2rem', fontWeight: 900, marginBottom: '0.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', textWrap: 'balance' }}
+      >
         <CrownIcon size={32} /> ¡Fin del Juego!
-      </h2>
-      <p style={{ fontSize: '1.25rem', color: 'var(--accent)', marginBottom: '2rem' }}>
+      </motion.h2>
+      <motion.p
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1 }}
+        style={{ fontSize: '1.25rem', color: 'var(--accent)', marginBottom: '2rem' }}
+      >
         ¡{winner?.name} gana con {winner?.score} puntos!
-      </p>
+      </motion.p>
 
       <div style={{ maxWidth: 400, margin: '0 auto', marginBottom: '2rem' }}>
         <ol className="player-list" style={{ listStyle: 'none', counterReset: 'rank' }}>
           {sortedPlayers.map((p, i) => (
-            <li key={p.id} className={`player-item ${i === 0 ? 'leader' : ''}`}>
+            <motion.li
+              key={p.id}
+              custom={i}
+              variants={podiumStagger}
+              initial="hidden"
+              animate="visible"
+              className={`player-item ${i === 0 ? 'leader' : ''}`}
+            >
               <span style={{ fontWeight: 800, fontSize: '1.1rem', minWidth: '2rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 {i === 0 ? <MedalFirstPlaceIcon size={20} /> : i === 1 ? <MedalSecondPlaceIcon size={20} /> : i === 2 ? <MedalThirdPlaceIcon size={20} /> : `${i + 1}.`}
               </span>
               <span className="player-name">{p.name}</span>
               <span className="player-score">{p.score}</span>
-            </li>
+            </motion.li>
           ))}
         </ol>
       </div>

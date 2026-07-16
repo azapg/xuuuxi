@@ -21,6 +21,7 @@ import {
   type WheelEvent as ReactWheelEvent,
 } from "react";
 import { cn } from "@/lib/utils";
+import { playSound } from "@/lib/sound";
 
 const GLIDE_SPRING = { stiffness: 40, damping: 20, mass: 3 };
 const FLICK_MOMENTUM = 0.45;
@@ -159,8 +160,17 @@ function CarouselBall({
 
   return (
     <motion.div
-      onMouseEnter={() => hoverIdx.set(index)}
-      onMouseLeave={() => hoverIdx.set(-1)}
+      onPointerEnter={(e) => {
+        // Only real cursors get the hover lift + paper tick — on touch the
+        // "hover" would just double the tap.
+        if (e.pointerType !== "mouse") return;
+        hoverIdx.set(index);
+        playSound("cardHover");
+      }}
+      onPointerLeave={(e) => {
+        if (e.pointerType !== "mouse") return;
+        hoverIdx.set(-1);
+      }}
       style={{
         position: 'absolute',
         top: '50%',
@@ -250,6 +260,9 @@ export function CylinderCarousel({
         indexRef.current = idx;
         setActiveIndex(idx);
         onIndexChange?.(idx);
+        // A soft paper flick each time a new card passes center while
+        // riffling through the hand (throttled inside playSound).
+        playSound("cardRiffle");
       }
     });
     return unsub;
