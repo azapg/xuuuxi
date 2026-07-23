@@ -46,6 +46,8 @@ export const ClientMessageSchema = z.discriminatedUnion("type", [
   z.object({ type: z.literal("END_ROOM") }),
   z.object({ type: z.literal("TRANSFER_HOST"), playerId: z.string() }),
   z.object({ type: z.literal("PLAY_AGAIN") }),
+  z.object({ type: z.literal("SEND_REACTION"), reaction: z.enum(["🔥", "💀", "😳", "🍑", "🚩", "🤡", "🫦"]) }),
+  z.object({ type: z.literal("SEND_ROOM_MESSAGE"), message: z.string().trim().min(1).max(72) }),
   z.object({ type: z.literal("PING") }),
 ]);
 

@@ -5,6 +5,15 @@
 import type { GameState, GameSettings, PublicPlayer, AnonymousSubmission, RevealedSubmission, TradeState } from "./game";
 import type { WhiteCard, BlackCard, CollectionSummary } from "./cards";
 
+export type RoomSocialEvent = {
+  id: string;
+  playerId: string;
+  playerName: string;
+  kind: "REACTION" | "MESSAGE";
+  content: string;
+  sentAt: number;
+};
+
 // ============================================================
 // Client → Server Messages
 // ============================================================
@@ -28,6 +37,8 @@ export type ClientMessage =
   | { type: "END_ROOM" }
   | { type: "TRANSFER_HOST"; playerId: string }
   | { type: "PLAY_AGAIN" }
+  | { type: "SEND_REACTION"; reaction: string }
+  | { type: "SEND_ROOM_MESSAGE"; message: string }
   | { type: "PING" };
 
 // ============================================================
@@ -60,6 +71,7 @@ export type ServerMessage =
   | { type: "YOU_WERE_KICKED" }
   | { type: "LEFT_ROOM" }
   | { type: "ROOM_DESTROYED"; reason: string }
+  | { type: "ROOM_SOCIAL_EVENT"; event: RoomSocialEvent }
   | { type: "ERROR"; code: string; message: string }
   | { type: "PONG" };
 

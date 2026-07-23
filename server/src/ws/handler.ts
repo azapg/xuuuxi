@@ -178,6 +178,14 @@ export async function handleMessage(
       case "PLAY_AGAIN":
         handlePlayAgain(ws);
         break;
+
+      case "SEND_REACTION":
+        handleRoomSocialEvent(ws, "REACTION", msg.reaction);
+        break;
+
+      case "SEND_ROOM_MESSAGE":
+        handleRoomSocialEvent(ws, "MESSAGE", msg.message);
+        break;
     }
   } catch (err) {
     if (err instanceof GameError) {
@@ -575,6 +583,30 @@ function handlePlayAgain(ws: ServerWebSocket<WsData>): void {
   room.playAgain();
   broadcastGameState(room);
   console.log(`🔁 Room ${room.code} reset to lobby for new game.`);
+}
+
+function handleRoomSocialEvent(
+  ws: ServerWebSocket<WsData>,
+  kind: "REACTION" | "MESSAGE",
+  content: string
+): void {
+  const room = getPlayerRoom(ws);
+  const player = room.players.get(ws.data.playerId);
+  if (!player) {
+    throw new GameError(ErrorCodes.NOT_IN_ROOM, "Not in a room.");
+  }
+
+  broadcastToRoom(room, {
+    type: "ROOM_SOCIAL_EVENT",
+    event: {
+      id: crypto.randomUUID(),
+      playerId: player.id,
+      playerName: player.name,
+      kind,
+      content,
+      sentAt: Date.now(),
+    },
+  });
 }
 
 // ============================================================

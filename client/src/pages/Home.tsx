@@ -52,22 +52,15 @@ export default function Home() {
   )
 
   return (
-    <div className="page-center">
-      <div className="stagger-children" style={{ maxWidth: 400, width: '100%', textAlign: 'center' }}>
+    <div className="page-center riot-home">
+      <div className="stagger-children riot-home-panel">
+        <span className="riot-kicker">UN JUEGO PARA GENTE TERRIBLE</span>
         {/* Title */}
-        <h1
-          style={{
-            fontSize: '3rem',
-            fontWeight: 900,
-            color: 'var(--accent)',
-            marginBottom: '0.5rem',
-            letterSpacing: '-0.02em',
-          }}
-        >
+        <h1 className="riot-home-title">
           {GAME_DISPLAY_NAME}
         </h1>
-        <p style={{ color: 'var(--text-secondary)', marginBottom: '2.5rem' }}>
-          El juego de cartas más irreverente
+        <p className="riot-home-copy">
+          MALAS RESPUESTAS. PEORES AMIGOS.
         </p>
 
         {error && (
@@ -77,7 +70,7 @@ export default function Home() {
         )}
 
         {mode === 'menu' && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+          <div className="riot-home-actions">
             <Button
               size="lg"
               className="w-full"

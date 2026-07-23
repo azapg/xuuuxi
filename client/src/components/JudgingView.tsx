@@ -84,13 +84,13 @@ export default function JudgingView() {
         : 'El juez está eligiendo la mejor respuesta...'
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', position: 'relative', overflow: 'hidden' }}>
+    <div className="riot-phase riot-judging">
 
       {/* --- Center Stage: Black Card and Selected Submission --- */}
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '1rem', gap: '2.5rem', zIndex: 15 }}>
+      <div className="riot-phase-stage">
 
         {/* Phase badge */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginTop: '2.5rem' }}>
+        <div className="riot-phase-badges">
           <Badge variant="secondary" style={{ color: 'var(--accent)', background: 'var(--accent-subtle)' }}>
             {isCzarMode ? <><BalanceScaleIcon size={14} /> Juicio</> : <><CheckmarkBadge01Icon size={14} /> Votación</>}
           </Badge>
@@ -100,7 +100,7 @@ export default function JudgingView() {
         </div>
 
         {/* Stack Stage */}
-        <div style={{ position: 'relative', width: cardWidth, height: cardHeight }}>
+        <div className="riot-card-stack" style={{ width: cardWidth, height: cardHeight }}>
           {gameState.currentBlackCard && (
             <motion.div
               className="game-card black cursor-pointer"
@@ -157,7 +157,7 @@ export default function JudgingView() {
         </div>
 
         {/* Action Button / Messages */}
-        <div style={{ minHeight: 60, display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 200, position: 'relative' }}>
+        <div className="riot-phase-action">
           <AnimatePresence mode="wait" initial={false}>
             {canChoose && selectedSubmission ? (
               <motion.div
@@ -188,7 +188,7 @@ export default function JudgingView() {
       </div>
 
       {/* --- Bottom Stage: Submissions Carousel --- */}
-      <div style={{ width: '100%', paddingBottom: '1rem', zIndex: 10, marginTop: 'auto' }}>
+      <div className="riot-carousel-dock">
         <CylinderCarousel itemSize={cardWidth} height={carouselHeight}>
           {gameState.submissions
             .filter(s => s.submissionId !== selectedSubmission)

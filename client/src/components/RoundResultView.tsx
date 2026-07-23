@@ -25,7 +25,7 @@ export default function RoundResultView() {
   )
 
   return (
-    <div>
+    <div className="riot-result">
       <motion.h2
         {...sectionStagger(0)}
         style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem', textWrap: 'balance' }}

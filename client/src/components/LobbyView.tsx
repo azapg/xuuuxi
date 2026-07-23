@@ -391,7 +391,7 @@ export default function LobbyView() {
             onClick={startGame}
             disabled={!canStart}
           >
-            <GameController01Icon size={24} className="mr-2" /> Iniciar Juego
+            <GameController01Icon size={24} className="mr-2" /> Empezar partida
           </Button>
           {!canStart && (
             <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>

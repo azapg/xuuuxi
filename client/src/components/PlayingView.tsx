@@ -71,13 +71,13 @@ export default function PlayingView() {
   if (!gameState) return null
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', position: 'relative', overflow: 'hidden' }}>
+    <div className="riot-phase riot-playing">
 
       {/* --- Center Stage: Black Card and Selected Cards --- */}
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '1rem', gap: '3.5rem', zIndex: 15 }}>
+      <div className="riot-phase-stage">
 
         {/* Stack Stage */}
-        <div style={{ position: 'relative', width: cardWidth, height: cardHeight, marginTop: '2rem' }}>
+        <div className="riot-card-stack" style={{ width: cardWidth, height: cardHeight }}>
 
           {/* Black card */}
           {gameState.currentBlackCard && (
@@ -156,7 +156,7 @@ export default function PlayingView() {
         </div>
 
         {/* Action Button / Messages */}
-        <div style={{ minHeight: 60, display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: '2rem', zIndex: 200, position: 'relative' }}>
+        <div className="riot-phase-action">
           <AnimatePresence mode="wait" initial={false}>
             {isJudge ? (
               <motion.div key="judge" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="info-message">
@@ -188,7 +188,7 @@ export default function PlayingView() {
 
       {/* --- Bottom Stage: Hand Carousel --- */}
       {!isJudge && !hasSubmitted && (
-        <div style={{ width: '100%', paddingBottom: '1rem', zIndex: 10, marginTop: 'auto' }}>
+        <div className="riot-carousel-dock">
           <CylinderCarousel itemSize={cardWidth} height={carouselHeight}>
             {hand.filter(c => !selectedIds.includes(c.id)).map(card => (
               <PlayingCard

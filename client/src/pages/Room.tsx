@@ -13,6 +13,7 @@ import { CrownIcon, MedalFirstPlaceIcon, MedalSecondPlaceIcon, MedalThirdPlaceIc
 import { motion } from 'motion/react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { RoomSocialDock } from '@/components/RoomSocialDock'
 
 export default function Room() {
   const { code } = useParams<{ code: string }>()
@@ -80,11 +81,12 @@ export default function Room() {
   }
 
   return (
-    <div className={`game-layout ${isImmersive ? 'immersive' : ''}`}>
+    <div className={`game-layout phase-${gameState.phase.toLowerCase()} ${isImmersive ? 'immersive' : ''}`}>
       <GameTopBar />
       <div className="game-main">
         {error && <div className="error-message">{error}</div>}
         {renderPhase()}
+        {gameState.phase !== 'LOBBY' && gameState.phase !== 'GAME_OVER' && <RoomSocialDock />}
         {/* Trade overlay */}
         {gameState.trade && gameState.trade.status !== 'IDLE' && <TradeView />}
       </div>

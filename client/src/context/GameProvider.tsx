@@ -43,6 +43,8 @@ interface GameContextValue {
   endRoom: () => void
   transferHost: (playerId: string) => void
   playAgain: () => void
+  sendReaction: (reaction: string) => void
+  sendRoomMessage: (message: string) => void
 }
 
 const GameContext = createContext<GameContextValue | null>(null)
@@ -135,6 +137,16 @@ export function GameProvider({ children }: { children: ReactNode }) {
 
   const playAgain = useCallback(() => send({ type: 'PLAY_AGAIN' }), [send])
 
+  const sendReaction = useCallback(
+    (reaction: string) => send({ type: 'SEND_REACTION', reaction }),
+    [send],
+  )
+
+  const sendRoomMessage = useCallback(
+    (message: string) => send({ type: 'SEND_ROOM_MESSAGE', message }),
+    [send],
+  )
+
   const value: GameContextValue = {
     connected,
     gameState,
@@ -159,6 +171,8 @@ export function GameProvider({ children }: { children: ReactNode }) {
     endRoom,
     transferHost,
     playAgain,
+    sendReaction,
+    sendRoomMessage,
   }
 
   return <GameContext.Provider value={value}>{children}</GameContext.Provider>

@@ -66,10 +66,10 @@ export default function DiscardView() {
   if (!gameState) return null
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', position: 'relative', overflow: 'hidden' }}>
+    <div className="riot-phase riot-discard">
 
       {/* --- Center Stage: Discard Zone --- */}
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '1rem', gap: '2.5rem', zIndex: 15 }}>
+      <div className="riot-phase-stage">
 
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem', marginTop: '2.5rem' }}>
           <Badge variant="secondary" className="text-destructive bg-destructive/10">
@@ -123,7 +123,7 @@ export default function DiscardView() {
         </div>
 
         {/* Actions */}
-        <div style={{ minHeight: 60, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem', zIndex: 200, position: 'relative' }}>
+        <div className="riot-phase-action">
           <Button variant="ghost" onClick={handleSkip} isLoading={isSubmitting}>
             Saltar
           </Button>
@@ -150,7 +150,7 @@ export default function DiscardView() {
       </div>
 
       {/* --- Bottom Stage: Hand Carousel --- */}
-      <div style={{ width: '100%', paddingBottom: '1rem', zIndex: 10, marginTop: 'auto' }}>
+      <div className="riot-carousel-dock">
         <CylinderCarousel itemSize={cardWidth} height={carouselHeight}>
           {hand.filter(c => !selectedIds.includes(c.id)).map(card => (
             <PlayingCard

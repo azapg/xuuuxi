@@ -129,7 +129,7 @@ export default function Collections() {
   )
 
   return (
-    <div className="container">
+    <div className="container riot-admin-page">
       <div
         style={{
           display: 'flex',
@@ -188,6 +188,7 @@ export default function Collections() {
             </p>
           ) : (
             <div
+              className="riot-collection-grid"
               style={{
                 display: 'grid',
                 gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
@@ -197,6 +198,7 @@ export default function Collections() {
               {collections.map(col => (
                 <div
                   key={col.id}
+                  className="riot-collection-tile"
                   style={{
                     background: 'var(--bg-secondary)',
                     border: '1px solid var(--border)',
@@ -229,14 +231,14 @@ export default function Collections() {
                     <Badge variant="secondary">
                       {col.blackCardCount} negras
                     </Badge>
-                    <Badge className="bg-green-600 hover:bg-green-700 text-white">
+                    <Badge>
                       {col.whiteCardCount} blancas
                     </Badge>
                   </div>
                   {col.isDefault && (
                     <Badge
                       variant="outline"
-                      className="mt-2 border-yellow-500 text-yellow-500"
+                      className="mt-2"
                     >
                       Predeterminada
                     </Badge>
@@ -251,6 +253,7 @@ export default function Collections() {
       {/* CREATE VIEW */}
       {view === 'create' && (
         <form
+          className="riot-admin-sheet"
           onSubmit={handleCreateCollection}
           style={{
             maxWidth: 500,
@@ -316,6 +319,7 @@ export default function Collections() {
 
           {/* Add card form */}
           <div
+            className="riot-admin-sheet"
             style={{
               background: 'var(--bg-secondary)',
               border: '1px solid var(--border)',

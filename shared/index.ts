@@ -28,6 +28,7 @@ export type {
 export type {
   ClientMessage,
   ServerMessage,
+  RoomSocialEvent,
   ErrorCode,
 } from "./types/messages";
 

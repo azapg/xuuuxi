@@ -1,0 +1,922 @@
+/* ============================================================
+   PRINT RIOT — production visual system
+   Flat ink, cut paper, manga screen tone, red as a signal.
+   ============================================================ */
+
+:root {
+  --bg-primary: #080808;
+  --bg-secondary: #111011;
+  --bg-elevated: #191617;
+  --bg-card: #211d1e;
+  --text-primary: #f7f2ed;
+  --text-secondary: #b9afb0;
+  --text-muted: #71696a;
+  --accent: #e21438;
+  --accent-hover: #ff244a;
+  --accent-subtle: rgba(226, 20, 56, 0.16);
+  --success: #f7f2ed;
+  --warning: #e21438;
+  --error: #e21438;
+  --border: #3c3537;
+  --border-light: #665a5d;
+  --card-white-bg: #f7f2ed;
+  --card-white-text: #080808;
+  --card-white-border: #080808;
+  --card-white-selected: #e21438;
+  --card-black-bg: #080808;
+  --card-black-text: #f7f2ed;
+  --card-black-border: #f7f2ed;
+  --radius: 0px;
+  --radius-lg: 0px;
+  --radius-xl: 0px;
+  --riot-cut: polygon(0 0, calc(100% - 13px) 0, 100% 13px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+  --riot-cut-flipped: polygon(11px 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%, 0 11px);
+  --riot-shadow: 6px 6px 0 #e21438;
+}
+
+body {
+  background: #080808;
+  color: #f7f2ed;
+}
+
+.app-main {
+  background-color: #080808;
+  background-image: url('/textures/manga-screen-tone.svg');
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+}
+
+.app-main::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: #080808;
+  clip-path: polygon(0 0, 100% 0, 100% 16%, 0 29%);
+  opacity: 0.93;
+}
+
+.app-main > * {
+  position: relative;
+  z-index: 1;
+}
+
+.app-header {
+  justify-content: space-between;
+  min-height: 64px;
+  padding: 0.65rem clamp(1rem, 4vw, 2.5rem);
+  color: #080808;
+  background: #f7f2ed;
+  border: 0;
+  border-bottom: 5px solid #e21438;
+  box-shadow: 0 5px 0 #080808;
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 6px), 58% 100%, 0 calc(100% - 4px));
+}
+
+.app-logo,
+.game-topbar-logo {
+  color: #e21438;
+  font-weight: 1000;
+  font-style: italic;
+  letter-spacing: -0.08em;
+  text-transform: uppercase;
+}
+
+[data-slot='button'] {
+  border: 2px solid currentColor;
+  border-radius: 0 !important;
+  clip-path: var(--riot-cut);
+  font-weight: 950;
+  font-style: italic;
+  letter-spacing: 0.035em;
+  text-transform: uppercase;
+  box-shadow: 4px 4px 0 #080808;
+}
+
+[data-slot='button'][data-variant='default'] {
+  color: #080808;
+  background: #f7f2ed;
+  border-color: #080808;
+  box-shadow: 5px 5px 0 #e21438;
+}
+
+[data-slot='button'][data-variant='secondary'] {
+  color: #f7f2ed;
+  background: #080808;
+  border-color: #f7f2ed;
+  box-shadow: 4px 4px 0 #e21438;
+}
+
+[data-slot='button'][data-variant='destructive'] {
+  color: #f7f2ed;
+  background: #e21438;
+  border-color: #080808;
+}
+
+[data-slot='button'][data-variant='ghost'] {
+  color: #f7f2ed;
+  background: #111011;
+  border-color: #51494b;
+  box-shadow: none;
+}
+
+[data-slot='button']:hover {
+  translate: -2px -2px;
+  box-shadow: 7px 7px 0 #e21438;
+}
+
+[data-slot='button']:active {
+  translate: 3px 3px;
+  box-shadow: 1px 1px 0 #e21438;
+}
+
+[data-slot='input'],
+[data-slot='select-trigger'],
+textarea,
+select {
+  min-height: 44px;
+  border: 2px solid #f7f2ed !important;
+  border-radius: 0 !important;
+  color: #f7f2ed;
+  background: #080808 !important;
+  box-shadow: 4px 4px 0 #e21438 !important;
+  clip-path: var(--riot-cut-flipped);
+  font-weight: 800;
+}
+
+[data-slot='input']:focus,
+[data-slot='select-trigger']:focus {
+  border-color: #e21438 !important;
+  outline: 2px solid #f7f2ed;
+  outline-offset: 3px;
+}
+
+[data-slot='dialog-overlay'] {
+  background: rgba(8, 8, 8, 0.92) !important;
+}
+
+[data-slot='dialog-content'] {
+  border: 3px solid #f7f2ed !important;
+  border-radius: 0 !important;
+  color: #f7f2ed;
+  background: #111011 !important;
+  box-shadow: 9px 9px 0 #e21438 !important;
+  clip-path: var(--riot-cut);
+}
+
+[data-slot='dialog-title'],
+.section-title {
+  font-weight: 1000;
+  font-style: italic;
+  letter-spacing: -0.035em;
+  text-transform: uppercase;
+}
+
+.riot-home {
+  min-height: 100%;
+  padding: clamp(1.2rem, 6vw, 4rem);
+}
+
+.riot-home-panel {
+  position: relative;
+  width: min(100%, 520px);
+  padding: clamp(1.25rem, 6vw, 3rem);
+  text-align: center;
+  color: #080808;
+  background: #f7f2ed;
+  border: 4px solid #080808;
+  box-shadow: 12px 12px 0 #e21438;
+  clip-path: var(--riot-cut);
+  rotate: -0.8deg;
+}
+
+.riot-home-panel::before {
+  content: '18+';
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  padding: 0.1rem 0.4rem;
+  color: #f7f2ed;
+  background: #080808;
+  font-size: 0.68rem;
+  font-weight: 1000;
+  rotate: 4deg;
+}
+
+.riot-kicker {
+  display: inline-block;
+  margin-bottom: 1.2rem;
+  padding: 0.2rem 0.55rem;
+  color: #f7f2ed;
+  background: #e21438;
+  font-size: 0.62rem;
+  font-weight: 1000;
+  letter-spacing: 0.13em;
+  rotate: 1.8deg;
+}
+
+.riot-home-title {
+  margin: 0;
+  color: #080808;
+  font-size: clamp(3.25rem, 16vw, 6rem);
+  font-weight: 1000;
+  font-style: italic;
+  line-height: 0.72;
+  letter-spacing: -0.12em;
+  text-transform: uppercase;
+  text-shadow: 5px 5px 0 #e21438;
+}
+
+.riot-home-copy {
+  margin: 1.6rem 0 2.2rem;
+  font-size: 0.74rem;
+  font-weight: 950;
+  letter-spacing: 0.13em;
+}
+
+.riot-home-actions,
+.riot-home-panel form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.riot-home-panel [data-slot='button'][data-variant='ghost'] {
+  color: #080808;
+  background: transparent;
+  border-color: #080808;
+}
+
+.game-layout {
+  position: relative;
+  isolation: isolate;
+  background-color: #080808;
+  background-image: url('/textures/manga-screen-tone.svg');
+  background-size: cover;
+  background-position: center;
+}
+
+.game-layout::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: #e21438;
+  clip-path: polygon(0 59%, 100% 43%, 100% 51%, 0 69%);
+  opacity: 0.72;
+}
+
+.game-topbar {
+  align-items: center;
+  padding: max(0.65rem, env(safe-area-inset-top)) max(0.8rem, env(safe-area-inset-right)) 0 max(0.8rem, env(safe-area-inset-left));
+}
+
+.game-topbar-left,
+.game-topbar-right {
+  min-height: 42px;
+  color: #f7f2ed;
+  background: #080808;
+  border: 2px solid #f7f2ed;
+  box-shadow: 4px 4px 0 #e21438;
+  clip-path: var(--riot-cut);
+}
+
+.game-topbar-left {
+  padding: 0.25rem 0.55rem 0.25rem 0.25rem;
+}
+
+.game-topbar-right {
+  padding: 0.25rem;
+}
+
+.game-topbar-room-code {
+  color: #f7f2ed;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.game-topbar-timer {
+  top: max(0.8rem, env(safe-area-inset-top));
+  min-width: 64px;
+  padding: 0.3rem 0.75rem;
+  color: #080808;
+  background: #f7f2ed;
+  border: 2px solid #080808;
+  border-radius: 0;
+  box-shadow: 4px 4px 0 #e21438;
+  clip-path: var(--riot-cut-flipped);
+  font-size: 0.78rem;
+}
+
+.game-topbar-avatar {
+  border-radius: 0;
+  color: #080808;
+  background: #f7f2ed;
+  border: 2px solid #080808;
+  box-shadow: 2px 2px 0 #e21438;
+  clip-path: polygon(15% 0, 100% 0, 100% 80%, 80% 100%, 0 100%, 0 15%);
+}
+
+.game-topbar-avatar + .game-topbar-avatar {
+  margin-top: -9px;
+  rotate: 3deg;
+}
+
+.game-topbar-avatar.judge {
+  color: #f7f2ed;
+  background: #e21438;
+}
+
+.game-main {
+  gap: 1.25rem;
+}
+
+.game-card {
+  border-radius: 0;
+  border-width: 3px !important;
+  clip-path: var(--riot-cut);
+  box-shadow: 7px 7px 0 #e21438 !important;
+  font-weight: 900;
+  transition: translate 150ms steps(2, end), rotate 150ms steps(2, end);
+}
+
+.game-card.white {
+  color: #080808;
+  background: #f7f2ed;
+  border-color: #080808;
+}
+
+.game-card.black {
+  color: #f7f2ed;
+  background: #080808;
+  border-color: #f7f2ed;
+}
+
+.game-card.selectable:hover {
+  translate: 0 -8px;
+  rotate: -1.5deg;
+  box-shadow: 10px 12px 0 #e21438 !important;
+}
+
+.game-card.selected {
+  border-color: #e21438 !important;
+  translate: 0 -7px;
+}
+
+.game-card.winner {
+  border-color: #e21438 !important;
+  box-shadow: 10px 10px 0 #f7f2ed !important;
+}
+
+.game-card .card-text {
+  font-weight: 950;
+  line-height: 1.18;
+  letter-spacing: -0.025em;
+}
+
+.game-card .card-meta,
+.card-pick-badge {
+  color: #f7f2ed;
+  background: #e21438;
+  border-radius: 0;
+  font-size: 0.62rem;
+  font-weight: 1000;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 1;
+}
+
+.riot-phase {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+.riot-phase-stage {
+  z-index: 15;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(1.1rem, 4vh, 2.8rem);
+  min-height: 0;
+  padding: 4.5rem 1rem 0;
+}
+
+.riot-card-stack {
+  position: relative;
+  margin-top: 0.5rem;
+}
+
+.riot-card-stack::before,
+.discard-zone::before {
+  content: '';
+  position: absolute;
+  inset: -15px;
+  z-index: -1;
+  border: 2px dashed #f7f2ed;
+  rotate: 4deg;
+  opacity: 0.45;
+}
+
+.riot-phase-action {
+  position: relative;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  min-height: 54px;
+}
+
+.riot-phase-badges {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin-top: 1.5rem;
+}
+
+.riot-phase-badges > * {
+  border: 2px solid #f7f2ed;
+  border-radius: 0;
+  color: #f7f2ed !important;
+  background: #080808 !important;
+  box-shadow: 3px 3px 0 #e21438;
+  clip-path: var(--riot-cut);
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.riot-carousel-dock {
+  z-index: 10;
+  width: 100%;
+  margin-top: auto;
+  padding-bottom: 7.9rem;
+}
+
+.info-message,
+.error-message {
+  border: 2px solid #f7f2ed;
+  border-radius: 0;
+  color: #f7f2ed;
+  background: #080808;
+  box-shadow: 4px 4px 0 #e21438;
+  clip-path: var(--riot-cut-flipped);
+  font-weight: 850;
+}
+
+.error-message {
+  border-color: #e21438;
+}
+
+.lobby {
+  width: min(100%, 1080px);
+  margin: 0 auto;
+  padding: 2.5rem 0 5rem;
+}
+
+.lobby > div {
+  width: min(100%, 720px) !important;
+  max-width: none !important;
+  padding: clamp(1rem, 3vw, 1.5rem);
+  background: #111011;
+  border: 2px solid #f7f2ed;
+  box-shadow: 7px 7px 0 #e21438;
+  clip-path: var(--riot-cut);
+}
+
+.lobby > div:nth-child(even) {
+  rotate: 0.35deg;
+}
+
+.lobby-code-section {
+  color: #080808;
+  background: #f7f2ed !important;
+  border-color: #080808 !important;
+  rotate: -0.7deg;
+}
+
+.lobby-code-label,
+.lobby-code-section p {
+  color: #080808 !important;
+  font-weight: 900;
+}
+
+.room-code-copy {
+  color: #f7f2ed;
+  background: #080808;
+  border: 2px solid #080808;
+  border-radius: 0;
+  box-shadow: 5px 5px 0 #e21438;
+  clip-path: var(--riot-cut);
+}
+
+.room-code-display {
+  color: #f7f2ed;
+  font-style: italic;
+  text-shadow: 3px 3px 0 #e21438;
+}
+
+.player-list {
+  gap: 0.65rem;
+}
+
+.player-item {
+  border: 2px solid #51494b;
+  border-radius: 0;
+  color: #f7f2ed;
+  background: #080808;
+  box-shadow: 3px 3px 0 #e21438;
+  clip-path: var(--riot-cut-flipped);
+}
+
+.player-item:nth-child(even) {
+  translate: 5px 0;
+}
+
+.player-item.leader {
+  border-color: #e21438;
+  background: #080808;
+}
+
+.settings-grid {
+  gap: 1rem;
+}
+
+.settings-field {
+  padding: 0.85rem;
+  border-left: 5px solid #e21438;
+  background: #080808;
+}
+
+.settings-label {
+  color: #f7f2ed;
+  font-weight: 950;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.checkbox-label {
+  padding: 0.85rem;
+  border: 2px solid #f7f2ed;
+  background: #080808;
+  font-weight: 900;
+}
+
+.card-submissions {
+  gap: 1.25rem;
+}
+
+.discard-zone {
+  border: 3px dashed #e21438;
+  border-radius: 0;
+  background: #080808;
+  clip-path: var(--riot-cut);
+}
+
+.discard-zone-hint {
+  color: #e21438;
+  font-weight: 1000;
+}
+
+.riot-result {
+  width: min(100%, 920px);
+  margin: 0 auto;
+  padding: 1rem 0 7rem;
+}
+
+.riot-result > h2,
+.riot-result > div {
+  padding: 1rem;
+  background: #111011;
+  border: 2px solid #f7f2ed;
+  box-shadow: 6px 6px 0 #e21438;
+  clip-path: var(--riot-cut);
+}
+
+.riot-result > h2 {
+  color: #080808;
+  background: #f7f2ed;
+  font-weight: 1000 !important;
+  font-style: italic;
+  text-transform: uppercase;
+  rotate: -0.5deg;
+}
+
+.riot-result .section-title {
+  color: #e21438 !important;
+}
+
+.riot-admin-page {
+  padding-top: clamp(1.25rem, 4vw, 3rem);
+  padding-bottom: 5rem;
+}
+
+.riot-admin-page > div:first-child h1 {
+  font-size: clamp(1.8rem, 5vw, 3rem) !important;
+  font-weight: 1000 !important;
+  font-style: italic;
+  letter-spacing: -0.055em;
+  text-transform: uppercase;
+}
+
+.riot-collection-grid {
+  gap: 1.35rem !important;
+}
+
+.riot-collection-tile {
+  border: 3px solid #f7f2ed !important;
+  border-radius: 0 !important;
+  color: #f7f2ed;
+  background: #111011 !important;
+  box-shadow: 7px 7px 0 #e21438;
+  clip-path: var(--riot-cut);
+  transition: translate 150ms steps(2, end) !important;
+}
+
+.riot-collection-tile:nth-child(even) {
+  rotate: 0.5deg;
+}
+
+.riot-collection-tile:hover {
+  translate: -3px -3px;
+  border-color: #f7f2ed !important;
+  box-shadow: 10px 10px 0 #e21438;
+}
+
+.riot-collection-tile h3 {
+  font-size: 1.05rem;
+  font-weight: 1000 !important;
+  font-style: italic;
+  text-transform: uppercase;
+}
+
+.riot-collection-tile [data-slot='badge'],
+.riot-admin-page [data-slot='badge'] {
+  border: 2px solid #f7f2ed !important;
+  border-radius: 0 !important;
+  color: #f7f2ed !important;
+  background: #080808 !important;
+  box-shadow: 2px 2px 0 #e21438;
+  clip-path: var(--riot-cut-flipped);
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.riot-admin-sheet {
+  padding: clamp(1rem, 3vw, 1.5rem) !important;
+  border: 3px solid #f7f2ed !important;
+  border-radius: 0 !important;
+  background: #111011 !important;
+  box-shadow: 7px 7px 0 #e21438;
+  clip-path: var(--riot-cut);
+}
+
+.riot-social {
+  position: fixed;
+  right: max(0.75rem, env(safe-area-inset-right));
+  bottom: max(0.75rem, env(safe-area-inset-bottom));
+  left: max(0.75rem, env(safe-area-inset-left));
+  z-index: 210;
+  width: min(calc(100% - 1.5rem), 520px);
+  margin: 0 auto;
+  pointer-events: none;
+}
+
+.riot-social > * {
+  pointer-events: auto;
+}
+
+.riot-social-feed {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 0.55rem);
+  width: min(82vw, 320px);
+  display: grid;
+  gap: 0.35rem;
+}
+
+.riot-social-event {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.55rem 0.7rem;
+  color: #080808;
+  background: #f7f2ed;
+  border: 2px solid #080808;
+  box-shadow: 4px 4px 0 #e21438;
+  clip-path: var(--riot-cut);
+  font-size: 0.78rem;
+}
+
+.riot-social-event strong {
+  color: #e21438;
+  font-weight: 1000;
+  text-transform: uppercase;
+}
+
+.riot-social-event.reaction span {
+  margin-left: auto;
+  font-size: 1.7rem;
+}
+
+.riot-reactions {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.25rem;
+  margin: 0 auto 0.4rem;
+  width: min(100%, 430px);
+}
+
+.riot-reactions button {
+  display: grid;
+  place-items: center;
+  min-width: 0;
+  aspect-ratio: 1.08;
+  padding: 0;
+  border: 2px solid #080808;
+  color: #080808;
+  background: #f7f2ed;
+  box-shadow: 2px 2px 0 #e21438;
+  clip-path: var(--riot-cut-flipped);
+}
+
+.riot-reactions button:nth-child(even) {
+  rotate: 3deg;
+}
+
+.riot-reactions button:nth-child(3n) {
+  rotate: -4deg;
+}
+
+.riot-reactions button span {
+  display: block;
+  font-size: clamp(1.25rem, 5vw, 1.8rem);
+  animation: riot-reaction-drift calc(2.8s + var(--reaction-index) * 0.16s) steps(4, end) infinite alternate;
+}
+
+.riot-reactions button:active span {
+  scale: 1.35;
+  rotate: -12deg;
+}
+
+@keyframes riot-reaction-drift {
+  0% { translate: -2px 2px; rotate: -5deg; }
+  45% { translate: 3px -4px; rotate: 7deg; }
+  100% { translate: -1px 3px; rotate: -2deg; }
+}
+
+.riot-message-form {
+  display: grid;
+  grid-template-columns: 1fr 48px;
+  min-height: 48px;
+  border: 2px solid #f7f2ed;
+  background: #080808;
+  box-shadow: 5px 5px 0 #e21438;
+  clip-path: var(--riot-cut);
+}
+
+.riot-message-form input {
+  min-width: 0;
+  padding: 0 0.85rem;
+  border: 0;
+  color: #f7f2ed;
+  background: transparent;
+  outline: 0;
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+}
+
+.riot-message-form button {
+  display: grid;
+  place-items: center;
+  border: 0;
+  color: #f7f2ed;
+  background: #e21438;
+}
+
+.riot-message-form button:disabled {
+  color: #71696a;
+  background: #211d1e;
+}
+
+@media (min-width: 900px) {
+  .lobby {
+    display: grid;
+    grid-template-columns: 0.85fr 1.15fr;
+    align-items: start;
+  }
+
+  .lobby > div {
+    width: 100% !important;
+  }
+
+  .lobby > div:nth-last-child(-n + 2) {
+    grid-column: 1 / -1;
+    justify-self: center;
+  }
+
+  .riot-social {
+    left: auto;
+    width: 410px;
+  }
+
+  .riot-carousel-dock {
+    padding-bottom: 1.2rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .app-header {
+    min-height: 56px;
+    padding: 0.45rem 0.65rem;
+  }
+
+  .app-header .app-logo {
+    display: none;
+  }
+
+  .app-header > div {
+    width: 100%;
+    justify-content: space-between;
+    gap: 0.35rem !important;
+  }
+
+  .app-header [data-slot='button'] {
+    padding-inline: 0.55rem;
+    font-size: 0.58rem;
+  }
+
+  .game-topbar-brand {
+    display: none;
+  }
+
+  .game-topbar-timer {
+    top: max(0.72rem, env(safe-area-inset-top));
+  }
+
+  .game-main {
+    padding-inline: 0.75rem;
+  }
+
+  .riot-phase-stage {
+    gap: 1rem;
+    padding-top: 4.2rem;
+  }
+
+  .riot-phase-badges {
+    margin-top: 0.2rem;
+  }
+
+  .riot-carousel-dock {
+    padding-bottom: 7.5rem;
+  }
+
+  .lobby {
+    gap: 1.35rem;
+    padding-top: 1rem;
+  }
+
+  .settings-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .riot-result {
+    padding-bottom: 8rem;
+  }
+}
+
+@media (max-height: 720px) and (max-width: 640px) {
+  .riot-phase-stage {
+    justify-content: flex-start;
+    padding-top: 4.3rem;
+  }
+
+  .riot-phase-action {
+    min-height: 42px;
+  }
+
+  .riot-carousel-dock {
+    padding-bottom: 6.8rem;
+  }
+
+  .riot-message-form {
+    min-height: 42px;
+  }
+
+  .riot-reactions button span {
+    font-size: 1.2rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .riot-reactions button span {
+    animation: none;
+  }
+}
