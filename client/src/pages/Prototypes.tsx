@@ -1,6 +1,7 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import {
+  AnalyticsUpIcon,
   ArrowLeft01Icon,
   Cards02Icon,
   Copy01Icon,
@@ -16,6 +17,8 @@ import {
   UserGroup02Icon,
   VolumeHighIcon,
 } from 'hugeicons-react'
+import { CylinderCarousel } from '@/components/CylinderCarousel'
+import { playSound } from '@/lib/sound'
 import './prototypes.css'
 
 type Screen = 'lobby' | 'settings' | 'cards' | 'round'
@@ -31,19 +34,19 @@ const concepts: Array<{
     id: 'orbit',
     number: '01',
     name: 'Velvet Orbit',
-    note: 'Social, flotante, juguetón',
+    note: 'Social, cinético, afilado',
   },
   {
     id: 'stack',
     number: '02',
-    name: 'Rouge Stack',
-    note: 'Táctil, editorial, enfocado',
+    name: 'Razor Stack',
+    note: 'Directo, táctil, explosivo',
   },
   {
     id: 'signal',
     number: '03',
-    name: 'Afterdark Signal',
-    note: 'Cinemático, denso, misterioso',
+    name: 'Redline Signal',
+    note: 'Tenso, preciso, hostil',
   },
 ]
 
@@ -60,10 +63,10 @@ const screens: Array<{
 ]
 
 const players = [
-  { name: 'Allan', initials: 'AZ', tone: 'ember', score: 3, host: true },
-  { name: 'Mauricio', initials: 'MR', tone: 'wine', score: 2 },
-  { name: 'Vale', initials: 'VA', tone: 'clay', score: 1 },
-  { name: 'Diego', initials: 'DG', tone: 'smoke', score: 0 },
+  { name: 'Allan', initials: 'AZ', tone: 'ember', score: 3, host: true, submitted: true },
+  { name: 'Mauricio', initials: 'MR', tone: 'wine', score: 2, submitted: true },
+  { name: 'Vale', initials: 'VA', tone: 'clay', score: 1, submitted: false },
+  { name: 'Diego', initials: 'DG', tone: 'smoke', score: 0, submitted: true },
 ]
 
 const hand = [
@@ -150,7 +153,13 @@ function ScreenIntro({ concept, screen }: { concept: Concept; screen: Screen }) 
   )
 }
 
-function LobbyPrototype({ concept }: { concept: Concept }) {
+function LobbyPrototype({
+  concept,
+  onOpenSettings,
+}: {
+  concept: Concept
+  onOpenSettings: () => void
+}) {
   const [copied, setCopied] = useState(false)
 
   return (
@@ -158,9 +167,23 @@ function LobbyPrototype({ concept }: { concept: Concept }) {
       <ScreenIntro concept={concept} screen="lobby" />
 
       <button
+        className="proto-room-settings"
+        type="button"
+        onClick={() => {
+          playSound('page')
+          onOpenSettings()
+        }}
+      >
+        <Settings01Icon size={18} />
+        <span>REGLAS</span>
+        <i>HOST</i>
+      </button>
+
+      <button
         className="proto-code"
         type="button"
         onClick={() => {
+          playSound('success')
           setCopied(true)
           window.setTimeout(() => setCopied(false), 1400)
         }}
@@ -182,10 +205,15 @@ function LobbyPrototype({ concept }: { concept: Concept }) {
           <b>4 conectados</b>
         </div>
         {players.slice(1).map((player, index) => (
-          <div className={`proto-orbit-player proto-orbit-player--${index + 1}`} key={player.name}>
+          <button
+            className={`proto-orbit-player proto-orbit-player--${index + 1}`}
+            key={player.name}
+            type="button"
+            onClick={() => playSound('whisper')}
+          >
             <Avatar player={player} />
             <span>{player.name}</span>
-          </div>
+          </button>
         ))}
       </div>
 
@@ -206,7 +234,7 @@ function LobbyPrototype({ concept }: { concept: Concept }) {
         </div>
       </div>
 
-      <button className="proto-primary-action" type="button">
+      <button className="proto-primary-action" type="button" onClick={() => playSound('ready')}>
         <PlayIcon size={19} />
         <span>Empezar la noche</span>
         <i>4/4 listos</i>
@@ -230,7 +258,10 @@ function Toggle({
       className="proto-toggle-row"
       type="button"
       aria-pressed={enabled}
-      onClick={() => setEnabled(value => !value)}
+      onClick={() => {
+        playSound(enabled ? 'cardLift' : 'cardSlide')
+        setEnabled(value => !value)
+      }}
     >
       <span>
         <b>{label}</b>
@@ -249,11 +280,11 @@ function Stepper({ label, initial }: { label: string; initial: number }) {
     <div className="proto-stepper">
       <span>{label}</span>
       <div>
-        <button type="button" onClick={() => setValue(Math.max(1, value - 1))}>
+        <button type="button" onClick={() => { playSound('tick'); setValue(Math.max(1, value - 1)) }}>
           −
         </button>
         <b>{value}</b>
-        <button type="button" onClick={() => setValue(value + 1)}>
+        <button type="button" onClick={() => { playSound('tick'); setValue(value + 1) }}>
           +
         </button>
       </div>
@@ -283,20 +314,26 @@ function SettingsPrototype({ concept }: { concept: Concept }) {
           </div>
         </div>
 
+        <div className="proto-danger-meter">
+          <span>NIVEL DE CAOS</span>
+          <div><i /><i /><i /><i /><i /></div>
+          <b>04</b>
+        </div>
+
         <div className="proto-setting-block">
           <label>Quién decide</label>
           <div className="proto-segmented">
             <button
               type="button"
               className={mode === 'czar' ? 'is-active' : ''}
-              onClick={() => setMode('czar')}
+              onClick={() => { playSound('cardSlide'); setMode('czar') }}
             >
               Juez rotativo
             </button>
             <button
               type="button"
               className={mode === 'vote' ? 'is-active' : ''}
-              onClick={() => setMode('vote')}
+              onClick={() => { playSound('cardSlide'); setMode('vote') }}
             >
               Voto popular
             </button>
@@ -311,7 +348,7 @@ function SettingsPrototype({ concept }: { concept: Concept }) {
                 key={item}
                 type="button"
                 className={deck === item ? 'is-active' : ''}
-                onClick={() => setDeck(item)}
+                onClick={() => { playSound('cardRiffle'); setDeck(item) }}
               >
                 {item}
                 {deck === item && <Tick01Icon size={14} />}
@@ -331,8 +368,8 @@ function SettingsPrototype({ concept }: { concept: Concept }) {
           <Toggle label="Cartas anónimas" note="Revela autores al final" initial={false} />
         </div>
 
-        <button className="proto-save-action" type="button">
-          Guardar este caos
+        <button className="proto-save-action" type="button" onClick={() => playSound('success')}>
+          BLOQUEAR REGLAS
           <Tick01Icon size={18} />
         </button>
       </div>
@@ -342,22 +379,77 @@ function SettingsPrototype({ concept }: { concept: Concept }) {
 
 function CardsPrototype({ concept }: { concept: Concept }) {
   const [selected, setSelected] = useState(1)
-  const visibleHand = useMemo(() => {
-    const start = Math.max(0, Math.min(selected - 1, hand.length - 3))
-    return hand.slice(start, start + 3).map((text, index) => ({
-      text,
-      originalIndex: start + index,
-    }))
-  }, [selected])
+  const [showScoreboard, setShowScoreboard] = useState(false)
+  const [played, setPlayed] = useState(false)
+  const [holding, setHolding] = useState(false)
+  const holdTimer = useRef<number | null>(null)
+
+  const playSelected = () => {
+    playSound('success')
+    setPlayed(true)
+    window.setTimeout(() => setPlayed(false), 1100)
+  }
+
+  const beginHold = () => {
+    setHolding(true)
+    playSound('tick')
+    holdTimer.current = window.setTimeout(playSelected, 720)
+  }
+
+  const endHold = () => {
+    setHolding(false)
+    if (holdTimer.current !== null) window.clearTimeout(holdTimer.current)
+    holdTimer.current = null
+  }
+
+  useEffect(() => () => {
+    if (holdTimer.current !== null) window.clearTimeout(holdTimer.current)
+  }, [])
 
   return (
-    <section className="proto-screen proto-cards" aria-label="Propuesta de selector de cartas">
+    <section className={`proto-screen proto-cards ${played ? 'is-played' : ''}`} aria-label="Propuesta de selector de cartas">
       <div className="proto-round-status">
         <span>RONDA 04</span>
         <b>00:42</b>
         <button type="button" aria-label="Activar sonido">
           <VolumeHighIcon size={17} />
         </button>
+      </div>
+
+      <div className="proto-submit-status">
+        <button
+          type="button"
+          onClick={() => {
+            playSound('page')
+            setShowScoreboard(value => !value)
+          }}
+          aria-expanded={showScoreboard}
+        >
+          <div>
+            {players.map(player => (
+              <span className={player.submitted ? 'is-done' : 'is-waiting'} key={player.name}>
+                <Avatar player={player} size="sm" />
+                {player.submitted ? <Tick01Icon size={11} /> : <i />}
+              </span>
+            ))}
+          </div>
+          <strong>3/4</strong>
+          <small>ENVIARON</small>
+          <AnalyticsUpIcon size={17} />
+        </button>
+        {showScoreboard && (
+          <div className="proto-card-scoreboard">
+            <header><span>CLASIFICACIÓN</span><b>R04</b></header>
+            {players.map((player, index) => (
+              <div key={player.name}>
+                <i>{String(index + 1).padStart(2, '0')}</i>
+                <Avatar player={player} size="sm" />
+                <span>{player.name}</span>
+                <b>{player.score} PT</b>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       <div className="proto-prompt-card">
@@ -371,29 +463,43 @@ function CardsPrototype({ concept }: { concept: Concept }) {
           <i />
           Tu mano
         </span>
-        <b>{selected + 1} de {hand.length}</b>
+        <b>ARRASTRA · {selected + 1}/{hand.length}</b>
       </div>
 
-      <div className="proto-card-carousel">
-        {visibleHand.map((card, index) => {
-          const isSelected = card.originalIndex === selected
-          return (
+      <div className="proto-restored-carousel">
+        <CylinderCarousel
+          itemSize={158}
+          height={244}
+          visibleItems={3}
+          minScale={0.78}
+          dragSpeed={1.2}
+          arc={34}
+          onIndexChange={setSelected}
+          defaultIndex={selected}
+        >
+          {hand.map((text, index) => {
+            const isSelected = index === selected
+            return (
             <button
-              key={card.text}
+              key={text}
               type="button"
-              className={`proto-answer-card proto-answer-card--${index} ${isSelected ? 'is-selected' : ''}`}
-              onClick={() => setSelected(card.originalIndex)}
+              className={`proto-scroll-card ${isSelected ? 'is-selected' : ''}`}
+              onClick={() => {
+                playSound('cardSlide')
+                setSelected(index)
+              }}
             >
-              <span>{card.text}</span>
-              <small>QX · {String(card.originalIndex + 12).padStart(2, '0')}</small>
+              <span>{text}</span>
+              <small>QX · {String(index + 12).padStart(2, '0')}</small>
               {isSelected && (
                 <i>
                   <Tick01Icon size={16} />
                 </i>
               )}
             </button>
-          )
-        })}
+            )
+          })}
+        </CylinderCarousel>
       </div>
 
       <div className="proto-card-dots" aria-hidden="true">
@@ -402,11 +508,35 @@ function CardsPrototype({ concept }: { concept: Concept }) {
         ))}
       </div>
 
-      <button className="proto-primary-action proto-primary-action--submit" type="button">
-        <Cards02Icon size={19} />
-        <span>Jugar esta carta</span>
-        <i>Mantén para confirmar</i>
-      </button>
+      {concept === 'orbit' && (
+        <button className="proto-swipe-submit" type="button" onClick={playSelected}>
+          <span>DESLIZA PARA JUGAR</span>
+          <i>↑</i>
+          <small>o toca aquí</small>
+        </button>
+      )}
+      {concept === 'stack' && (
+        <button className="proto-slam-submit" type="button" onClick={playSelected}>
+          <span>JUGAR</span>
+          <Cards02Icon size={20} />
+          <b>CARTA {String(selected + 1).padStart(2, '0')}</b>
+        </button>
+      )}
+      {concept === 'signal' && (
+        <button
+          className={`proto-hold-submit ${holding ? 'is-holding' : ''}`}
+          type="button"
+          onPointerDown={beginHold}
+          onPointerUp={endHold}
+          onPointerCancel={endHold}
+          onPointerLeave={endHold}
+        >
+          <i />
+          <span>MANTÉN PARA BLOQUEAR</span>
+          <b>0.7s</b>
+        </button>
+      )}
+      {played && <div className="proto-played-stamp">BLOQUEADA</div>}
     </section>
   )
 }
@@ -500,6 +630,10 @@ export default function Prototypes() {
   const [concept, setConcept] = useState<Concept>('orbit')
   const [screen, setScreen] = useState<Screen>('lobby')
 
+  useEffect(() => {
+    playSound('page')
+  }, [concept, screen])
+
   return (
     <div className={`proto-lab proto-lab--${concept}`}>
       <div className="proto-ambient proto-ambient--one" />
@@ -512,7 +646,7 @@ export default function Prototypes() {
         <div className="proto-device__edge" />
         <div className="proto-device__island" />
         <main className="proto-device__screen">
-          {screen === 'lobby' && <LobbyPrototype concept={concept} />}
+          {screen === 'lobby' && <LobbyPrototype concept={concept} onOpenSettings={() => setScreen('settings')} />}
           {screen === 'settings' && <SettingsPrototype concept={concept} />}
           {screen === 'cards' && <CardsPrototype concept={concept} />}
           {screen === 'round' && <RoundPrototype concept={concept} />}
