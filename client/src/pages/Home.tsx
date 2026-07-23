@@ -1,8 +1,9 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { GAME_DISPLAY_NAME } from '@xuuuxi/shared'
 import { useGame } from '@/context/GameProvider'
-import { DiceIcon, Door01Icon, ArrowLeft01Icon } from 'hugeicons-react'
+import { DiceIcon, Door01Icon, ArrowLeft01Icon, SparklesIcon } from 'hugeicons-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 
@@ -91,6 +92,11 @@ export default function Home() {
               onClick={() => setMode('join')}
             >
               <Door01Icon size={24} /> Unirse a Sala
+            </Button>
+            <Button variant="ghost" className="w-full" asChild>
+              <Link to="/prototypes">
+                <SparklesIcon size={19} /> Explorar UI Lab
+              </Link>
             </Button>
           </div>
         )}

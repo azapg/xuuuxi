@@ -8,6 +8,7 @@ import Room from './pages/Room'
 import Collections from './pages/Collections'
 import DebugDecks from './pages/DebugDecks'
 import Analytics from './pages/Analytics'
+import Prototypes from './pages/Prototypes'
 
 function AppShell() {
   const location = useLocation()
@@ -17,7 +18,8 @@ function AppShell() {
   // (GameTopBar: logo + timer + players + room controls), so the global
   // header would just eat vertical space for no reason.
   const isCompactGameView =
-    location.pathname.startsWith('/room/') && gameState != null
+    (location.pathname.startsWith('/room/') && gameState != null) ||
+    location.pathname.startsWith('/prototypes')
 
   return (
     <div className="app">
@@ -49,6 +51,7 @@ function AppShell() {
           <Route path="/room/:code" element={<Room />} />
           <Route path="/collections" element={<Collections />} />
           <Route path="/analytics" element={<Analytics />} />
+          <Route path="/prototypes" element={<Prototypes />} />
           {import.meta.env.DEV && (
             <Route path="/debug-decks" element={<DebugDecks />} />
           )}
