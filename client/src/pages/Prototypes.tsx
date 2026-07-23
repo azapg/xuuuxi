@@ -156,6 +156,10 @@ function LobbyPrototype({
   onOpenSettings: () => void
 }) {
   const [copied, setCopied] = useState(false)
+  const [quickSetting, setQuickSetting] = useState<'deck' | 'goal' | null>(null)
+  const [deck, setDeck] = useState('Sin filtro')
+  const [goal, setGoal] = useState(7)
+  const [started, setStarted] = useState(false)
 
   return (
     <section className="proto-screen proto-lobby" aria-label="Propuesta de sala">
@@ -213,26 +217,82 @@ function LobbyPrototype({
       </div>
 
       <div className="proto-lobby-meta">
-        <div>
+        <button
+          type="button"
+          aria-expanded={quickSetting === 'deck'}
+          onClick={() => {
+            playSound('cardLift')
+            setQuickSetting(current => current === 'deck' ? null : 'deck')
+          }}
+        >
           <Layers01Icon size={18} />
           <span>
             <small>Mazo</small>
-            <b>Sin filtro</b>
+            <b>{deck}</b>
           </span>
-        </div>
-        <div>
+          <i>EDITAR</i>
+        </button>
+        <button
+          type="button"
+          aria-expanded={quickSetting === 'goal'}
+          onClick={() => {
+            playSound('cardLift')
+            setQuickSetting(current => current === 'goal' ? null : 'goal')
+          }}
+        >
           <UserGroup02Icon size={18} />
           <span>
             <small>Meta</small>
-            <b>7 puntos</b>
+            <b>{goal} puntos</b>
           </span>
-        </div>
+          <i>EDITAR</i>
+        </button>
       </div>
 
-      <button className="proto-primary-action" type="button" onClick={() => playSound('ready')}>
+      {quickSetting && (
+        <div className="proto-quick-settings" role="dialog" aria-label={quickSetting === 'deck' ? 'Cambiar mazo' : 'Cambiar meta'}>
+          <header>
+            <span>{quickSetting === 'deck' ? 'MAZO RÁPIDO' : 'META RÁPIDA'}</span>
+            <button type="button" aria-label="Cerrar ajustes rápidos" onClick={() => setQuickSetting(null)}>×</button>
+          </header>
+          <div>
+            {(quickSetting === 'deck' ? ['Sin filtro', 'Panamá', 'Internas'] : [5, 7, 10]).map(option => {
+              const selected = quickSetting === 'deck' ? deck === option : goal === option
+              return (
+                <button
+                  key={option}
+                  type="button"
+                  className={selected ? 'is-active' : ''}
+                  onClick={() => {
+                    playSound('cardSlide')
+                    if (quickSetting === 'deck') setDeck(String(option))
+                    else setGoal(Number(option))
+                    setQuickSetting(null)
+                  }}
+                >
+                  {quickSetting === 'deck' ? option : `${option} PT`}
+                  {selected && <Tick01Icon size={14} />}
+                </button>
+              )
+            })}
+          </div>
+          <button className="proto-quick-settings__full" type="button" onClick={onOpenSettings}>
+            VER TODOS LOS AJUSTES →
+          </button>
+        </div>
+      )}
+
+      <button
+        className={`proto-primary-action ${started ? 'is-started' : ''}`}
+        type="button"
+        onClick={() => {
+          playSound(started ? 'tick' : 'ready')
+          setStarted(true)
+        }}
+      >
         <PlayIcon size={19} />
-        <span>Empezar la noche</span>
-        <i>4/4 listos</i>
+        <span>{started ? 'PARTIDA LISTA' : 'EMPEZAR PARTIDA'}</span>
+        <i>{started ? 'CARGANDO…' : '4/4 LISTOS'}</i>
       </button>
     </section>
   )
@@ -376,6 +436,7 @@ function CardsPrototype() {
   const [selected, setSelected] = useState(1)
   const [showScoreboard, setShowScoreboard] = useState(false)
   const [played, setPlayed] = useState(false)
+  const [swaps, setSwaps] = useState(2)
 
   const playSelected = () => {
     playSound('success')
@@ -414,9 +475,22 @@ function CardsPrototype() {
           <small>ENVIARON</small>
           <AnalyticsUpIcon size={17} />
         </button>
-        {showScoreboard && (
-          <div className="proto-card-scoreboard">
-            <header><span>CLASIFICACIÓN</span><b>R04</b></header>
+      </div>
+
+      {showScoreboard && (
+        <>
+          <button
+            className="proto-scoreboard-scrim"
+            type="button"
+            aria-label="Cerrar clasificación"
+            onClick={() => setShowScoreboard(false)}
+          />
+          <div className="proto-card-scoreboard" role="dialog" aria-modal="true" aria-label="Clasificación de la partida">
+            <header>
+              <span>CLASIFICACIÓN</span>
+              <b>R04</b>
+              <button type="button" aria-label="Cerrar clasificación" onClick={() => setShowScoreboard(false)}>×</button>
+            </header>
             {players.map((player, index) => (
               <div key={player.name}>
                 <i>{String(index + 1).padStart(2, '0')}</i>
@@ -426,8 +500,8 @@ function CardsPrototype() {
               </div>
             ))}
           </div>
-        )}
-      </div>
+        </>
+      )}
 
       <div className="proto-prompt-card">
         <span>COMPLETA LA FRASE</span>
@@ -485,6 +559,31 @@ function CardsPrototype() {
         ))}
       </div>
 
+      <div className="proto-hand-tools">
+        <button
+          type="button"
+          disabled={swaps === 0}
+          onClick={() => {
+            playSound('deal')
+            setSelected(current => (current + 1) % hand.length)
+            setSwaps(current => Math.max(0, current - 1))
+          }}
+        >
+          <span>CAMBIAR CARTA</span>
+          <b>{swaps} RESTANTES</b>
+        </button>
+        <button
+          type="button"
+          onClick={() => {
+            playSound('page')
+            setShowScoreboard(true)
+          }}
+        >
+          <span>MARCADOR</span>
+          <b>ALLAN LIDERA · 3 PT</b>
+        </button>
+      </div>
+
       <button className="proto-slam-submit" type="button" onClick={playSelected}>
         <span>JUGAR</span>
         <Cards02Icon size={20} />
@@ -496,7 +595,27 @@ function CardsPrototype() {
 }
 
 function RoundPrototype() {
-  const [reacted, setReacted] = useState(false)
+  const [sentReaction, setSentReaction] = useState<string | null>(null)
+  const [message, setMessage] = useState('')
+  const [sentMessage, setSentMessage] = useState<string | null>(null)
+  const reactions = [
+    { emoji: '🔥', label: 'Fuego' },
+    { emoji: '💀', label: 'Muerto' },
+    { emoji: '😳', label: 'Qué fuerte' },
+    { emoji: '🍑', label: 'Sospechoso' },
+    { emoji: '🚩', label: 'Bandera roja' },
+    { emoji: '🤡', label: 'Payaso' },
+    { emoji: '🫦', label: 'Picante' },
+  ]
+
+  const sendMessage = () => {
+    const cleanMessage = message.trim()
+    if (!cleanMessage) return
+    playSound('success')
+    setSentMessage(cleanMessage)
+    setMessage('')
+  }
+
   return (
     <section className="proto-screen proto-round" aria-label="Propuesta de ronda activa">
       <div className="proto-round-status">
@@ -524,18 +643,50 @@ function RoundPrototype() {
         </div>
       </div>
 
-      <div className="proto-reaction-row">
-        {['SUCIO', 'BRUTAL', 'NO PUEDE SER'].map((label, index) => (
-          <button
-            key={label}
-            type="button"
-            className={reacted && index === 1 ? 'is-active' : ''}
-            onClick={() => setReacted(index === 1)}
-          >
-            <i>{index === 0 ? '×' : index === 1 ? '!' : '?'}</i>
-            <span>{label}</span>
+      {(sentReaction || sentMessage) && (
+        <div className="proto-sent-reaction" aria-live="polite">
+          {sentReaction && <strong>{sentReaction}</strong>}
+          {sentMessage && <span>{sentMessage}</span>}
+        </div>
+      )}
+
+      <div className="proto-judge-social">
+        <div className="proto-sticker-wheel" aria-label="Reacciones rápidas">
+          {reactions.map((reaction, index) => (
+            <button
+              className={`proto-sticker proto-sticker--${index + 1} ${sentReaction === reaction.emoji ? 'is-sent' : ''}`}
+              key={reaction.label}
+              type="button"
+              aria-label={`Enviar ${reaction.label}`}
+              onClick={() => {
+                playSound('cardLift')
+                setSentReaction(reaction.emoji)
+                window.setTimeout(() => setSentReaction(null), 1500)
+              }}
+            >
+              <span aria-hidden="true">{reaction.emoji}</span>
+            </button>
+          ))}
+        </div>
+
+        <form
+          className="proto-message-composer"
+          onSubmit={event => {
+            event.preventDefault()
+            sendMessage()
+          }}
+        >
+          <input
+            aria-label="Mensaje para la sala"
+            maxLength={72}
+            placeholder="DI ALGO…"
+            value={message}
+            onChange={event => setMessage(event.target.value)}
+          />
+          <button type="submit" disabled={!message.trim()}>
+            ENVIAR ↑
           </button>
-        ))}
+        </form>
       </div>
 
       <div className="proto-score-strip">

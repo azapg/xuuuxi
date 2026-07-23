@@ -3408,3 +3408,435 @@
     left: calc(50% - 258px);
   }
 }
+
+/* ============================================================
+   Functional UX pass — every visible control earns its space
+   ============================================================ */
+
+.proto-lobby-meta > button {
+  position: relative;
+  min-width: 0;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.65rem 0.75rem;
+  border: 1px solid var(--proto-line);
+  color: var(--proto-ink);
+  background: #18080c;
+  box-shadow: 4px 4px 0 #080808;
+  text-align: left;
+  clip-path: var(--proto-cut);
+}
+
+.proto-lobby-meta > button:active,
+.proto-lobby-meta > button[aria-expanded='true'] {
+  color: #080808;
+  background: #f7f2ed;
+  translate: 3px 3px;
+  box-shadow: 1px 1px 0 #080808;
+}
+
+.proto-lobby-meta > button[aria-expanded='true'] small,
+.proto-lobby-meta > button[aria-expanded='true'] svg {
+  color: #e21438;
+}
+
+.proto-lobby-meta > button > i {
+  align-self: end;
+  color: var(--proto-red-soft);
+  font-size: 0.43rem;
+  font-style: normal;
+  font-weight: 950;
+  letter-spacing: 0.08em;
+}
+
+.proto-quick-settings {
+  position: absolute;
+  right: max(1.15rem, env(safe-area-inset-right));
+  bottom: calc(max(10rem, env(safe-area-inset-bottom) + 9.5rem));
+  left: max(1.15rem, env(safe-area-inset-left));
+  z-index: 120;
+  padding: 0.75rem;
+  border: 2px solid #f7f2ed;
+  color: #f7f2ed;
+  background: #080808;
+  box-shadow: 8px 8px 0 #e21438;
+  clip-path: var(--proto-cut);
+  animation: proto-quick-in 180ms steps(3, end);
+}
+
+@keyframes proto-quick-in {
+  from { opacity: 0; translate: 0 15px; rotate: 2deg; }
+  to { opacity: 1; translate: 0 0; rotate: 0; }
+}
+
+.proto-quick-settings header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.6rem;
+  color: var(--proto-red-soft);
+  font-size: 0.58rem;
+  font-weight: 1000;
+  font-style: italic;
+  letter-spacing: 0.12em;
+}
+
+.proto-quick-settings header button {
+  width: 28px;
+  height: 28px;
+  border: 1px solid #f7f2ed;
+  color: #f7f2ed;
+  background: #080808;
+  font-size: 1rem;
+  font-weight: 900;
+}
+
+.proto-quick-settings > div {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.4rem;
+}
+
+.proto-quick-settings > div button {
+  min-height: 43px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  border: 1px solid var(--proto-line);
+  color: #f7f2ed;
+  background: #1a1113;
+  font-size: 0.6rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.proto-quick-settings > div button.is-active {
+  color: #080808;
+  background: #f7f2ed;
+  box-shadow: 3px 3px 0 #e21438;
+}
+
+.proto-quick-settings__full {
+  width: 100%;
+  margin-top: 0.65rem;
+  padding: 0.45rem;
+  border: 0;
+  color: var(--proto-red-soft);
+  background: transparent;
+  font-size: 0.52rem;
+  font-weight: 950;
+  letter-spacing: 0.1em;
+}
+
+.proto-lab--immersive .proto-lobby .proto-primary-action {
+  grid-template-columns: 1fr;
+  place-items: center;
+  border: 2px solid #f7f2ed;
+  color: #f7f2ed;
+  background: #e21438;
+  box-shadow: 7px 7px 0 #080808;
+}
+
+.proto-lab--immersive .proto-lobby .proto-primary-action svg {
+  position: absolute;
+  left: 0.9rem;
+}
+
+.proto-lab--immersive .proto-lobby .proto-primary-action span {
+  text-align: center;
+  font-size: 0.9rem;
+  font-weight: 1000;
+  font-style: italic;
+  letter-spacing: 0.02em;
+}
+
+.proto-lab--immersive .proto-lobby .proto-primary-action i {
+  position: absolute;
+  right: 0.85rem;
+  color: #f7f2ed;
+}
+
+.proto-lab--immersive .proto-lobby .proto-primary-action.is-started {
+  color: #080808;
+  background: #f7f2ed;
+  box-shadow: 7px 7px 0 #e21438;
+}
+
+.proto-lab--immersive .proto-lobby .proto-primary-action.is-started i {
+  color: #e21438;
+}
+
+/* The leaderboard is a real modal layer, never part of the card stack. */
+.proto-scoreboard-scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 240;
+  border: 0;
+  background: rgba(8, 8, 8, 0.78);
+}
+
+.proto-lab--immersive .proto-card-scoreboard {
+  position: absolute;
+  top: calc(max(4.5rem, env(safe-area-inset-top) + 4rem));
+  right: max(1.15rem, env(safe-area-inset-right));
+  left: max(1.15rem, env(safe-area-inset-left));
+  z-index: 260;
+  width: auto;
+  padding: 0.8rem;
+  border: 3px solid #f7f2ed;
+  background: #12080a;
+  box-shadow: 10px 10px 0 #e21438;
+}
+
+.proto-card-scoreboard header {
+  grid-template-columns: 1fr auto auto;
+  gap: 0.7rem;
+}
+
+.proto-card-scoreboard header button {
+  width: 30px;
+  height: 30px;
+  border: 1px solid #f7f2ed;
+  color: #f7f2ed;
+  background: #080808;
+  font-size: 1rem;
+  font-weight: 900;
+}
+
+.proto-lab--immersive .proto-card-scoreboard > div {
+  min-height: 48px;
+  grid-template-columns: 30px 32px 1fr auto;
+}
+
+.proto-hand-tools {
+  position: absolute;
+  right: max(1.15rem, env(safe-area-inset-right));
+  bottom: calc(max(5.9rem, env(safe-area-inset-bottom) + 5.4rem));
+  left: max(1.15rem, env(safe-area-inset-left));
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.55rem;
+}
+
+.proto-hand-tools button {
+  min-width: 0;
+  min-height: 54px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.15rem;
+  padding: 0.55rem 0.65rem;
+  border: 1px solid #f7f2ed;
+  color: #f7f2ed;
+  background: #080808;
+  text-align: left;
+  clip-path: var(--proto-cut);
+}
+
+.proto-hand-tools button:last-child {
+  color: #080808;
+  background: #f7f2ed;
+  box-shadow: 4px 4px 0 #e21438;
+}
+
+.proto-hand-tools button:active {
+  translate: 3px 3px;
+}
+
+.proto-hand-tools button:disabled {
+  opacity: 0.38;
+}
+
+.proto-hand-tools span {
+  font-size: 0.58rem;
+  font-weight: 1000;
+  font-style: italic;
+  letter-spacing: 0.04em;
+}
+
+.proto-hand-tools b {
+  color: var(--proto-red-soft);
+  font-size: 0.44rem;
+  letter-spacing: 0.06em;
+}
+
+.proto-hand-tools button:last-child b {
+  color: #8e0924;
+}
+
+/* Judge social controls: sticker orbit plus a message channel. */
+.proto-judge-social {
+  position: absolute;
+  right: max(1.15rem, env(safe-area-inset-right));
+  bottom: calc(max(6.2rem, env(safe-area-inset-bottom) + 5.7rem));
+  left: max(1.15rem, env(safe-area-inset-left));
+  z-index: 80;
+}
+
+.proto-sticker-wheel {
+  min-height: 76px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 0.15rem;
+}
+
+.proto-sticker {
+  width: 43px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  border: 2px solid #080808;
+  color: #080808;
+  background: #f7f2ed;
+  box-shadow: 3px 3px 0 #e21438;
+  font-size: 1.45rem;
+  clip-path: polygon(7px 0, 100% 0, 100% calc(100% - 7px), calc(100% - 7px) 100%, 0 100%, 0 7px);
+}
+
+.proto-sticker > span {
+  display: block;
+  animation: proto-sticker-float 2.7s steps(5, end) infinite alternate;
+}
+
+.proto-sticker:nth-child(2) > span { animation-delay: -1.7s; }
+.proto-sticker:nth-child(3) > span { animation-delay: -2.4s; }
+.proto-sticker:nth-child(4) > span { animation-delay: -0.8s; }
+.proto-sticker:nth-child(5) > span { animation-delay: -1.1s; }
+.proto-sticker:nth-child(6) > span { animation-delay: -2s; }
+.proto-sticker:nth-child(7) > span { animation-delay: -2.7s; }
+
+.proto-sticker:nth-child(even) {
+  color: #f7f2ed;
+  background: #e21438;
+  box-shadow: 3px 3px 0 #f7f2ed;
+}
+
+.proto-sticker--1 { rotate: -12deg; translate: 0 9px; animation-delay: -0.4s; }
+.proto-sticker--2 { rotate: 8deg; translate: 0 -6px; animation-delay: -1.7s; }
+.proto-sticker--3 { rotate: -5deg; translate: 0 4px; animation-delay: -2.4s; }
+.proto-sticker--4 { width: 50px; height: 56px; rotate: 5deg; translate: 0 -10px; }
+.proto-sticker--5 { rotate: -8deg; translate: 0 3px; animation-delay: -1.1s; }
+.proto-sticker--6 { rotate: 11deg; translate: 0 -5px; animation-delay: -2s; }
+.proto-sticker--7 { rotate: -6deg; translate: 0 8px; animation-delay: -2.7s; }
+
+@keyframes proto-sticker-float {
+  from { translate: 0 -5px; rotate: -5deg; }
+  to { translate: 0 7px; rotate: 6deg; }
+}
+
+.proto-sticker:active,
+.proto-sticker.is-sent {
+  scale: 1.22;
+  rotate: 0deg;
+  background: #f7f2ed;
+}
+
+.proto-message-composer {
+  height: 48px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  border: 2px solid #f7f2ed;
+  background: #080808;
+  box-shadow: 5px 5px 0 #e21438;
+  clip-path: var(--proto-cut);
+}
+
+.proto-message-composer input {
+  min-width: 0;
+  padding: 0 0.8rem;
+  border: 0;
+  outline: 0;
+  color: #f7f2ed;
+  background: transparent;
+  font: inherit;
+  font-size: 0.68rem;
+  font-weight: 800;
+}
+
+.proto-message-composer input::placeholder {
+  color: #8f7d81;
+  font-style: italic;
+}
+
+.proto-message-composer button {
+  min-width: 82px;
+  border: 0;
+  color: #080808;
+  background: #f7f2ed;
+  font-size: 0.54rem;
+  font-weight: 1000;
+  letter-spacing: 0.07em;
+}
+
+.proto-message-composer button:disabled {
+  color: #7b6d70;
+  background: #21191b;
+}
+
+.proto-sent-reaction {
+  position: absolute;
+  top: 58%;
+  left: 50%;
+  z-index: 120;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  max-width: 80%;
+  padding: 0.5rem 0.75rem;
+  color: #080808;
+  background: #f7f2ed;
+  box-shadow: 7px 7px 0 #e21438;
+  translate: -50% -50%;
+  rotate: -4deg;
+  animation: proto-reaction-send 420ms steps(5, end);
+}
+
+.proto-sent-reaction strong {
+  font-size: 2rem;
+}
+
+.proto-sent-reaction span {
+  overflow: hidden;
+  font-size: 0.7rem;
+  font-weight: 900;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@keyframes proto-reaction-send {
+  from { opacity: 0; translate: -50% 35%; rotate: 9deg; scale: 0.5; }
+  to { opacity: 1; translate: -50% -50%; rotate: -4deg; scale: 1; }
+}
+
+@media (max-height: 740px) {
+  .proto-hand-tools {
+    bottom: 5.55rem;
+  }
+
+  .proto-hand-tools button {
+    min-height: 48px;
+  }
+
+  .proto-judge-social {
+    bottom: 5.75rem;
+  }
+
+  .proto-sticker-wheel {
+    min-height: 65px;
+  }
+
+  .proto-sticker {
+    width: 38px;
+    height: 42px;
+    font-size: 1.2rem;
+  }
+
+  .proto-sticker--4 {
+    width: 44px;
+    height: 48px;
+  }
+}
