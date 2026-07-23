@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import {
   AnalyticsUpIcon,
   ArrowLeft01Icon,
@@ -11,7 +11,6 @@ import {
   Layers01Icon,
   PlayIcon,
   Settings01Icon,
-  Share01Icon,
   SparklesIcon,
   Tick01Icon,
   UserGroup02Icon,
@@ -98,16 +97,18 @@ function Avatar({
   )
 }
 
-function FloatingChrome({
+function PrototypeHub({
   concept,
   onConceptChange,
+  onOpenScreen,
 }: {
   concept: Concept
   onConceptChange: (concept: Concept) => void
+  onOpenScreen: (screen: Screen) => void
 }) {
   return (
-    <>
-      <div className="proto-exit-row">
+    <main className="proto-hub">
+      <div className="proto-hub__top">
         <Link className="proto-round-button" to="/" aria-label="Volver al juego">
           <ArrowLeft01Icon size={20} />
         </Link>
@@ -116,12 +117,18 @@ function FloatingChrome({
           <span>UI LAB</span>
           <i>12 pantallas</i>
         </div>
-        <button className="proto-round-button" type="button" aria-label="Compartir prototipo">
-          <Share01Icon size={19} />
-        </button>
       </div>
 
-      <div className="proto-concept-picker" role="tablist" aria-label="Dirección visual">
+      <header className="proto-hub__title">
+        <span>PROTOTIPOS // 03 × 04</span>
+        <h1>
+          ELIGE UNA
+          <i>PANTALLA</i>
+        </h1>
+        <p>Cada prueba abre como una experiencia completa. Usa Atrás en el navegador para volver a este índice.</p>
+      </header>
+
+      <div className="proto-hub__concepts" role="tablist" aria-label="Dirección visual">
         {concepts.map(item => (
           <button
             key={item.id}
@@ -133,10 +140,40 @@ function FloatingChrome({
           >
             <b>{item.number}</b>
             <span>{item.name}</span>
+            <small>{item.note}</small>
           </button>
         ))}
       </div>
-    </>
+
+      <section className="proto-hub__screens" aria-label="Pantallas disponibles">
+        {screens.map((item, index) => {
+          const Icon = item.icon
+          return (
+            <button
+              className={`proto-hub-card proto-hub-card--${item.id}`}
+              key={item.id}
+              type="button"
+              onClick={() => onOpenScreen(item.id)}
+            >
+              <span className="proto-hub-card__number">0{index + 1}</span>
+              <Icon size={28} />
+              <strong>{item.label}</strong>
+              <small>
+                {item.id === 'lobby' && 'Órbita social · código · reglas'}
+                {item.id === 'settings' && 'Ritmo · mazo · control host'}
+                {item.id === 'cards' && 'Carrusel · estado · envío'}
+                {item.id === 'round' && 'Czar · reacciones · marcador'}
+              </small>
+              <i>ABRIR →</i>
+            </button>
+          )
+        })}
+      </section>
+
+      <div className="proto-paper-shard proto-paper-shard--one">MOVE</div>
+      <div className="proto-paper-shard proto-paper-shard--two">PLAY</div>
+      <div className="proto-paper-shard proto-paper-shard--three">///</div>
+    </main>
   )
 }
 
@@ -597,81 +634,47 @@ function RoundPrototype({ concept }: { concept: Concept }) {
   )
 }
 
-function BottomTabs({
-  screen,
-  onScreenChange,
-}: {
-  screen: Screen
-  onScreenChange: (screen: Screen) => void
-}) {
-  return (
-    <nav className="proto-tabs" aria-label="Pantallas del prototipo">
-      {screens.map(item => {
-        const Icon = item.icon
-        return (
-          <button
-            key={item.id}
-            type="button"
-            className={screen === item.id ? 'is-active' : ''}
-            onClick={() => onScreenChange(item.id)}
-          >
-            <i>
-              <Icon size={21} />
-            </i>
-            <span>{item.short}</span>
-          </button>
-        )
-      })}
-    </nav>
-  )
-}
-
 export default function Prototypes() {
-  const [concept, setConcept] = useState<Concept>('orbit')
-  const [screen, setScreen] = useState<Screen>('lobby')
+  const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+  const requestedConcept = searchParams.get('concept')
+  const requestedScreen = searchParams.get('screen')
+  const screen = screens.some(item => item.id === requestedScreen) ? requestedScreen as Screen : null
+  const queryConcept = concepts.some(item => item.id === requestedConcept) ? requestedConcept as Concept : 'orbit'
+  const [hubConcept, setHubConcept] = useState<Concept>(queryConcept)
+  const concept = screen ? queryConcept : hubConcept
 
   useEffect(() => {
     playSound('page')
   }, [concept, screen])
 
+  const openScreen = (nextScreen: Screen) => {
+    navigate(`/prototypes?concept=${hubConcept}&screen=${nextScreen}`)
+  }
+
   return (
-    <div className={`proto-lab proto-lab--${concept}`}>
+    <div className={`proto-lab proto-lab--${concept} ${screen ? 'proto-lab--immersive' : 'proto-lab--hub'}`}>
       <div className="proto-ambient proto-ambient--one" />
       <div className="proto-ambient proto-ambient--two" />
       <div className="proto-grain" />
 
-      <FloatingChrome concept={concept} onConceptChange={setConcept} />
-
-      <div className="proto-device">
-        <div className="proto-device__edge" />
-        <div className="proto-device__island" />
-        <main className="proto-device__screen">
-          {screen === 'lobby' && <LobbyPrototype concept={concept} onOpenSettings={() => setScreen('settings')} />}
-          {screen === 'settings' && <SettingsPrototype concept={concept} />}
-          {screen === 'cards' && <CardsPrototype concept={concept} />}
-          {screen === 'round' && <RoundPrototype concept={concept} />}
-          <BottomTabs screen={screen} onScreenChange={setScreen} />
-        </main>
-      </div>
-
-      <aside className="proto-desktop-note">
-        <span>EXPLORACIÓN {concepts.findIndex(item => item.id === concept) + 1}/3</span>
-        <h1>{concepts.find(item => item.id === concept)?.name}</h1>
-        <p>{concepts.find(item => item.id === concept)?.note}. Cambia de pantalla con las pestañas inferiores.</p>
-        <div>
-          {screens.map(item => (
-            <button
-              key={item.id}
-              type="button"
-              className={screen === item.id ? 'is-active' : ''}
-              onClick={() => setScreen(item.id)}
-            >
-              <span>{String(screens.indexOf(item) + 1).padStart(2, '0')}</span>
-              {item.label}
-            </button>
-          ))}
+      {!screen ? (
+        <PrototypeHub concept={hubConcept} onConceptChange={setHubConcept} onOpenScreen={openScreen} />
+      ) : (
+        <div className="proto-device">
+          <main className="proto-device__screen">
+            {screen === 'lobby' && (
+              <LobbyPrototype
+                concept={concept}
+                onOpenSettings={() => navigate(`/prototypes?concept=${concept}&screen=settings`)}
+              />
+            )}
+            {screen === 'settings' && <SettingsPrototype concept={concept} />}
+            {screen === 'cards' && <CardsPrototype concept={concept} />}
+            {screen === 'round' && <RoundPrototype concept={concept} />}
+          </main>
         </div>
-      </aside>
+      )}
     </div>
   )
 }
