@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import {
   AnalyticsUpIcon,
@@ -21,44 +21,16 @@ import { playSound } from '@/lib/sound'
 import './prototypes.css'
 
 type Screen = 'lobby' | 'settings' | 'cards' | 'round'
-type Concept = 'orbit' | 'stack' | 'signal'
-
-const concepts: Array<{
-  id: Concept
-  number: string
-  name: string
-  note: string
-}> = [
-  {
-    id: 'orbit',
-    number: '01',
-    name: 'Velvet Orbit',
-    note: 'Social, cinético, afilado',
-  },
-  {
-    id: 'stack',
-    number: '02',
-    name: 'Razor Stack',
-    note: 'Directo, táctil, explosivo',
-  },
-  {
-    id: 'signal',
-    number: '03',
-    name: 'Redline Signal',
-    note: 'Tenso, preciso, hostil',
-  },
-]
 
 const screens: Array<{
   id: Screen
   label: string
-  short: string
   icon: typeof Home02Icon
 }> = [
-  { id: 'lobby', label: 'Sala', short: 'Sala', icon: Home02Icon },
-  { id: 'settings', label: 'Ajustes', short: 'Ajustes', icon: Settings01Icon },
-  { id: 'cards', label: 'Tus cartas', short: 'Cartas', icon: Cards02Icon },
-  { id: 'round', label: 'En juego', short: 'Ronda', icon: GameController01Icon },
+  { id: 'lobby', label: 'Sala', icon: Home02Icon },
+  { id: 'settings', label: 'Ajustes', icon: Settings01Icon },
+  { id: 'cards', label: 'Tus cartas', icon: Cards02Icon },
+  { id: 'round', label: 'En juego', icon: GameController01Icon },
 ]
 
 const players = [
@@ -98,12 +70,8 @@ function Avatar({
 }
 
 function PrototypeHub({
-  concept,
-  onConceptChange,
   onOpenScreen,
 }: {
-  concept: Concept
-  onConceptChange: (concept: Concept) => void
   onOpenScreen: (screen: Screen) => void
 }) {
   return (
@@ -115,12 +83,12 @@ function PrototypeHub({
         <div className="proto-lab-pill">
           <SparklesIcon size={15} />
           <span>UI LAB</span>
-          <i>12 pantallas</i>
+          <i>04 pantallas</i>
         </div>
       </div>
 
       <header className="proto-hub__title">
-        <span>PROTOTIPOS // 03 × 04</span>
+        <span>PROTOTIPOS // 04</span>
         <h1>
           ELIGE UNA
           <i>PANTALLA</i>
@@ -128,21 +96,14 @@ function PrototypeHub({
         <p>Cada prueba abre como una experiencia completa. Usa Atrás en el navegador para volver a este índice.</p>
       </header>
 
-      <div className="proto-hub__concepts" role="tablist" aria-label="Dirección visual">
-        {concepts.map(item => (
-          <button
-            key={item.id}
-            className={concept === item.id ? 'is-active' : ''}
-            type="button"
-            role="tab"
-            aria-selected={concept === item.id}
-            onClick={() => onConceptChange(item.id)}
-          >
-            <b>{item.number}</b>
-            <span>{item.name}</span>
-            <small>{item.note}</small>
-          </button>
-        ))}
+      <div className="proto-hub__direction" aria-label="Dirección visual elegida">
+        <span>DIRECCIÓN ÚNICA</span>
+        <strong>PRINT RIOT</strong>
+        <div>
+          <i>PAPEL</i>
+          <i>TINTA</i>
+          <i>CAOS</i>
+        </div>
       </div>
 
       <section className="proto-hub__screens" aria-label="Pantallas disponibles">
@@ -177,31 +138,28 @@ function PrototypeHub({
   )
 }
 
-function ScreenIntro({ concept, screen }: { concept: Concept; screen: Screen }) {
-  const currentConcept = concepts.find(item => item.id === concept)!
+function ScreenIntro({ screen }: { screen: Screen }) {
   const currentScreen = screens.find(item => item.id === screen)!
 
   return (
     <div className="proto-screen-intro">
-      <span>{currentConcept.name}</span>
+      <span>XUUUXI // PRINT RIOT</span>
       <strong>{currentScreen.label}</strong>
-      <small>{currentConcept.note}</small>
+      <small>Pantalla jugable</small>
     </div>
   )
 }
 
 function LobbyPrototype({
-  concept,
   onOpenSettings,
 }: {
-  concept: Concept
   onOpenSettings: () => void
 }) {
   const [copied, setCopied] = useState(false)
 
   return (
     <section className="proto-screen proto-lobby" aria-label="Propuesta de sala">
-      <ScreenIntro concept={concept} screen="lobby" />
+      <ScreenIntro screen="lobby" />
 
       <button
         className="proto-room-settings"
@@ -329,13 +287,13 @@ function Stepper({ label, initial }: { label: string; initial: number }) {
   )
 }
 
-function SettingsPrototype({ concept }: { concept: Concept }) {
+function SettingsPrototype() {
   const [mode, setMode] = useState<'czar' | 'vote'>('czar')
   const [deck, setDeck] = useState('Sin filtro')
 
   return (
     <section className="proto-screen proto-settings" aria-label="Propuesta de ajustes">
-      <ScreenIntro concept={concept} screen="settings" />
+      <ScreenIntro screen="settings" />
 
       <div className="proto-settings-sheet">
         <div className="proto-sheet-handle" />
@@ -414,34 +372,16 @@ function SettingsPrototype({ concept }: { concept: Concept }) {
   )
 }
 
-function CardsPrototype({ concept }: { concept: Concept }) {
+function CardsPrototype() {
   const [selected, setSelected] = useState(1)
   const [showScoreboard, setShowScoreboard] = useState(false)
   const [played, setPlayed] = useState(false)
-  const [holding, setHolding] = useState(false)
-  const holdTimer = useRef<number | null>(null)
 
   const playSelected = () => {
     playSound('success')
     setPlayed(true)
     window.setTimeout(() => setPlayed(false), 1100)
   }
-
-  const beginHold = () => {
-    setHolding(true)
-    playSound('tick')
-    holdTimer.current = window.setTimeout(playSelected, 720)
-  }
-
-  const endHold = () => {
-    setHolding(false)
-    if (holdTimer.current !== null) window.clearTimeout(holdTimer.current)
-    holdTimer.current = null
-  }
-
-  useEffect(() => () => {
-    if (holdTimer.current !== null) window.clearTimeout(holdTimer.current)
-  }, [])
 
   return (
     <section className={`proto-screen proto-cards ${played ? 'is-played' : ''}`} aria-label="Propuesta de selector de cartas">
@@ -505,12 +445,12 @@ function CardsPrototype({ concept }: { concept: Concept }) {
 
       <div className="proto-restored-carousel">
         <CylinderCarousel
-          itemSize={158}
-          height={244}
+          itemSize={180}
+          height={320}
           visibleItems={3}
-          minScale={0.78}
+          minScale={0.74}
           dragSpeed={1.2}
-          arc={34}
+          arc={40}
           onIndexChange={setSelected}
           defaultIndex={selected}
         >
@@ -545,40 +485,17 @@ function CardsPrototype({ concept }: { concept: Concept }) {
         ))}
       </div>
 
-      {concept === 'orbit' && (
-        <button className="proto-swipe-submit" type="button" onClick={playSelected}>
-          <span>DESLIZA PARA JUGAR</span>
-          <i>↑</i>
-          <small>o toca aquí</small>
-        </button>
-      )}
-      {concept === 'stack' && (
-        <button className="proto-slam-submit" type="button" onClick={playSelected}>
-          <span>JUGAR</span>
-          <Cards02Icon size={20} />
-          <b>CARTA {String(selected + 1).padStart(2, '0')}</b>
-        </button>
-      )}
-      {concept === 'signal' && (
-        <button
-          className={`proto-hold-submit ${holding ? 'is-holding' : ''}`}
-          type="button"
-          onPointerDown={beginHold}
-          onPointerUp={endHold}
-          onPointerCancel={endHold}
-          onPointerLeave={endHold}
-        >
-          <i />
-          <span>MANTÉN PARA BLOQUEAR</span>
-          <b>0.7s</b>
-        </button>
-      )}
+      <button className="proto-slam-submit" type="button" onClick={playSelected}>
+        <span>JUGAR</span>
+        <Cards02Icon size={20} />
+        <b>CARTA {String(selected + 1).padStart(2, '0')}</b>
+      </button>
       {played && <div className="proto-played-stamp">BLOQUEADA</div>}
     </section>
   )
 }
 
-function RoundPrototype({ concept }: { concept: Concept }) {
+function RoundPrototype() {
   const [reacted, setReacted] = useState(false)
   return (
     <section className="proto-screen proto-round" aria-label="Propuesta de ronda activa">
@@ -637,41 +554,36 @@ function RoundPrototype({ concept }: { concept: Concept }) {
 export default function Prototypes() {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
-  const requestedConcept = searchParams.get('concept')
   const requestedScreen = searchParams.get('screen')
   const screen = screens.some(item => item.id === requestedScreen) ? requestedScreen as Screen : null
-  const queryConcept = concepts.some(item => item.id === requestedConcept) ? requestedConcept as Concept : 'orbit'
-  const [hubConcept, setHubConcept] = useState<Concept>(queryConcept)
-  const concept = screen ? queryConcept : hubConcept
 
   useEffect(() => {
     playSound('page')
-  }, [concept, screen])
+  }, [screen])
 
   const openScreen = (nextScreen: Screen) => {
-    navigate(`/prototypes?concept=${hubConcept}&screen=${nextScreen}`)
+    navigate(`/prototypes?screen=${nextScreen}`)
   }
 
   return (
-    <div className={`proto-lab proto-lab--${concept} ${screen ? 'proto-lab--immersive' : 'proto-lab--hub'}`}>
+    <div className={`proto-lab ${screen ? 'proto-lab--immersive' : 'proto-lab--hub'}`}>
       <div className="proto-ambient proto-ambient--one" />
       <div className="proto-ambient proto-ambient--two" />
       <div className="proto-grain" />
 
       {!screen ? (
-        <PrototypeHub concept={hubConcept} onConceptChange={setHubConcept} onOpenScreen={openScreen} />
+        <PrototypeHub onOpenScreen={openScreen} />
       ) : (
         <div className="proto-device">
           <main className="proto-device__screen">
             {screen === 'lobby' && (
               <LobbyPrototype
-                concept={concept}
-                onOpenSettings={() => navigate(`/prototypes?concept=${concept}&screen=settings`)}
+                onOpenSettings={() => navigate('/prototypes?screen=settings')}
               />
             )}
-            {screen === 'settings' && <SettingsPrototype concept={concept} />}
-            {screen === 'cards' && <CardsPrototype concept={concept} />}
-            {screen === 'round' && <RoundPrototype concept={concept} />}
+            {screen === 'settings' && <SettingsPrototype />}
+            {screen === 'cards' && <CardsPrototype />}
+            {screen === 'round' && <RoundPrototype />}
           </main>
         </div>
       )}

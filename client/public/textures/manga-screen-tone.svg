@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="960" viewBox="0 0 640 960">
+  <defs>
+    <pattern id="dense" width="8" height="8" patternUnits="userSpaceOnUse">
+      <circle cx="2" cy="2" r="1.45" fill="#f7f2ed"/>
+      <circle cx="6" cy="6" r="1.45" fill="#f7f2ed"/>
+    </pattern>
+    <pattern id="medium" width="12" height="12" patternUnits="userSpaceOnUse">
+      <circle cx="3" cy="3" r="1.35" fill="#f7f2ed"/>
+      <circle cx="9" cy="9" r="1.35" fill="#f7f2ed"/>
+    </pattern>
+    <pattern id="light" width="18" height="18" patternUnits="userSpaceOnUse">
+      <circle cx="4" cy="4" r="1.1" fill="#f7f2ed"/>
+      <circle cx="13" cy="13" r="1.1" fill="#f7f2ed"/>
+    </pattern>
+    <pattern id="hatch" width="14" height="14" patternUnits="userSpaceOnUse" patternTransform="rotate(-18)">
+      <rect width="2" height="14" fill="#f7f2ed"/>
+    </pattern>
+    <pattern id="pixels" width="16" height="16" patternUnits="userSpaceOnUse">
+      <rect x="0" y="0" width="3" height="3" fill="#f7f2ed"/>
+      <rect x="8" y="4" width="2" height="2" fill="#f7f2ed"/>
+      <rect x="4" y="11" width="3" height="3" fill="#f7f2ed"/>
+      <rect x="13" y="13" width="2" height="2" fill="#f7f2ed"/>
+    </pattern>
+  </defs>
+  <path d="M640 0v258L388 0Z" fill="url(#light)" opacity=".44"/>
+  <path d="M640 96v246L462 96Z" fill="url(#medium)" opacity=".5"/>
+  <path d="M0 500 640 340v126L0 626Z" fill="url(#hatch)" opacity=".16"/>
+  <path d="M0 604 640 444v42L0 646Z" fill="#f7f2ed" opacity=".09"/>
+  <path d="M0 770 640 548v412H0Z" fill="url(#dense)" opacity=".3"/>
+  <path d="M0 858 640 634v326H0Z" fill="url(#pixels)" opacity=".32"/>
+  <path d="M0 908 640 684v276H0Z" fill="#f7f2ed" opacity=".06"/>
+</svg>

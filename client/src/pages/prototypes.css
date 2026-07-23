@@ -3103,3 +3103,308 @@
     min-height: 260px;
   }
 }
+
+/* ============================================================
+   Unified playable direction — composed screen tone, no variants
+   ============================================================ */
+
+.proto-hub__direction {
+  min-height: 82px;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.7rem;
+  padding: 0.8rem 1rem;
+  border: 2px solid #f7f2ed;
+  color: #f7f2ed;
+  background: #080808;
+  box-shadow: 7px 7px 0 #e21438;
+  clip-path: var(--proto-cut);
+  rotate: -0.7deg;
+}
+
+.proto-hub__direction > span {
+  color: #e21438;
+  font-size: 0.55rem;
+  font-weight: 950;
+  letter-spacing: 0.16em;
+  writing-mode: vertical-rl;
+  rotate: 180deg;
+}
+
+.proto-hub__direction > strong {
+  font-size: clamp(1.4rem, 5vw, 2.8rem);
+  font-weight: 1000;
+  letter-spacing: -0.06em;
+}
+
+.proto-hub__direction > div {
+  display: flex;
+  gap: 0.35rem;
+}
+
+.proto-hub__direction i {
+  padding: 0.2rem 0.4rem;
+  color: #080808;
+  background: #f7f2ed;
+  font-size: 0.52rem;
+  font-style: normal;
+  font-weight: 950;
+  letter-spacing: 0.08em;
+}
+
+.proto-hub__direction i:nth-child(1) { rotate: -3deg; }
+.proto-hub__direction i:nth-child(2) { color: #f7f2ed; background: #e21438; rotate: 2deg; }
+.proto-hub__direction i:nth-child(3) { rotate: -1deg; }
+
+.proto-lab--immersive::before,
+.proto-lab--immersive::after,
+.proto-lab--immersive > .proto-ambient,
+.proto-lab--immersive > .proto-grain {
+  display: none;
+}
+
+.proto-lab--immersive .proto-screen {
+  background-color: #080808;
+  background-image: url('/textures/manga-screen-tone.svg') !important;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+}
+
+.proto-lab--immersive .proto-screen::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: #e21438;
+  clip-path: polygon(0 72%, 100% 55%, 100% 62%, 0 79%);
+  opacity: 0.7;
+}
+
+.proto-lab--immersive .proto-screen-intro {
+  position: absolute;
+  top: calc(max(1.1rem, env(safe-area-inset-top) + 0.65rem));
+  left: max(1.15rem, env(safe-area-inset-left));
+  margin: 0;
+}
+
+.proto-lab--immersive .proto-screen-intro > small {
+  display: none;
+}
+
+/* Lobby: a centered social stage with anchored game controls. */
+.proto-lab--immersive .proto-lobby .proto-code {
+  top: calc(max(1.1rem, env(safe-area-inset-top) + 0.65rem));
+  right: max(1.15rem, env(safe-area-inset-right));
+}
+
+.proto-lab--immersive .proto-lobby .proto-room-settings {
+  top: calc(max(5.6rem, env(safe-area-inset-top) + 5rem));
+  right: max(1.15rem, env(safe-area-inset-right));
+}
+
+.proto-lab--immersive .proto-lobby .proto-social-stage {
+  position: absolute;
+  top: 48%;
+  left: 50%;
+  width: min(90vw, 46vh, 390px);
+  margin: 0;
+  translate: -50% -50%;
+}
+
+.proto-lab--immersive .proto-lobby .proto-lobby-meta {
+  position: absolute;
+  right: max(1.15rem, env(safe-area-inset-right));
+  bottom: calc(max(5.6rem, env(safe-area-inset-bottom) + 5rem));
+  left: max(1.15rem, env(safe-area-inset-left));
+  margin: 0;
+}
+
+.proto-lab--immersive .proto-lobby .proto-primary-action {
+  min-height: 58px;
+}
+
+/* Settings: the sheet itself is the viewport, rather than a short web panel. */
+.proto-lab--immersive .proto-settings {
+  overflow: hidden;
+}
+
+.proto-lab--immersive .proto-settings-sheet {
+  position: absolute;
+  top: calc(max(6.65rem, env(safe-area-inset-top) + 6rem));
+  right: max(1rem, env(safe-area-inset-right));
+  bottom: calc(max(1rem, env(safe-area-inset-bottom) + 0.65rem));
+  left: max(1rem, env(safe-area-inset-left));
+  min-height: 0;
+  margin: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  transform: none;
+  display: flex;
+  flex-direction: column;
+}
+
+.proto-lab--immersive .proto-settings-sheet::after {
+  position: fixed;
+}
+
+.proto-lab--immersive .proto-save-action {
+  min-height: 58px;
+  margin-top: auto;
+}
+
+/* Cards: use the center of the screen, then anchor the decisive action. */
+.proto-lab--immersive .proto-cards {
+  padding-top: calc(max(1.15rem, env(safe-area-inset-top) + 0.7rem));
+}
+
+.proto-lab--immersive .proto-cards .proto-round-status {
+  width: min(100%, 430px);
+  margin: 0 auto;
+}
+
+.proto-lab--immersive .proto-cards .proto-submit-status {
+  width: min(100%, 430px);
+  margin-right: auto;
+  margin-left: auto;
+}
+
+.proto-lab--immersive .proto-cards .proto-prompt-card {
+  width: min(100%, 430px);
+  min-height: 142px;
+  margin-top: 1.05rem;
+}
+
+.proto-lab--immersive .proto-cards .proto-selection-copy {
+  width: min(100%, 430px);
+  margin: 0.8rem auto 0.3rem;
+}
+
+.proto-lab--immersive .proto-restored-carousel {
+  height: min(37vh, 320px);
+  margin-top: 0;
+}
+
+.proto-lab--immersive .proto-restored-carousel .cylinder-carousel-container {
+  height: 100% !important;
+}
+
+.proto-scroll-card::before {
+  display: none;
+  content: none;
+}
+
+.proto-scroll-card > span {
+  margin-top: 0;
+}
+
+.proto-lab--immersive .proto-cards .proto-card-dots {
+  margin-top: 0.2rem;
+}
+
+.proto-lab--immersive .proto-cards > .proto-slam-submit {
+  min-height: 58px;
+}
+
+.proto-lab--immersive .proto-slam-submit b {
+  color: #080808;
+}
+
+/* Round: a larger card collision, reactions mid-field, ranking at the edge. */
+.proto-lab--immersive .proto-round {
+  padding-top: calc(max(1.15rem, env(safe-area-inset-top) + 0.7rem));
+}
+
+.proto-lab--immersive .proto-round .proto-round-status,
+.proto-lab--immersive .proto-round .proto-round-copy,
+.proto-lab--immersive .proto-round .proto-reaction-row {
+  width: min(100%, 430px);
+  margin-right: auto;
+  margin-left: auto;
+}
+
+.proto-lab--immersive .proto-round .proto-round-copy {
+  margin-top: 1.25rem;
+  margin-bottom: 0.8rem;
+}
+
+.proto-lab--immersive .proto-round .proto-combo-card {
+  width: min(82vw, 330px);
+  min-height: min(39vh, 335px);
+}
+
+.proto-lab--immersive .proto-round .proto-combo-card__prompt {
+  min-height: 46%;
+}
+
+.proto-lab--immersive .proto-round .proto-combo-card__answer {
+  min-height: 58%;
+}
+
+.proto-lab--immersive .proto-round .proto-reaction-row {
+  margin-top: 0.75rem;
+}
+
+@media (max-width: 620px) {
+  .proto-hub__direction {
+    grid-template-columns: auto 1fr;
+  }
+
+  .proto-hub__direction > div {
+    grid-column: 2;
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-height: 740px) {
+  .proto-lab--immersive .proto-lobby .proto-social-stage {
+    top: 46%;
+    width: min(82vw, 40vh, 315px);
+  }
+
+  .proto-lab--immersive .proto-settings-sheet {
+    top: 5.9rem;
+  }
+
+  .proto-lab--immersive .proto-cards .proto-prompt-card {
+    min-height: 110px;
+    margin-top: 0.65rem;
+  }
+
+  .proto-lab--immersive .proto-restored-carousel {
+    height: 235px;
+    margin-top: 0;
+    transform: none;
+  }
+
+  .proto-lab--immersive .proto-cards .proto-card-dots {
+    margin-top: 0;
+  }
+
+  .proto-lab--immersive .proto-round .proto-round-copy {
+    margin-top: 0.65rem;
+  }
+
+  .proto-lab--immersive .proto-round .proto-combo-card {
+    min-height: 255px;
+    transform: none;
+  }
+
+  .proto-lab--immersive .proto-round .proto-reaction-row {
+    margin-top: 0.45rem;
+  }
+}
+
+@media (min-width: 900px) {
+  .proto-lab--immersive .proto-lobby .proto-code,
+  .proto-lab--immersive .proto-lobby .proto-room-settings {
+    right: calc(50% - 258px);
+  }
+
+  .proto-lab--immersive .proto-screen-intro {
+    left: calc(50% - 258px);
+  }
+}
